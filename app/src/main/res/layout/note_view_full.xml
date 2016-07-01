@@ -15,10 +15,7 @@
             android:layout_gravity="center_horizontal|top"
             android:layout_marginTop="25dp"
             android:checked="true"
-            android:showText="true"
-            android:text="Public"
-            android:textOff="@string/nvf_private_label"
-            android:textOn="@string/nvf_public_label" />
+            android:text="@string/nvf_public_label" />
 
         <EditText
             android:id="@+id/nvf_note_title"
