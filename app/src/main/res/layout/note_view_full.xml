@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/note_title"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="65dp"
+            android:text="Title"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:editable="true"
+            android:elegantTextHeight="false"
+            android:autoText="false"
+            android:maxLines="1"
+            android:textColor="#c5c4c4" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Note view"
+            android:id="@+id/note_full_label"
+            android:layout_gravity="left|top"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="15dp" />
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/note_permission"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="25dp"
+            android:textOff="Public"
+            android:textOn="Private" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Note Me"
+            android:id="@+id/note_submit_btn"
+            android:layout_gravity="right|top"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/note_content"
+            android:layout_gravity="center_horizontal|top"
+            android:text="Content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:editable="true"
+            android:textColor="#c5c4c4"
+            android:layout_marginTop="100dp" />
+
+    </FrameLayout>
+</LinearLayout>
