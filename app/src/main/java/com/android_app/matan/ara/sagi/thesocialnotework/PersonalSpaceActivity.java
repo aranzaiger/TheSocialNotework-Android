@@ -1,7 +1,12 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import android.app.Dialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -10,6 +15,7 @@ import java.util.List;
 public class PersonalSpaceActivity extends AppCompatActivity {
 
     protected ListView noteList;
+    protected Button addBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +32,29 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         ListAdapter la = new ListAdapter(this, listOfNotes);
         this.noteList = (ListView)findViewById(R.id.ps_list_listview);
         noteList.setAdapter(la);
+
+        addBtn = (Button) findViewById(R.id.ps_new_note_button);
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(PersonalSpaceActivity.this);
+
+                dialog.setContentView(R.layout.note_view_full);
+                dialog.setTitle("New Note");
+                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+
+                lp.copyFrom(dialog.getWindow().getAttributes());
+                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+
+
+//                final EditText editText = (EditText) dialog.findViewById(R.id.editText);
+//                Button btnSave          = (Button) dialog.findViewById(R.id.save);
+//                Button btnCancel        = (Button) dialog.findViewById(R.id.cancel);
+                dialog.setCancelable(false);
+                dialog.show();
+                dialog.getWindow().setAttributes(lp);
+            }
+        });
 
 
     }

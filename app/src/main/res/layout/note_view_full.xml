@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <EditText
+            android:id="@+id/nvf_note_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/note_title"
             android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="65dp"
-            android:text="Title"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
+            android:layout_marginTop="65dp"
+            android:autoText="false"
             android:editable="true"
             android:elegantTextHeight="false"
-            android:autoText="false"
             android:maxLines="1"
+            android:text="Title"
             android:textColor="#c5c4c4" />
 
         <TextView
+            android:id="@+id/nvf_note_full_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Note view"
-            android:id="@+id/note_full_label"
             android:layout_gravity="left|top"
+            android:layout_marginLeft="15dp"
             android:layout_marginTop="25dp"
-            android:layout_marginLeft="15dp" />
+            android:text="Note view" />
 
         <Switch
+            android:id="@+id/nvf_note_permission"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/note_permission"
             android:layout_gravity="center_horizontal|top"
             android:layout_marginTop="25dp"
             android:textOff="Public"
             android:textOn="Private" />
 
         <Button
+            android:id="@+id/nvf_note_submit_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Note Me"
-            android:id="@+id/note_submit_btn"
             android:layout_gravity="right|top"
+            android:layout_marginRight="15dp"
             android:layout_marginTop="15dp"
-            android:layout_marginRight="15dp" />
+            android:text="Note Me" />
 
         <EditText
+            android:id="@+id/nvf_note_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/note_content"
             android:layout_gravity="center_horizontal|top"
-            android:text="Content"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
+            android:layout_marginTop="100dp"
             android:editable="true"
-            android:textColor="#c5c4c4"
-            android:layout_marginTop="100dp" />
+            android:text="Content"
+            android:textColor="#c5c4c4" />
 
     </FrameLayout>
 </LinearLayout>
