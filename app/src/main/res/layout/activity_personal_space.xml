@@ -24,6 +24,12 @@
             android:layout_weight="0.8"/>
 
         <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/temp_btn" />
+
+        <Button
             android:id="@+id/ps_new_note_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
