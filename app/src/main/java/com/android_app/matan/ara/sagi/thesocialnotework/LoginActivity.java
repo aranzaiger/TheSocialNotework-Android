@@ -3,6 +3,7 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -87,7 +88,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
       @Override
       public void onClick(View view) {
         attemptLogin();
-      }
+        Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
+        startActivity(personalSpaceActivity);
+    }
     });
 
     mLoginFormView = findViewById(R.id.login_form);
@@ -192,7 +195,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
   private boolean isEmailValid(String email) {
     //TODO: Replace this with your own logic
-    return email.contains("@");
+    return email.contains("@") && email.contains(".");
   }
 
   private boolean isPasswordValid(String password) {
