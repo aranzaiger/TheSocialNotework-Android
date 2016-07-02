@@ -32,12 +32,6 @@ public class HeavyWorker extends AsyncTask< String , Context , Void > {
 
         PersonalSpaceActivity ps = (PersonalSpaceActivity)targetCtx;
         ps.getAllNotes();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
         return null ;
     }
