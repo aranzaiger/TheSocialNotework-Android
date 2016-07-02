@@ -48,12 +48,15 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     private GPSUtils gpsUtils;
     private List<Note> listOfNotes;
     private ListAdapter noteListAdapter;
+    private String userId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_space);
+        Bundle b = getIntent().getExtras();
+        userId = b.getString("user_id");
 
         this.locationPermission = true;
 
@@ -83,7 +86,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     }
 
     public void getAllNotes(){
-        VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).get(BASE_URL + "/note/all?uid=5719238044024832", getNotesSuccessListener, genericErrorListener);
+        VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).get(BASE_URL + "/note/all?uid="+userId, getNotesSuccessListener, genericErrorListener);
     }
 
     private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
@@ -122,7 +125,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                     try {
 
                         //TODO need to get owner id from login screen
-                        noteJson.put("owner_id", "5719238044024832");
+                        noteJson.put("owner_id", userId);
                         noteJson.put("title", newTitle.getText());
                         noteJson.put("lat", gpsUtils.getLatitude());
                         noteJson.put("lng", gpsUtils.getLongitude());
@@ -164,11 +167,11 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", ""+System.currentTimeMillis() / 1000, true);
         Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", ""+System.currentTimeMillis() / 1000, true);
         Note n3 = new Note("3", 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", ""+System.currentTimeMillis() / 1000, true);
-        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", ""+System.currentTimeMillis() / 1000, true);
+//        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", ""+System.currentTimeMillis() / 1000, true);
         listOfNotes.add(n1);
         listOfNotes.add(n2);
         listOfNotes.add(n3);
-        listOfNotes.add(n4);
+//        listOfNotes.add(n4);
     }
 
 
