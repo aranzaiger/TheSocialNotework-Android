@@ -8,10 +8,10 @@ public class Note {
 //    protected int id;
     protected float lat, lon;
     protected String id, address, title, body;
-    protected long  timestamp;
+    protected String  timestamp;
     protected boolean isPublic;
 
-    public Note(String id, float lat, float lon, String address, String title, String body, long timestamp, boolean isPublic) {
+    public Note(String id, float lat, float lon, String address, String title, String body, String timestamp, boolean isPublic) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -84,11 +84,11 @@ public class Note {
         this.body = body;
     }
 
-    public long getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 

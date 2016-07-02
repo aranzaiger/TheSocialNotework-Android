@@ -26,10 +26,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 
 //http://thesocialnotework.appspot.com/api/status | http://localhost:8080/api/note/all?uid=<userID>
@@ -43,6 +47,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     private boolean locationPermission;
     private GPSUtils gpsUtils;
     private List<Note> listOfNotes;
+    private ListAdapter noteListAdapter;
 
 
     @Override
@@ -64,8 +69,8 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         listOfNotes = new ArrayList<>();
         //add demo notes to view
         addDemoNotes(listOfNotes);
-        ListAdapter la = new ListAdapter(this, listOfNotes);
-        noteList.setAdapter(la);
+        noteListAdapter = new ListAdapter(this, listOfNotes);
+        noteList.setAdapter(noteListAdapter);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
                                       public void onClick(View v) {
@@ -122,7 +127,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                                                       Log.d(TAG, e.toString());
                                                   }
 
-                                                  VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).newUser(BASE_URL + "/note/upsert", noteJson);
+                                                  VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).post(BASE_URL + "/note/upsert", noteJson, newNoteSuccess, newNoteError);
                                                   dialog.dismiss();
                                               }
                                           });
@@ -150,10 +155,10 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
 
     public void addDemoNotes(List<Note> listOfNotes) {
-        Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", System.currentTimeMillis() / 1000, true);
-        Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", System.currentTimeMillis() / 1000, true);
-        Note n3 = new Note("3", 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", System.currentTimeMillis() / 1000, true);
-        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", System.currentTimeMillis() / 1000, true);
+        Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", ""+System.currentTimeMillis() / 1000, true);
+        Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", ""+System.currentTimeMillis() / 1000, true);
+        Note n3 = new Note("3", 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", ""+System.currentTimeMillis() / 1000, true);
+        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", ""+System.currentTimeMillis() / 1000, true);
         listOfNotes.add(n1);
         listOfNotes.add(n2);
         listOfNotes.add(n3);
@@ -168,29 +173,27 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     Response.Listener<JSONObject> newNoteSuccess = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
-            String s = "";
-
-            try {
-                s= response.getString("id");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
             Log.d(TAG, "newNoteSuccess: response - " + response.toString());
-            Log.d(TAG, "newNoteSuccess: id response - " + s);
             try {
+                Date time = new Date();
+                JSONObject noteObject = response.getJSONObject("note");
+                time.setTime(noteObject.getLong("created_at"));
+
                 Note addNote = new Note(
-                        "12345",
-                        Float.parseFloat(response.getJSONObject("location").getString("lat")),
-                        Float.parseFloat(response.getJSONObject("location").getString("lng")),
-                        response.getJSONObject("location").getString("address"),
-                        response.getString("title"),
-                        response.getString("body"),
-                        response.getLong("created_at"),
-                        response.getBoolean("is_public")
+                        noteObject.getString("id"),
+                        Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
+                        Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
+                        noteObject.getJSONObject("location").getString("address"),
+                        noteObject.getString("title"),
+                        noteObject.getString("body"),
+                        time.toString(),
+                        noteObject.getBoolean("is_public")
                 );
                 listOfNotes.add(addNote);
+//                noteListAdapter = new ListAdapter(PersonalSpaceActivity.this, listOfNotes);
+                noteList.setAdapter(noteListAdapter);
 //                addNoteToArray(addNote);
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 Log.e(TAG, "newNoteSuccess:" + e.getMessage());
             }
 
