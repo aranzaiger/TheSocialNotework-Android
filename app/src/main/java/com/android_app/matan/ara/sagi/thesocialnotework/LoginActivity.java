@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
         Log.d(TAG, "user: " + username);
         Log.d(TAG, "pwd: " + password);
 
-        if(TextUtils.isEmpty(username) || !isPasswordValid(username) || TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+        if(TextUtils.isEmpty(username) || !isUsernameValid(username) || TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             return false;
         } else{
             return true;
@@ -203,38 +203,39 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
 
             boolean cancel = false;
             View focusView = null;
-
-            // Check for a valid password, if the user entered one.
-            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-                mPasswordView.setError(getString(R.string.error_invalid_password));
-                focusView = mPasswordView;
-                cancel = true;
-            }
-            if (cancel) {
-                // There was an error; don't attempt login and focus the first
-                // form field with an error.
-                focusView.requestFocus();
-            } else {
-                // Show a progress spinner, and kick off a background task to
-                // perform the user login attempt.
-                showProgress(true);
+            showProgress(true);
 //            mAuthTask = new UserLoginTask(username, password); // TODO: RETRIEVE ?
 //            mAuthTask.execute((Void) null); // TODO: RETRIEVE ?
 
-                // http request register
-                JSONObject tempJson = new JSONObject();
-                try {
-                    tempJson.put("username", username);
-                    tempJson.put("password", password);
-                } catch (Exception e) {
-                    Log.d(TAG, e.toString());
-                }
-
-                VolleyUtilSingleton.getInstance(LoginActivity.this).post(BASE_URL + LOGIN_PATH, tempJson, onLoginSuccess, onLoginError);
+            // http request register
+            JSONObject tempJson = new JSONObject();
+            try {
+                tempJson.put("username", username);
+                tempJson.put("password", password);
+            } catch (Exception e) {
+                Log.d(TAG, e.toString());
             }
+
+            VolleyUtilSingleton.getInstance(LoginActivity.this).post(BASE_URL + LOGIN_PATH, tempJson, onLoginSuccess, onLoginError);
+
+            // Check for a valid password, if the user entered one.
+//            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+//                mPasswordView.setError(getString(R.string.error_invalid_password));
+//                focusView = mPasswordView;
+//                cancel = true;
+//            }
+//            if (cancel) {
+//                // There was an error; don't attempt login and focus the first
+//                // form field with an error.
+//                focusView.requestFocus();
+//            } else {
+//                // Show a progress spinner, and kick off a background task to
+//                // perform the user login attempt.
+//
+//            }
         } else {
             showProgress(false);
-            Log.d(TAG, "Invalid params");
+            Log.d(TAG, "Invalid params - make sure username exist & password is greater than 4");
         }
 
         // Check for a valid username
@@ -256,9 +257,9 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
                 if(response.get("user") != null) {
                     Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
                     Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
-                    Bundle b = new Bundle();
-                    b.putString("user_id", response.getJSONObject("user").getString("id"));
-                    personalSpaceActivity.putExtras(b);
+                    Bundle loginUserBundle = new Bundle();
+                    loginUserBundle.putString("user_id", response.getJSONObject("user").getString("id"));
+                    personalSpaceActivity.putExtras(loginUserBundle);
                     startActivity(personalSpaceActivity);
                 }
             }catch (Exception e) {
@@ -275,9 +276,9 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
     };
 
 
-    private boolean isEmailValid(String email) {
+    private boolean isUsernameValid(String username) {
         //TODO: Replace this with your own logic
-        return email.contains("@") && email.contains(".");
+        return username.length() > 0;
     }
 
     private boolean isPasswordValid(String password) {
