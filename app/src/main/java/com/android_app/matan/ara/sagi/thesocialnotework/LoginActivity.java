@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +30,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,24 +61,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private UserLoginTask mAuthTask = null;
 
     // UI references.
+    private AutoCompleteTextView mUsernameView;
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
 
-    private final String baseUrl = "http://thesocialnotework-api.appspot.com/api";
+    private final String TAG = "Login Activity";
+    private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private final String REG_PATH = "/register";
     private final String LOGIN_PATH = "/login";
+    private boolean loginSuccess = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+//        mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
+//        populateAutoComplete();
 
+//        mUsernameView
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -92,9 +102,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "Login.......");
                 attemptLogin();
-                Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
-                startActivity(personalSpaceActivity);
             }
         });
 
@@ -158,9 +167,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Reset errors.
         mEmailView.setError(null);
+//        mUsernameView.setError(null);
         mPasswordView.setError(null);
 
+
         // Store values at the time of the login attempt.
+//        String username = mUsernameView.getText().toString();
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
@@ -195,6 +207,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
+
+            // http request register
+            JSONObject tempJson = new JSONObject();
+            try {
+                tempJson.put("email", email);
+                tempJson.put("password", password);
+            } catch (Exception e) {
+                Log.d(TAG, e.toString());
+            }
+
+            VolleyUtilSingleton.getInstance(LoginActivity.this).newUser(BASE_URL + LOGIN_PATH, tempJson);
+
+            Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
+            startActivity(personalSpaceActivity);
         }
     }
 
