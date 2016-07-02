@@ -57,11 +57,13 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_personal_space);
         Bundle b = getIntent().getExtras();
         userId = b.getString("user_id");
+        Log.d(TAG,"-------------------------USER ID: "+ userId);
 
         this.locationPermission = true;
 
         //check for permission
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, FINE_PERM);
 
 
         this.noteList = (ListView) findViewById(R.id.ps_list_listview);
