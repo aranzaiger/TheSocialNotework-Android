@@ -38,6 +38,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     protected Button addBtn;
     private final String TAG = "Personal Space Activity";
     private final int FINE_PERM = 0;
+    private final String baseUrl = "http://thesocialnotework-api.appspot.com/api";
     private boolean locationPermission;
     private GPSUtils gpsUtils;
 
@@ -79,7 +80,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         tempBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).newUser("http://thesocialnotework.appspot.com/api/register", tempJson);
+                VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).newUser(baseUrl + "/register", tempJson);
             }
 
         });

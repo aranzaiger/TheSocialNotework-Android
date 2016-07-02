@@ -63,8 +63,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
-    private final String REG_PATH = "http://thesocialnotework.appspot.com/api/register";
-    private final String LOGIN_PATH = "http://thesocialnotework.appspot.com/api/login";
+    private final String baseUrl = "http://thesocialnotework-api.appspot.com/api";
+    private final String REG_PATH = "/register";
+    private final String LOGIN_PATH = "/login";
 
 
     @Override
