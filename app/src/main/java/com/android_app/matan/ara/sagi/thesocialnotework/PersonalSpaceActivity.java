@@ -122,7 +122,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                                                       Log.d(TAG, e.toString());
                                                   }
 
-                                                  VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).newUser(BASE_URL + "/note/upsert", noteJson);
+                                                  VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).post(BASE_URL + "/note/upsert", noteJson, newNoteSuccess, newNoteError);
                                                   dialog.dismiss();
                                               }
                                           });

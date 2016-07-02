@@ -31,6 +31,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -41,7 +45,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends AppCompatActivity{ // implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -61,17 +65,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mUsernameView;
+    private EditText mUsernameView;
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
 
     private final String TAG = "Login Activity";
+
     private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
-    private final String REG_PATH = "/register";
     private final String LOGIN_PATH = "/login";
-    private boolean loginSuccess = false;
+    private final String REG_PATH = "/register";
 
 
     @Override
@@ -80,13 +84,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+//        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+//        populateAutoComplete();
 //        mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
 //        populateAutoComplete();
 
-//        mUsernameView
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mUsernameView = (EditText) findViewById(R.id.al_username);
+        mPasswordView = (EditText) findViewById(R.id.al_password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -102,7 +106,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Register....... this section under construction");
-                //attemptLogin();
+                //attemptRegister(); // TODO : implement
             }
         });
 
@@ -124,7 +128,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return;
         }
 
-        getLoaderManager().initLoader(0, null, this);
+//        getLoaderManager().initLoader(0, null, this);
     }
 
     private boolean mayRequestContacts() {
@@ -168,69 +172,108 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
+
+    private boolean isParamsValid(String username, String password) {
+        Log.d(TAG, "user: " + username);
+        Log.d(TAG, "pwd: " + password);
+
+        if(TextUtils.isEmpty(username) || !isPasswordValid(username) || TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            return false;
+        } else{
+            return true;
+        }
+    }
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+//        mEmailView.setError(null);
 //        mUsernameView.setError(null);
         mPasswordView.setError(null);
 
-
         // Store values at the time of the login attempt.
-//        String username = mUsernameView.getText().toString();
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
 
-        boolean cancel = false;
-        View focusView = null;
+//        String email = mEmailView.getText().toString();
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
+        if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString())) {
+            String username = mUsernameView.getText().toString();
+            String password = mPasswordView.getText().toString();
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
+            boolean cancel = false;
+            View focusView = null;
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
-
-            // http request register
-            JSONObject tempJson = new JSONObject();
-            try {
-                tempJson.put("email", email);
-                tempJson.put("password", password);
-            } catch (Exception e) {
-                Log.d(TAG, e.toString());
+            // Check for a valid password, if the user entered one.
+            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+                mPasswordView.setError(getString(R.string.error_invalid_password));
+                focusView = mPasswordView;
+                cancel = true;
             }
+            if (cancel) {
+                // There was an error; don't attempt login and focus the first
+                // form field with an error.
+                focusView.requestFocus();
+            } else {
+                // Show a progress spinner, and kick off a background task to
+                // perform the user login attempt.
+                showProgress(true);
+//            mAuthTask = new UserLoginTask(username, password); // TODO: RETRIEVE ?
+//            mAuthTask.execute((Void) null); // TODO: RETRIEVE ?
 
-            VolleyUtilSingleton.getInstance(LoginActivity.this).newUser(BASE_URL + LOGIN_PATH, tempJson);
+                // http request register
+                JSONObject tempJson = new JSONObject();
+                try {
+                    tempJson.put("username", username);
+                    tempJson.put("password", password);
+                } catch (Exception e) {
+                    Log.d(TAG, e.toString());
+                }
 
-            Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
-            startActivity(personalSpaceActivity);
+                VolleyUtilSingleton.getInstance(LoginActivity.this).post(BASE_URL + LOGIN_PATH, tempJson, onLoginSuccess, onLoginError);
+            }
+        } else {
+            showProgress(false);
+            Log.d(TAG, "Invalid params");
         }
+
+        // Check for a valid username
+//        if (TextUtils.isEmpty(username)) {
+//            mUsernameView.setError(getString(R.string.error_field_required));
+//            focusView = mUsernameView;
+//            cancel = true;
+//        } else if (!isEmailValid(username)) {
+//            mUsernameView.setError(getString(R.string.error_invalid_email));
+//            focusView = mUsernameView;
+//            cancel = true;
+//        }
     }
+
+    Response.Listener<JSONObject> onLoginSuccess = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                if(response.get("user") != null) {
+                    Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
+                    Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
+                    Bundle b = new Bundle();
+                    b.putString("user_id", response.getJSONObject("user").getString("id"));
+                    personalSpaceActivity.putExtras(b);
+                    startActivity(personalSpaceActivity);
+                }
+            }catch (Exception e) {
+                Log.e(TAG, "onLoginSuccess:" + e.getMessage());
+            }
+        }
+    };
+
+    Response.ErrorListener onLoginError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Log.d(TAG, "onLoginError: msg: " + error.getMessage());
+        }
+    };
+
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
@@ -278,47 +321,47 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+//        return new CursorLoader(this,
+//                // Retrieve data rows for the device user's 'profile' contact.
+//                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
+//                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
+//
+//                // Select only email addresses.
+//                ContactsContract.Contacts.Data.MIMETYPE +
+//                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
+//                .CONTENT_ITEM_TYPE},
+//
+//                // Show primary email addresses first. Note that there won't be
+//                // a primary email address if the user hasn't specified one.
+//                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
+//    }
+//
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+//        List<String> users = new ArrayList<>();
+//        cursor.moveToFirst();
+//        while (!cursor.isAfterLast()) {
+//            emails.add(cursor.getString(ProfileQuery.ADDRESS));
+//            cursor.moveToNext();
+//        }
+//
+//        addUsersToAutoComplete(users);
+//    }
 
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
+//    @Override
+//    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+//
+//    }
 
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+    private void addUsersToAutoComplete(List<String> usernameCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+                        android.R.layout.simple_dropdown_item_1line, usernameCollection);
 
-        mEmailView.setAdapter(adapter);
+//        mUsernameView.setAdapter(adapter);
     }
 
 
