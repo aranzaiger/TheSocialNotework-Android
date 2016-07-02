@@ -70,90 +70,96 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         //add demo notes to view
         addDemoNotes(listOfNotes);
         noteListAdapter = new ListAdapter(this, listOfNotes);
+
         noteList.setAdapter(noteListAdapter);
-
-        addBtn.setOnClickListener(new View.OnClickListener() {
-                                      public void onClick(View v) {
-                                          final Dialog dialog = new Dialog(PersonalSpaceActivity.this);
-
-                                          dialog.setContentView(R.layout.note_view_full);
-                                          dialog.setTitle("New Note");
-                                          WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-
-                                          lp.copyFrom(dialog.getWindow().getAttributes());
-                                          lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-                                          lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+        new HeavyWorker(this).execute();
 
 
-                                          //                final EditText editText = (EditText) dialog.findViewById(R.id.editText);
-                                          //                Button btnSave          = (Button) dialog.findViewById(R.id.save);
-                                          //                Button btnCancel        = (Button) dialog.findViewById(R.id.cancel);
-                                          dialog.setCancelable(false);
-                                          dialog.show();
-                                          dialog.getWindow().setAttributes(lp);
+//https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
+        addBtn.setOnClickListener(addNewNoteDialog);
 
-
-                                          final Switch permissionSwitch = (Switch) dialog.findViewById(R.id.nvf_note_permission);
-                                          final EditText newTitle = (EditText) dialog.findViewById(R.id.nvf_note_title);
-                                          final EditText newBody = (EditText) dialog.findViewById(R.id.nvf_note_content);
-                                          Button saveBtn = (Button) dialog.findViewById(R.id.nvf_note_submit_btn);
-                                          Button cancelBtn = (Button) dialog.findViewById(R.id.nvf_note_cancel_btn);
-
-                                          cancelBtn.setOnClickListener(new View.OnClickListener() {
-                                              public void onClick(View v) {
-                                                  dialog.dismiss();
-                                              }
-                                          });
-
-
-                                          saveBtn.setOnClickListener(new View.OnClickListener() {
-                                              public void onClick(View v) {
-                                                  //volley post
-                                                  final JSONObject noteJson = new JSONObject();
-                                                  try {
-
-                                                      noteJson.put("owner_id", "5634472569470976");
-                                                      noteJson.put("title", newTitle.getText());
-                                                      noteJson.put("lat", gpsUtils.getLatitude());
-                                                      noteJson.put("lng", gpsUtils.getLongitude());
-                                                      noteJson.put("address", gpsUtils.getAddress());
-                                                      noteJson.put("body", newBody.getText());
-                                                      noteJson.put("is_public", permissionSwitch.isChecked());
-//                                                      noteJson.put("tags",);
-                                                      Log.d(TAG, "Json: " + noteJson.toString());
-
-
-                                                  } catch (Exception e) {
-                                                      Log.d(TAG, e.toString());
-                                                  }
-
-                                                  VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).post(BASE_URL + "/note/upsert", noteJson, newNoteSuccess, newNoteError);
-                                                  dialog.dismiss();
-                                              }
-                                          });
-
-                                          permissionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                  if (isChecked)
-                                                      permissionSwitch.setText(R.string.nvf_public_label);
-                                                  else
-                                                      permissionSwitch.setText(R.string.nvf_private_label);
-
-                                                  // do something, the isChecked will be
-                                                  // true if the switch is in the On position
-                                              }
-                                          });
-
-
-                                      }
-                                  }
-
-        );
 
 
     }
 
+    public void getAllNotes(){
+        VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).get(BASE_URL + "/note/all?uid=5719238044024832", getNotesSuccessListener, genericErrorListener);
+    }
 
+    private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
+        public void onClick(View v) {
+
+            //create and configure dialog
+            final Dialog dialog = new Dialog(PersonalSpaceActivity.this);
+            dialog.setContentView(R.layout.note_view_full);
+            dialog.setTitle("New Note");
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(dialog.getWindow().getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+            dialog.setCancelable(false);
+            dialog.show();
+            dialog.getWindow().setAttributes(lp);
+
+
+            //get note_view_full layout elements
+            final Switch permissionSwitch = (Switch) dialog.findViewById(R.id.nvf_note_permission);
+            final EditText newTitle = (EditText) dialog.findViewById(R.id.nvf_note_title);
+            final EditText newBody = (EditText) dialog.findViewById(R.id.nvf_note_content);
+            Button saveBtn = (Button) dialog.findViewById(R.id.nvf_note_submit_btn);
+            Button cancelBtn = (Button) dialog.findViewById(R.id.nvf_note_cancel_btn);
+
+            cancelBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            saveBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    //volley post
+                    final JSONObject noteJson = new JSONObject();
+                    try {
+
+                        //TODO need to get owner id from login screen
+                        noteJson.put("owner_id", "5719238044024832");
+                        noteJson.put("title", newTitle.getText());
+                        noteJson.put("lat", gpsUtils.getLatitude());
+                        noteJson.put("lng", gpsUtils.getLongitude());
+                        noteJson.put("address", gpsUtils.getAddress());
+                        noteJson.put("body", newBody.getText());
+                        noteJson.put("is_public", permissionSwitch.isChecked());
+//                      noteJson.put("tags",);
+                        Log.d(TAG, "Json: " + noteJson.toString());
+
+
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                    }
+
+                    //send request and close dialog
+                    VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).post(BASE_URL + "/note/upsert", noteJson, newNoteSuccessListener, genericErrorListener);
+                    dialog.dismiss();
+                }
+            });
+
+            //change text of switch according to state.
+            permissionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked)
+                        permissionSwitch.setText(R.string.nvf_public_label);
+                    else
+                        permissionSwitch.setText(R.string.nvf_private_label);
+                }
+            });
+
+
+        }
+    };
+
+
+
+    //TODO remove
     public void addDemoNotes(List<Note> listOfNotes) {
         Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", ""+System.currentTimeMillis() / 1000, true);
         Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", ""+System.currentTimeMillis() / 1000, true);
@@ -165,12 +171,14 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         listOfNotes.add(n4);
     }
 
+
     public void setLocationPermission(boolean locationPermission) {
         this.locationPermission = locationPermission;
     }
 
 
-    Response.Listener<JSONObject> newNoteSuccess = new Response.Listener<JSONObject>() {
+    //response listener for adding new note
+    Response.Listener<JSONObject> newNoteSuccessListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             Log.d(TAG, "newNoteSuccess: response - " + response.toString());
@@ -189,10 +197,9 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                         time.toString(),
                         noteObject.getBoolean("is_public")
                 );
+
                 listOfNotes.add(addNote);
-//                noteListAdapter = new ListAdapter(PersonalSpaceActivity.this, listOfNotes);
                 noteList.setAdapter(noteListAdapter);
-//                addNoteToArray(addNote);
             } catch (Exception e) {
                 Log.e(TAG, "newNoteSuccess:" + e.getMessage());
             }
@@ -200,16 +207,68 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         }
     };
 
-//    private void addNoteToArray(Note addNote) {
-//        listOfNotes.addNote
-//    }
 
-    Response.ErrorListener newNoteError = new Response.ErrorListener() {
+    //response Error listener for adding new note
+    Response.ErrorListener newNoteErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             Log.d(TAG, "newNoteError: msg: " + error.getMessage());
         }
     };
+
+
+    //response listener for getting all user notes
+    Response.Listener<JSONObject> getNotesSuccessListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            Log.d(TAG,response.toString());
+            try {
+                //need to get all notes and add to listOfNotes
+                JSONArray noteObjectsArray = response.getJSONArray("notes");
+                Date time = new Date();
+                for (int i = 0; i < noteObjectsArray.length(); i++) {
+                    JSONObject noteObject = noteObjectsArray.getJSONObject(i);
+                    time.setTime(noteObject.getLong("created_at"));
+
+                    Note addNote = new Note(
+                            noteObject.getString("id"),
+                            Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
+                            Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
+                            noteObject.getJSONObject("location").getString("address"),
+                            noteObject.getString("title"),
+                            noteObject.getString("body"),
+                            time.toString(),
+                            noteObject.getBoolean("is_public")
+                    );
+                    listOfNotes.add(addNote);
+                }
+                noteList.setAdapter(noteListAdapter);
+            } catch (Exception e) {
+                Log.e(TAG, "newNoteSuccess:" + e.getMessage());
+            }
+
+        }
+    };
+
+
+    //response ErrorListener for getting all user notes
+    Response.ErrorListener getNotesErrorListener = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Log.d(TAG,error.getMessage());
+        }
+    };
+
+    //Generic response ErrorListener
+    Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Log.d(TAG,error.getMessage());
+        }
+    };
+
+
+
 
 
 }

@@ -98,4 +98,16 @@ public class VolleyUtilSingleton {
         addToRequestQueue(request);
     }
 
+    public void get(String url, Response.Listener<JSONObject> successFunction, Response.ErrorListener errorFunction) {
+        JsonObjectRequest request =
+                new JsonObjectRequest(
+                        Request.Method.GET,
+                        url,
+                        null,
+                        successFunction,
+                        errorFunction
+                );
+        addToRequestQueue(request);
+    }
+
 }

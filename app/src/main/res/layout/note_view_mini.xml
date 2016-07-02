@@ -14,7 +14,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Date and Location"
-        android:id="@+id/nvm_time_location_textview" />
+        android:text="Date and time"
+        android:id="@+id/nvm_time_textview" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="location"
+        android:id="@+id/nvm_location_textview" />
 
 </LinearLayout>
