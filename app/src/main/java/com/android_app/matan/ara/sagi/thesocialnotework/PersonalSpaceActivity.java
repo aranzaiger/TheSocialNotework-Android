@@ -23,6 +23,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -38,9 +39,10 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     protected Button addBtn;
     private final String TAG = "Personal Space Activity";
     private final int FINE_PERM = 0;
-    private final String baseUrl = "http://thesocialnotework-api.appspot.com/api";
+    private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private boolean locationPermission;
     private GPSUtils gpsUtils;
+    private List<Note> listOfNotes;
 
 
     @Override
@@ -51,42 +53,15 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         this.locationPermission = true;
 
         //check for permission
-        ActivityCompat.requestPermissions(this,  new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
-//        if (ContextCompat.checkSelfPermission(PersonalSpaceActivity.this,
-//                Manifest.permission.INTERNET)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(PersonalSpaceActivity.this,
-//                    new String[]{Manifest.permission.INTERNET},
-//                    1);
-//        }
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
 
 
         this.noteList = (ListView) findViewById(R.id.ps_list_listview);
         addBtn = (Button) findViewById(R.id.ps_new_note_button);
         gpsUtils = new GPSUtils(this);
 
-        final JSONObject tempJson = new JSONObject();
-        try {
-            tempJson.put("username", "aran");
-            tempJson.put("password", "1234");
-            tempJson.put("email", "abc@a.a");
 
-        } catch (Exception e) {
-            Log.d(TAG, e.toString());
-        }
-
-        //TODO remove
-        Button tempBtn = (Button) findViewById(R.id.temp_btn);
-        tempBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).newUser(baseUrl + "/register", tempJson);
-            }
-
-        });
-
-
-        List<Note> listOfNotes = new ArrayList<>();
+        listOfNotes = new ArrayList<>();
         //add demo notes to view
         addDemoNotes(listOfNotes);
         ListAdapter la = new ListAdapter(this, listOfNotes);
@@ -126,28 +101,29 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                                           });
 
 
-
                                           saveBtn.setOnClickListener(new View.OnClickListener() {
                                               public void onClick(View v) {
                                                   //volley post
                                                   final JSONObject noteJson = new JSONObject();
                                                   try {
-//                                                      noteJson.put("id", 12345);
+
+                                                      noteJson.put("owner_id", "5634472569470976");
                                                       noteJson.put("title", newTitle.getText());
                                                       noteJson.put("lat", gpsUtils.getLatitude());
                                                       noteJson.put("lng", gpsUtils.getLongitude());
-                                                      noteJson.put("address",gpsUtils.getAddress());
-                                                      noteJson.put("body",newBody.getText());
-                                                      noteJson.put("is_public",permissionSwitch.isChecked());
+                                                      noteJson.put("address", gpsUtils.getAddress());
+                                                      noteJson.put("body", newBody.getText());
+                                                      noteJson.put("is_public", permissionSwitch.isChecked());
 //                                                      noteJson.put("tags",);
-                                                      Log.d(TAG,"Json: "+noteJson.toString());
-
+                                                      Log.d(TAG, "Json: " + noteJson.toString());
 
 
                                                   } catch (Exception e) {
                                                       Log.d(TAG, e.toString());
                                                   }
 
+                                                  VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).newUser(BASE_URL + "/note/upsert", noteJson);
+                                                  dialog.dismiss();
                                               }
                                           });
 
@@ -174,42 +150,63 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
 
     public void addDemoNotes(List<Note> listOfNotes) {
-        Note n1 = new Note(1, 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", System.currentTimeMillis() / 1000, true);
-        Note n2 = new Note(2, 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", System.currentTimeMillis() / 1000, true);
-        Note n3 = new Note(3, 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", System.currentTimeMillis() / 1000, true);
-        Note n4 = new Note(4, 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", System.currentTimeMillis() / 1000, true);
+        Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", System.currentTimeMillis() / 1000, true);
+        Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", System.currentTimeMillis() / 1000, true);
+        Note n3 = new Note("3", 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", System.currentTimeMillis() / 1000, true);
+        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", System.currentTimeMillis() / 1000, true);
         listOfNotes.add(n1);
         listOfNotes.add(n2);
         listOfNotes.add(n3);
         listOfNotes.add(n4);
     }
+
     public void setLocationPermission(boolean locationPermission) {
         this.locationPermission = locationPermission;
     }
 
 
-//    private void newUser(String url, JSONObject body) {
-//        JsonObjectRequest request =
-//                new JsonObjectRequest(
-//                        Request.Method.POST,
-//                        url,
-//                        body,
-//                        new Response.Listener<JSONObject>() {
-//                            @Override
-//                            public void onResponse(JSONObject response) {
-//                                Log.d(TAG, "success: response - " + response.toString());
-////                                loadData(response, true);
-//                            }
-//                        },
-//                        new Response.ErrorListener() {
-//                            @Override
-//                            public void onErrorResponse(VolleyError error) {
-//                                Log.d(TAG, "error: msg: " + error.getMessage());
-//                            }
-//                        }
-//                );
-//        VolleyUtilSingleton.getInstance(this).addToRequestQueue(request);
+    Response.Listener<JSONObject> newNoteSuccess = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            String s = "";
+
+            try {
+                s= response.getString("id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, "newNoteSuccess: response - " + response.toString());
+            Log.d(TAG, "newNoteSuccess: id response - " + s);
+            try {
+                Note addNote = new Note(
+                        "12345",
+                        Float.parseFloat(response.getJSONObject("location").getString("lat")),
+                        Float.parseFloat(response.getJSONObject("location").getString("lng")),
+                        response.getJSONObject("location").getString("address"),
+                        response.getString("title"),
+                        response.getString("body"),
+                        response.getLong("created_at"),
+                        response.getBoolean("is_public")
+                );
+                listOfNotes.add(addNote);
+//                addNoteToArray(addNote);
+            } catch (JSONException e) {
+                Log.e(TAG, "newNoteSuccess:" + e.getMessage());
+            }
+
+        }
+    };
+
+//    private void addNoteToArray(Note addNote) {
+//        listOfNotes.addNote
 //    }
+
+    Response.ErrorListener newNoteError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Log.d(TAG, "newNoteError: msg: " + error.getMessage());
+        }
+    };
 
 
 }

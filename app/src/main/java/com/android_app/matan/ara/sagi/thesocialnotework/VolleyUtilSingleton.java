@@ -10,6 +10,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -64,8 +65,15 @@ public class VolleyUtilSingleton {
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
-                                Log.d(TAG, "success: response - " + response.toString());
-//                                loadData(response, true);
+                                String s = "";
+
+                                try {
+                                    s= response.getString("id");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                Log.d(TAG, "newNoteSuccess: response - " + response.toString());
+                                Log.d(TAG, "newNoteSuccess: id response - " + s);
                             }
                         },
                         new Response.ErrorListener() {
@@ -74,6 +82,18 @@ public class VolleyUtilSingleton {
                                 Log.d(TAG, "error: msg: " + error.getMessage());
                             }
                         }
+                );
+        addToRequestQueue(request);
+    }
+
+    public void post(String url, JSONObject body, Response.Listener<JSONObject> successFunction, Response.ErrorListener errorFunction) {
+        JsonObjectRequest request =
+                new JsonObjectRequest(
+                        Request.Method.POST,
+                        url,
+                        body,
+                        successFunction,
+                        errorFunction
                 );
         addToRequestQueue(request);
     }

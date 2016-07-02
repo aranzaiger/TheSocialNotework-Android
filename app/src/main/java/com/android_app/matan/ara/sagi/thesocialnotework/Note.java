@@ -5,13 +5,13 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
  */
 public class Note {
 
-    protected int id;
+//    protected int id;
     protected float lat, lon;
-    protected String address, title, body;
-    protected long timestamp;
+    protected String id, address, title, body;
+    protected long  timestamp;
     protected boolean isPublic;
 
-    public Note(int id, float lat, float lon, String address, String title, String body, long timestamp, boolean isPublic) {
+    public Note(String id, float lat, float lon, String address, String title, String body, long timestamp, boolean isPublic) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -36,11 +36,11 @@ public class Note {
                 '}';
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
