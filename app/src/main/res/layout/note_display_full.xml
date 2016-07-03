@@ -55,6 +55,13 @@
             android:layout_height="wrap_content"
             android:text="New Text" />
 
+        <ImageButton
+            android:id="@+id/ndf_delete_imagebutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@android:drawable/ic_menu_delete" />
+
 
     </LinearLayout>
 </ScrollView>
