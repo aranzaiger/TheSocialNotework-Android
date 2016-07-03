@@ -82,7 +82,6 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
 
     private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private final String LOGIN_PATH = "/login";
-    private final String REG_PATH = "/register";
 
     private LoginActivity self;
     protected LinearLayout layout;
@@ -117,8 +116,9 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
         mRegisterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "Register....... this section under construction");
-                //attemptRegister(); // TODO : implement
+                Log.d(TAG, "going to Register...page");
+                Intent registerActivity = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(registerActivity);
             }
         });
 
