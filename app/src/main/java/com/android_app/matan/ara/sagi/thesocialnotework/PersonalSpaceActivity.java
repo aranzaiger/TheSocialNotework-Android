@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -29,6 +30,7 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -72,8 +74,8 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
 
         listOfNotes = new ArrayList<>();
-        //add demo notes to view
-        addDemoNotes(listOfNotes);
+        //TODO - remove -add demo notes to view
+//        addDemoNotes(listOfNotes);
         noteListAdapter = new ListAdapter(this, listOfNotes);
 
         noteList.setAdapter(noteListAdapter);
@@ -123,6 +125,22 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
             saveBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+
+                    //title too short
+                    if (newTitle.getText().length() == 0)
+                    {
+                        Toast toast = Toast.makeText(PersonalSpaceActivity.this, "Title too short.", Toast.LENGTH_LONG);
+                        toast.show();
+                        return;
+                    }
+
+                    //title too long
+                    if (newTitle.getText().length() > 20)
+                    {
+                        Toast toast = Toast.makeText(PersonalSpaceActivity.this, "Title too long.\n Use up to 20 notes.", Toast.LENGTH_LONG);
+                        toast.show();
+                        return;
+                    }
                     //volley post
                     final JSONObject noteJson = new JSONObject();
                     try {
@@ -165,17 +183,17 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
 
 
-    //TODO remove
-    public void addDemoNotes(List<Note> listOfNotes) {
-        Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", ""+System.currentTimeMillis() / 1000, true);
-        Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", ""+System.currentTimeMillis() / 1000, true);
-        Note n3 = new Note("3", 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", ""+System.currentTimeMillis() / 1000, true);
-//        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", ""+System.currentTimeMillis() / 1000, true);
-        listOfNotes.add(n1);
-        listOfNotes.add(n2);
-        listOfNotes.add(n3);
-//        listOfNotes.add(n4);
-    }
+//    //TODO remove
+//    public void addDemoNotes(List<Note> listOfNotes) {
+//        Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", ""+System.currentTimeMillis() / 1000, true);
+//        Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", ""+System.currentTimeMillis() / 1000, true);
+//        Note n3 = new Note("3", 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", ""+System.currentTimeMillis() / 1000, true);
+////        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", ""+System.currentTimeMillis() / 1000, true);
+//        listOfNotes.add(n1);
+//        listOfNotes.add(n2);
+//        listOfNotes.add(n3);
+////        listOfNotes.add(n4);
+//    }
 
 
     public void setLocationPermission(boolean locationPermission) {
@@ -192,19 +210,22 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                 Date time = new Date();
                 JSONObject noteObject = response.getJSONObject("note");
                 time.setTime(noteObject.getLong("created_at"));
+                addNoteFromJsonObj(noteObject, time);
 
-                Note addNote = new Note(
-                        noteObject.getString("id"),
-                        Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
-                        Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
-                        noteObject.getJSONObject("location").getString("address"),
-                        noteObject.getString("title"),
-                        noteObject.getString("body"),
-                        time.toString(),
-                        noteObject.getBoolean("is_public")
-                );
-
-                listOfNotes.add(addNote);
+//                Note addNote = new Note(
+//                        noteObject.getString("id"),
+//                        Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
+//                        Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
+//                        noteObject.getJSONObject("location").getString("address"),
+//                        noteObject.getString("title"),
+//                        noteObject.getString("body"),
+//                        time.toString(),
+//                        noteObject.getBoolean("is_public"),
+//                        noteObject.getInt("likes"),
+//                        jsonArrayToStringArray(noteObject.getJSONArray("tags"))
+//                );
+//
+//                listOfNotes.add(addNote);
                 noteList.setAdapter(noteListAdapter);
             } catch (Exception e) {
                 Log.e(TAG, "newNoteSuccess:" + e.getMessage());
@@ -236,17 +257,20 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                     JSONObject noteObject = noteObjectsArray.getJSONObject(i);
                     time.setTime(noteObject.getLong("created_at"));
 
-                    Note addNote = new Note(
-                            noteObject.getString("id"),
-                            Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
-                            Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
-                            noteObject.getJSONObject("location").getString("address"),
-                            noteObject.getString("title"),
-                            noteObject.getString("body"),
-                            time.toString(),
-                            noteObject.getBoolean("is_public")
-                    );
-                    listOfNotes.add(addNote);
+                    addNoteFromJsonObj(noteObject, time);
+//                    Note addNote = new Note(
+//                            noteObject.getString("id"),
+//                            Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
+//                            Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
+//                            noteObject.getJSONObject("location").getString("address"),
+//                            noteObject.getString("title"),
+//                            noteObject.getString("body"),
+//                            time.toString(),
+//                            noteObject.getBoolean("is_public"),
+//                            noteObject.getInt("likes"),
+//                            jsonArrayToStringArray(noteObject.getJSONArray("tags"))
+//                    );
+//                    listOfNotes.add(addNote);
                 }
                 noteList.setAdapter(noteListAdapter);
             } catch (Exception e) {
@@ -326,4 +350,35 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
 
 
+    private ArrayList<String> jsonArrayToStringArray(JSONArray jArray){
+        ArrayList<String> stringArray = new ArrayList<String>();
+        for(int i = 0, count = jArray.length(); i< count; i++)
+        {
+            try {
+                JSONObject jsonObject = jArray.getJSONObject(i);
+                stringArray.add(jsonObject.toString());
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return stringArray;
+    }
+
+    private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
+        Note addNote = new Note(
+                noteObject.getString("id"),
+                Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
+                Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
+                noteObject.getJSONObject("location").getString("address"),
+                noteObject.getString("title"),
+                noteObject.getString("body"),
+                time.toString(),
+                noteObject.getBoolean("is_public"),
+                noteObject.getInt("likes"),
+                jsonArrayToStringArray(noteObject.getJSONArray("tags"))
+        );
+        listOfNotes.add(addNote);
+
+    }
 }

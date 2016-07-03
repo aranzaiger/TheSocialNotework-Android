@@ -1,25 +1,32 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import java.util.ArrayList;
+
 /**
  * Created by JERLocal on 7/1/2016.
  */
 public class Note {
 
-//    protected int id;
+    protected int likes;
+    protected ArrayList<String> tags;
     protected float lat, lon;
-    protected String id, address, title, body;
-    protected String  timestamp;
+    protected String id, address, title, body, timestamp;
     protected boolean isPublic;
 
-    public Note(String id, float lat, float lon, String address, String title, String body, String timestamp, boolean isPublic) {
+
+
+    public Note(String id, float lat, float lon, String address, String title, String body, String timestamp, boolean isPublic, int likes, ArrayList<String> tags) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
         this.address = address;
+
         this.title = title;
         this.body = body;
         this.timestamp = timestamp;
         this.isPublic = isPublic;
+        this.likes = likes;
+        this.tags =  tags;
     }
 
     @Override
@@ -102,6 +109,21 @@ public class Note {
 
     public String getLocationAndTime() {
         return getTimestamp()+" at "+ getAddress();
+    }
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public ArrayList<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(ArrayList<String> tags) {
+        this.tags = tags;
     }
 
 //    public void save(SQLiteOpenHelper dbHelper, Context context){
