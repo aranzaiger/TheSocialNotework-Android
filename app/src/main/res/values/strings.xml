@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TSN</string>
+    <string name="app_name">TheSocialNotework</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -19,5 +19,9 @@
     <string name="nvf_private_label">Private</string>
     <string name="nvf_public_label">Public</string>
     <string name="logo">Logo</string>
+    <string name="nvf_title">Title</string>
+    <string name="nvf_content">Content</string>
+    <string name="throw_me">Throw Me</string>
+    <string name="note_me">Note Me</string>
 
 </resources>

@@ -8,11 +8,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp">
+
         <Switch
             android:id="@+id/nvf_note_permission"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="25dp"
             android:checked="true"
             android:text="@string/nvf_public_label" />
@@ -21,44 +30,42 @@
             android:id="@+id/nvf_note_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="65dp"
             android:autoText="false"
             android:editable="true"
             android:elegantTextHeight="false"
             android:maxLines="1"
-            android:text="Title"
+            android:text="@string/nvf_title"
             android:textColor="#c5c4c4" />
 
         <EditText
             android:id="@+id/nvf_note_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="100dp"
             android:editable="true"
-            android:text="Content"
-            android:textColor="#c5c4c4" />
+            android:text="@string/nvf_content"
+            android:textColor="#c5c4c4"
+            android:layout_marginTop="20dp" />
 
-        <Button
-            android:id="@+id/nvf_note_submit_btn"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|top"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="150dp"
-            android:text="Note Me" />
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/nvf_note_cancel_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:text="Throw Me" />
+            <Button
+                android:id="@+id/nvf_note_submit_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/note_me"
+                android:layout_margin="15dp" />
 
-    </FrameLayout>
+            <Button
+                android:id="@+id/nvf_note_cancel_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/throw_me"
+                android:layout_marginTop="15dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 </LinearLayout>
