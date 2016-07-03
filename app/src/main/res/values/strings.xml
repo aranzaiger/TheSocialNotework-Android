@@ -18,5 +18,9 @@
     <string name="title_activity_personal_space">PersonalSpaceActivity</string>
     <string name="nvf_private_label">Private</string>
     <string name="nvf_public_label">Public</string>
+    <string name="nvf_title">Title</string>
+    <string name="nvf_content">Content</string>
+    <string name="throw_me">Throw Me</string>
+    <string name="note_me">Note Me</string>
 
 </resources>

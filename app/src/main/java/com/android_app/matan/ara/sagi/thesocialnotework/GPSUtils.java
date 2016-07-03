@@ -199,7 +199,7 @@ public class GPSUtils extends Service implements LocationListener {
                 return addresses;
 
             } else {
-                Toast.makeText(this, "latitude and longitude are null",
+                Toast.makeText(mContext, "latitude and longitude are null",
                         Toast.LENGTH_LONG).show();
                 return null;
             }
