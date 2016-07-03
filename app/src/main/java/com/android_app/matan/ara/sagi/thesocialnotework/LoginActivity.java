@@ -74,24 +74,34 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private TextView mRegisterButton;
+    private Button mLoginButton;
+
 
     private final String TAG = "Login Activity";
 
     private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private final String LOGIN_PATH = "/login";
+    private final String REG_PATH = "/register";
 
     private LoginActivity self;
     protected LinearLayout layout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Remove title bar
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
         this.self = this;
         this.layout = (LinearLayout) findViewById(R.id.layout);
         mUsernameView = (EditText) findViewById(R.id.al_username);
         mPasswordView = (EditText) findViewById(R.id.al_password);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
+        showProgress(false);
+
+        // Remove Auto Focus from the Text Fields
+        layout.setFocusable(true);
+        layout.setFocusableInTouchMode(true);
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -102,30 +112,28 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
                 return false;
             }
         });
-//        Button mRegisterButton = (Button) findViewById(R.id.al_register_button);
-//        mRegisterButton.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Log.d(TAG, "Register....... this section under construction");
-//                //attemptRegister(); // TODO : implement
-//            }
-//        });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.al_login_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        mRegisterButton = (TextView) findViewById(R.id.al_register_button);
+        mRegisterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Register....... this section under construction");
+                //attemptRegister(); // TODO : implement
+            }
+        });
+
+        mLoginButton = (Button) findViewById(R.id.al_login_button);
+        mLoginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Login.......");
+                showProgress(false);
                 attemptLogin();
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
-        // Remove Auto Focus from the Text Fields
-        layout.setFocusable(true);
-        layout.setFocusableInTouchMode(true);
     }
 
     private void populateAutoComplete() {
@@ -201,6 +209,8 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
             String username = mUsernameView.getText().toString();
             String password = mPasswordView.getText().toString();
 
+            boolean cancel = false;
+            View focusView = null;
 
             // http request register
             JSONObject tempJson = new JSONObject();
@@ -223,7 +233,6 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
         @Override
         public void onResponse(JSONObject response) {
             try {
-                // if(response.get("user") != null) {
                 if(!response.isNull("user")) {
                     Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
                     Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
