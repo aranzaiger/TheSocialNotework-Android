@@ -30,6 +30,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -75,19 +76,14 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
 
     private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private final String LOGIN_PATH = "/login";
-    private final String REG_PATH = "/register";
 
+    private LoginActivity self;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        // Set up the login form.
-//        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-//        populateAutoComplete();
-//        mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
-//        populateAutoComplete();
+        this.self = this;
 
         mUsernameView = (EditText) findViewById(R.id.al_username);
         mPasswordView = (EditText) findViewById(R.id.al_password);
@@ -101,14 +97,14 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
                 return false;
             }
         });
-        Button mRegisterButton = (Button) findViewById(R.id.al_register_button);
-        mRegisterButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "Register....... this section under construction");
-                //attemptRegister(); // TODO : implement
-            }
-        });
+//        Button mRegisterButton = (Button) findViewById(R.id.al_register_button);
+//        mRegisterButton.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(TAG, "Register....... this section under construction");
+//                //attemptRegister(); // TODO : implement
+//            }
+//        });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.al_login_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -188,25 +184,14 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
             return;
         }
         showProgress(true);
-
-        // Reset errors.
-//        mEmailView.setError(null);
-//        mUsernameView.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
-
-//        String email = mEmailView.getText().toString();
 
         if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString())) {
 
             String username = mUsernameView.getText().toString();
             String password = mPasswordView.getText().toString();
 
-            boolean cancel = false;
-            View focusView = null;
-//            mAuthTask = new UserLoginTask(username, password); // TODO: RETRIEVE ?
-//            mAuthTask.execute((Void) null); // TODO: RETRIEVE ?
 
             // http request register
             JSONObject tempJson = new JSONObject();
@@ -218,37 +203,11 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
             }
 
             VolleyUtilSingleton.getInstance(LoginActivity.this).post(BASE_URL + LOGIN_PATH, tempJson, onLoginSuccess, onLoginError);
-
-            // Check for a valid password, if the user entered one.
-//            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-//                mPasswordView.setError(getString(R.string.error_invalid_password));
-//                focusView = mPasswordView;
-//                cancel = true;
-//            }
-//            if (cancel) {
-//                // There was an error; don't attempt login and focus the first
-//                // form field with an error.
-//                focusView.requestFocus();
-//            } else {
-//                // Show a progress spinner, and kick off a background task to
-//                // perform the user login attempt.
-//
-//            }
         } else {
             showProgress(false);
             Log.d(TAG, "Invalid params - make sure username exist & password is 4 characters or more");
         }
 
-        // Check for a valid username
-//        if (TextUtils.isEmpty(username)) {
-//            mUsernameView.setError(getString(R.string.error_field_required));
-//            focusView = mUsernameView;
-//            cancel = true;
-//        } else if (!isEmailValid(username)) {
-//            mUsernameView.setError(getString(R.string.error_invalid_email));
-//            focusView = mUsernameView;
-//            cancel = true;
-//        }
     }
 
     Response.Listener<JSONObject> onLoginSuccess = new Response.Listener<JSONObject>() {
@@ -277,6 +236,7 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
         @Override
         public void onErrorResponse(VolleyError error) {
             showProgress(false);
+            Toast.makeText(self , "Username Or Password Incorrect", Toast.LENGTH_LONG).show();
             Log.d(TAG, "onLoginError: msg: " + error.getMessage());
         }
     };
