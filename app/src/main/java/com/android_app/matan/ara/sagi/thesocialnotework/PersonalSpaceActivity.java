@@ -1,7 +1,9 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -10,11 +12,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -59,7 +64,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_personal_space);
         Bundle b = getIntent().getExtras();
         userId = b.getString("user_id");
-        Log.d(TAG,"-------------------------USER ID: "+ userId);
+        Log.d(TAG, "-------------------------USER ID: " + userId);
 
         this.locationPermission = true;
 
@@ -79,19 +84,101 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         noteListAdapter = new ListAdapter(this, listOfNotes);
 
         noteList.setAdapter(noteListAdapter);
-//        new HeavyWorker(this).execute();
-        getAllNotes();
+        new HeavyWorker(this).execute();
+//        getAllNotes();
 
-//https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
         addBtn.setOnClickListener(addNewNoteDialog);
 
+        // click on listView item
+        noteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                //create and configure dialog
+                final Note note = listOfNotes.get(position);
+                final Dialog noteViewDialog = new Dialog(PersonalSpaceActivity.this);
+                noteViewDialog.setContentView(R.layout.note_display_full);
+                noteViewDialog.setTitle("You wrote...");
+
+                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+                lp.copyFrom(noteViewDialog.getWindow().getAttributes());
+                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+                noteViewDialog.show();
+//                dialog.getWindow().setAttributes(lp);
+
+
+                //get note_view_full layout elements
+                final TextView title = (TextView) noteViewDialog.findViewById(R.id.ndf_title_textview);
+                final TextView body = (TextView) noteViewDialog.findViewById(R.id.ndf_body_textview);
+                final TextView time = (TextView) noteViewDialog.findViewById(R.id.ndf_time_textview);
+                final TextView location = (TextView) noteViewDialog.findViewById(R.id.ndf_address_textview);
+                final TextView likes = (TextView) noteViewDialog.findViewById(R.id.ndf_likes_textview);
+                final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
+                final TextView permission = (TextView) noteViewDialog.findViewById(R.id.ndf_permission_textview);
+                final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
+
+
+                title.setText(note.getTitle());
+                body.setText(note.getBody());
+                time.setText(note.getTimestamp());
+                location.setText("Tags: " + note.getAddress());
+                likes.setText("Likes: " + note.getLikes());
+                tags.setText(note.getTags().toString());
+                permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
+
+                deleteBtn.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        //Put up the Yes/No message box
+                        AlertDialog.Builder builder = new AlertDialog.Builder(PersonalSpaceActivity.this);
+                        builder
+                                .setTitle("Delete Note")
+                                .setMessage("Are you sure you want to delete the note?")
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //Yes button clicked, do something
+                                        Toast.makeText(PersonalSpaceActivity.this, "Item Deleted!",
+                                                Toast.LENGTH_SHORT).show();
+                                        //TODO send delete
+                                        JSONObject delNote = new JSONObject();
+                                        try {
+                                            delNote.put("uid", userId);
+                                            delNote.put("nid", note.getId());
+                                            VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).post(BASE_URL + "/note/delete",delNote, deleteNoteSuccessListener, genericErrorListener);
+                                            listOfNotes.remove(position);
+
+                                        } catch (JSONException e) {
+                                            Toast.makeText(PersonalSpaceActivity.this, "Something went wrong.\n Failed to delete note...", Toast.LENGTH_LONG).show();
+                                            e.printStackTrace();
+                                        }
+                                        noteList.setAdapter(noteListAdapter);
+//                                        dialog.dismiss();
+                                        noteViewDialog.dismiss();
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //Yes button clicked, do something
+                                        Toast.makeText(PersonalSpaceActivity.this, "Note still here!",
+                                                Toast.LENGTH_SHORT).show();
+//                                        dialog.dismiss();
+                                        noteViewDialog.dismiss();
+                                    }
+                                })                        //Do nothing on no
+                                .show();
+                    }
+                });
+
+            }
+        });
 
 
     }
 
-    public void getAllNotes(){
-        Log.d(TAG, "url: "+BASE_URL + "/note/all?uid="+userId);
-        VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).get(BASE_URL + "/note/all?uid="+userId, getNotesSuccessListener, genericErrorListener);
+
+    public void getAllNotes() {
+        Log.d(TAG, "url: " + BASE_URL + "/note/all?uid=" + userId);
+        VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).get(BASE_URL + "/note/all?uid=" + userId, getNotesSuccessListener, genericErrorListener);
     }
 
     private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
@@ -127,16 +214,14 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                 public void onClick(View v) {
 
                     //title too short
-                    if (newTitle.getText().length() == 0)
-                    {
+                    if (newTitle.getText().length() == 0) {
                         Toast toast = Toast.makeText(PersonalSpaceActivity.this, "Title too short.", Toast.LENGTH_LONG);
                         toast.show();
                         return;
                     }
 
                     //title too long
-                    if (newTitle.getText().length() > 20)
-                    {
+                    if (newTitle.getText().length() > 20) {
                         Toast toast = Toast.makeText(PersonalSpaceActivity.this, "Title too long.\n Use up to 20 notes.", Toast.LENGTH_LONG);
                         toast.show();
                         return;
@@ -158,7 +243,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
 
                     } catch (Exception e) {
-                        Log.d(TAG, "saveBtn: "+e.toString());
+                        Log.d(TAG, "saveBtn: " + e.toString());
                     }
 
                     //send request and close dialog
@@ -180,20 +265,6 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
         }
     };
-
-
-
-//    //TODO remove
-//    public void addDemoNotes(List<Note> listOfNotes) {
-//        Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", ""+System.currentTimeMillis() / 1000, true);
-//        Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", ""+System.currentTimeMillis() / 1000, true);
-//        Note n3 = new Note("3", 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", ""+System.currentTimeMillis() / 1000, true);
-////        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", ""+System.currentTimeMillis() / 1000, true);
-//        listOfNotes.add(n1);
-//        listOfNotes.add(n2);
-//        listOfNotes.add(n3);
-////        listOfNotes.add(n4);
-//    }
 
 
     public void setLocationPermission(boolean locationPermission) {
@@ -248,7 +319,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     Response.Listener<JSONObject> getNotesSuccessListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
-            Log.d(TAG,"getNotesSuccessListener: "+response.toString());
+            Log.d(TAG, "getNotesSuccessListener: " + response.toString());
             try {
                 //need to get all notes and add to listOfNotes
                 JSONArray noteObjectsArray = response.getJSONArray("notes");
@@ -258,34 +329,29 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                     time.setTime(noteObject.getLong("created_at"));
 
                     addNoteFromJsonObj(noteObject, time);
-//                    Note addNote = new Note(
-//                            noteObject.getString("id"),
-//                            Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
-//                            Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
-//                            noteObject.getJSONObject("location").getString("address"),
-//                            noteObject.getString("title"),
-//                            noteObject.getString("body"),
-//                            time.toString(),
-//                            noteObject.getBoolean("is_public"),
-//                            noteObject.getInt("likes"),
-//                            jsonArrayToStringArray(noteObject.getJSONArray("tags"))
-//                    );
-//                    listOfNotes.add(addNote);
                 }
                 noteList.setAdapter(noteListAdapter);
             } catch (Exception e) {
                 Log.e(TAG, "newNoteSuccess:" + e.getMessage());
             }
-
         }
     };
 
+    //response listener for getting all user notes
+    Response.Listener<JSONObject> deleteNoteSuccessListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            Log.d(TAG, "deleteNoteSuccessListener: " + response.toString());
+
+
+        }
+    };
 
     //response ErrorListener for getting all user notes
     Response.ErrorListener getNotesErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.d(TAG,"getNotesErrorListener: "+error.getMessage());
+            Log.d(TAG, "getNotesErrorListener: " + error.getMessage());
         }
     };
 
@@ -293,26 +359,26 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.d(TAG,"genericErrorListener");
+            Log.d(TAG, "genericErrorListener");
             error.printStackTrace();
         }
     };
 
 
-    public void requestPermissions(){
+    public void requestPermissions() {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(PersonalSpaceActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
 
-                ActivityCompat.requestPermissions(PersonalSpaceActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        FINE_PERM);
+            ActivityCompat.requestPermissions(PersonalSpaceActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    FINE_PERM);
 
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
 
         }
 
@@ -349,16 +415,13 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     }
 
 
-
-    private ArrayList<String> jsonArrayToStringArray(JSONArray jArray){
+    private ArrayList<String> jsonArrayToStringArray(JSONArray jArray) {
         ArrayList<String> stringArray = new ArrayList<String>();
-        for(int i = 0, count = jArray.length(); i< count; i++)
-        {
+        for (int i = 0, count = jArray.length(); i < count; i++) {
             try {
                 JSONObject jsonObject = jArray.getJSONObject(i);
                 stringArray.add(jsonObject.toString());
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
