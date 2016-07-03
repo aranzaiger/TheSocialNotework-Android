@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
         Log.d(TAG, "user: " + username);
         Log.d(TAG, "pwd: " + password);
 
-        if(TextUtils.isEmpty(username) || !isPasswordValid(username) || TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+        if(TextUtils.isEmpty(username) || !isUsernameValid(username) || TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             return false;
         } else{
             return true;
@@ -187,6 +187,7 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
         if (mAuthTask != null) {
             return;
         }
+        showProgress(true);
 
         // Reset errors.
 //        mEmailView.setError(null);
@@ -198,43 +199,44 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
 //        String email = mEmailView.getText().toString();
 
         if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString())) {
+
             String username = mUsernameView.getText().toString();
             String password = mPasswordView.getText().toString();
 
             boolean cancel = false;
             View focusView = null;
-
-            // Check for a valid password, if the user entered one.
-            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-                mPasswordView.setError(getString(R.string.error_invalid_password));
-                focusView = mPasswordView;
-                cancel = true;
-            }
-            if (cancel) {
-                // There was an error; don't attempt login and focus the first
-                // form field with an error.
-                focusView.requestFocus();
-            } else {
-                // Show a progress spinner, and kick off a background task to
-                // perform the user login attempt.
-                showProgress(true);
 //            mAuthTask = new UserLoginTask(username, password); // TODO: RETRIEVE ?
 //            mAuthTask.execute((Void) null); // TODO: RETRIEVE ?
 
-                // http request register
-                JSONObject tempJson = new JSONObject();
-                try {
-                    tempJson.put("username", username);
-                    tempJson.put("password", password);
-                } catch (Exception e) {
-                    Log.d(TAG, e.toString());
-                }
-
-                VolleyUtilSingleton.getInstance(LoginActivity.this).post(BASE_URL + LOGIN_PATH, tempJson, onLoginSuccess, onLoginError);
+            // http request register
+            JSONObject tempJson = new JSONObject();
+            try {
+                tempJson.put("username", username);
+                tempJson.put("password", password);
+            } catch (Exception e) {
+                Log.d(TAG, e.toString());
             }
+
+            VolleyUtilSingleton.getInstance(LoginActivity.this).post(BASE_URL + LOGIN_PATH, tempJson, onLoginSuccess, onLoginError);
+
+            // Check for a valid password, if the user entered one.
+//            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+//                mPasswordView.setError(getString(R.string.error_invalid_password));
+//                focusView = mPasswordView;
+//                cancel = true;
+//            }
+//            if (cancel) {
+//                // There was an error; don't attempt login and focus the first
+//                // form field with an error.
+//                focusView.requestFocus();
+//            } else {
+//                // Show a progress spinner, and kick off a background task to
+//                // perform the user login attempt.
+//
+//            }
         } else {
             showProgress(false);
-            Log.d(TAG, "Invalid params");
+            Log.d(TAG, "Invalid params - make sure username exist & password is 4 characters or more");
         }
 
         // Check for a valid username
@@ -253,13 +255,17 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
         @Override
         public void onResponse(JSONObject response) {
             try {
-                if(response.get("user") != null) {
+                // if(response.get("user") != null) {
+                if(!response.isNull("user")) {
                     Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
                     Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
-                    Bundle b = new Bundle();
-                    b.putString("user_id", response.getJSONObject("user").getString("id"));
-                    personalSpaceActivity.putExtras(b);
+                    Bundle loginUserBundle = new Bundle();
+                    loginUserBundle.putString("user_id", response.getJSONObject("user").getString("id"));
+                    personalSpaceActivity.putExtras(loginUserBundle);
                     startActivity(personalSpaceActivity);
+                } else {
+                    showProgress(false);
+                    Log.d(TAG, "No such user, " + response.get("user"));
                 }
             }catch (Exception e) {
                 Log.e(TAG, "onLoginSuccess:" + e.getMessage());
@@ -270,19 +276,18 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
     Response.ErrorListener onLoginError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
+            showProgress(false);
             Log.d(TAG, "onLoginError: msg: " + error.getMessage());
         }
     };
 
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@") && email.contains(".");
+    private boolean isUsernameValid(String username) {
+        return username.length() > 0;
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 3;
     }
 
     /**
