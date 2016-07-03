@@ -42,6 +42,8 @@ public class GPSUtils extends Service implements LocationListener {
     Location location; // location
     double latitude; // latitude
     double longitude; // longitude
+    Geocoder geocoder;
+
 
     protected LocationManager locationManager;
 
@@ -188,9 +190,9 @@ public class GPSUtils extends Service implements LocationListener {
 
     public List<Address> getFromLocation(double latitude, double longitude, int maxResults){
         try {
-            Geocoder geocoder;
             List<Address> addresses;
-            geocoder = new Geocoder(this);
+
+            geocoder = new Geocoder(mContext);
             if (latitude != 0 || longitude != 0) {
                 addresses = geocoder.getFromLocation(latitude ,
                         longitude, maxResults);
@@ -202,6 +204,7 @@ public class GPSUtils extends Service implements LocationListener {
                 return null;
             }
         } catch (Exception e) {
+            Log.d(TAG, "in gettFromLocation");
             e.printStackTrace();
             return null;
         }
