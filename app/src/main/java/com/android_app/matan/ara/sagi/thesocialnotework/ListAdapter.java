@@ -59,12 +59,18 @@ public class ListAdapter extends BaseAdapter {
         TextView title = (TextView) v.findViewById(R.id.nvm_title_textview);
         TextView datetime = (TextView) v.findViewById(R.id.nvm_time_textview);
         TextView location = (TextView) v.findViewById(R.id.nvm_location_textview);
+        TextView likes = (TextView) v.findViewById(R.id.nvm_likes_textview);
+        TextView permission = (TextView) v.findViewById(R.id.nvm_permission_textview);
 //        NetworkImageView thumbNail = (NetworkImageView) v.findViewById(R.id.infoImageImageView);
 //        String url = mVideos.get(position).getImgURL();
 //        thumbNail.setImageUrl(url, VolleyUtilSingleTone.getInstance(mContext).getImageLoader());
-        title.setText(mNotes.get(position).getTitle());
-        datetime.setText(Html.fromHtml(mNotes.get(position).getTimestamp()));
-        location.setText(mNotes.get(position).getAddress());
+        Note curNote = mNotes.get(position);
+        title.setText(curNote.getTitle());
+        datetime.setText(Html.fromHtml(curNote.getTimestamp()));
+        location.setText(curNote.getAddress());
+        likes.setText(""+curNote.getLikes());
+        permission.setText(curNote.isPublic() ? "Public":"Private");
+
 //        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
 //        v.startAnimation(animation);
         lastPosition = position;
