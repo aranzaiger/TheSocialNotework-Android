@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TheSocialNotework</string>
+    <string name="app_name">TSN</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -23,5 +23,14 @@
     <string name="nvf_content">Content</string>
     <string name="throw_me">Throw Me</string>
     <string name="note_me">Note Me</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
