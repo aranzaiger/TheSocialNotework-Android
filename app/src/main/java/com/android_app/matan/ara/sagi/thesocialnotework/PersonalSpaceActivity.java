@@ -10,11 +10,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -79,15 +81,56 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         noteListAdapter = new ListAdapter(this, listOfNotes);
 
         noteList.setAdapter(noteListAdapter);
-//        new HeavyWorker(this).execute();
-        getAllNotes();
+        new HeavyWorker(this).execute();
+//        getAllNotes();
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
         addBtn.setOnClickListener(addNewNoteDialog);
 
+        // click on listView item
+        noteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //create and configure dialog
+                Note note = listOfNotes.get(position);
+                final Dialog dialog = new Dialog(PersonalSpaceActivity.this);
+                dialog.setContentView(R.layout.note_display_full);
+                dialog.setTitle("You wrote...");
+
+                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+                lp.copyFrom(dialog.getWindow().getAttributes());
+                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+                dialog.show();
+//                dialog.getWindow().setAttributes(lp);
+
+
+                //get note_view_full layout elements
+                final TextView title = (TextView) dialog.findViewById(R.id.ndf_title_textview);
+                final TextView body = (TextView) dialog.findViewById(R.id.ndf_body_textview);
+                final TextView time = (TextView) dialog.findViewById(R.id.ndf_time_textview);
+                final TextView location = (TextView) dialog.findViewById(R.id.ndf_address_textview);
+                final TextView likes = (TextView) dialog.findViewById(R.id.ndf_likes_textview);
+                final TextView tags = (TextView) dialog.findViewById(R.id.ndf_tags_textview);
+                final TextView permission = (TextView) dialog.findViewById(R.id.ndf_permission_textview);
+
+
+                title.setText(note.getTitle());
+                body.setText(note.getBody());
+                time.setText(note.getTimestamp());
+                location.setText("Tags: "+note.getAddress());
+                likes.setText("Likes: "+note.getLikes());
+                tags.setText(note.getTags().toString());
+                permission.setText("Permission: "+ (note.isPublic() ? "Public" : "Private"));
+
+            }
+
+        });
+
 
 
     }
+
 
     public void getAllNotes(){
         Log.d(TAG, "url: "+BASE_URL + "/note/all?uid="+userId);
@@ -181,19 +224,6 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         }
     };
 
-
-
-//    //TODO remove
-//    public void addDemoNotes(List<Note> listOfNotes) {
-//        Note n1 = new Note("1", 100, 100, "location1", "My 1st Title", "ohh i'm so sexy1", ""+System.currentTimeMillis() / 1000, true);
-//        Note n2 = new Note("2", 200, 200, "location2", "My 2st Title", "ohh i'm so sexy2", ""+System.currentTimeMillis() / 1000, true);
-//        Note n3 = new Note("3", 300, 300, "hell", "My 3st Title", "ohh i'm so sexy3", ""+System.currentTimeMillis() / 1000, true);
-////        Note n4 = new Note("4", 400, 400, "hell2", "My 4st Title", "ohh i'm so sexy4", ""+System.currentTimeMillis() / 1000, true);
-//        listOfNotes.add(n1);
-//        listOfNotes.add(n2);
-//        listOfNotes.add(n3);
-////        listOfNotes.add(n4);
-//    }
 
 
     public void setLocationPermission(boolean locationPermission) {
