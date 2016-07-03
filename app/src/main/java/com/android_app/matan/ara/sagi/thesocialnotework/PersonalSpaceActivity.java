@@ -3,8 +3,11 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.maps.MapFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,11 +47,14 @@ import java.util.Map;
 import java.util.TimeZone;
 
 
+//TODO - change all "setOnClickListener to xml onClick
+//TODO -
+
 //http://thesocialnotework.appspot.com/api/status | http://localhost:8080/api/note/all?uid=<userID>
 public class PersonalSpaceActivity extends AppCompatActivity {
 
     protected ListView noteList;
-    protected Button addBtn;
+    protected Button addBtn, mapButton;
     private final String TAG = "Personal Space Activity";
     private final int FINE_PERM = 0;
     private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
@@ -56,6 +63,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     private List<Note> listOfNotes;
     private ListAdapter noteListAdapter;
     private String userId;
+    private MapFragment mMapFragment;
 
 
     @Override
@@ -74,6 +82,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
         this.noteList = (ListView) findViewById(R.id.ps_list_listview);
         addBtn = (Button) findViewById(R.id.ps_new_note_button);
+        mapButton = (Button) findViewById(R.id.ps_maps_btn);
         gpsUtils = new GPSUtils(this);
         gpsUtils.getLocation();
 
@@ -88,6 +97,30 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 //        getAllNotes();
 
         addBtn.setOnClickListener(addNewNoteDialog);
+
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.d(TAG, "IN TESTS!!!!!!!!!!!!!!");
+//
+                Toast.makeText(PersonalSpaceActivity.this, "SUCCESS", Toast.LENGTH_LONG).show();
+
+                mMapFragment = MapFragment.newInstance();
+                FragmentTransaction fragmentTransaction =
+                        getFragmentManager().beginTransaction();
+                fragmentTransaction.add(R.id.map, mMapFragment);
+                fragmentTransaction.commit();
+                Intent mapsActivity = new Intent(PersonalSpaceActivity.this, MapsActivity.class);
+//                Bundle loginUserBundle = new Bundle();
+                mapsActivity.putParcelableArrayListExtra("note_list", (ArrayList<Note>) listOfNotes);
+                mapsActivity.putExtra("user_lat", gpsUtils.getLatitude());
+                mapsActivity.putExtra("user_lng", gpsUtils.getLongitude());
+//                Log.d(TAG, "IN After!!!!!!!!!!!!!!");
+//
+                startActivity(mapsActivity);
+                Log.d(TAG, "FINIsh!!!");
+
+            }
+        });
 
         // click on listView item
         noteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -144,7 +177,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
                                         try {
                                             delNote.put("uid", userId);
                                             delNote.put("nid", note.getId());
-                                            VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).post(BASE_URL + "/note/delete",delNote, deleteNoteSuccessListener, genericErrorListener);
+                                            VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).post(BASE_URL + "/note/delete", delNote, deleteNoteSuccessListener, genericErrorListener);
                                             listOfNotes.remove(position);
 
                                         } catch (JSONException e) {
@@ -215,15 +248,13 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
                     //title too short
                     if (newTitle.getText().length() == 0) {
-                        Toast toast = Toast.makeText(PersonalSpaceActivity.this, "Title too short.", Toast.LENGTH_LONG);
-                        toast.show();
+                        Toast.makeText(PersonalSpaceActivity.this, "Title too short.", Toast.LENGTH_LONG).show();
                         return;
                     }
 
                     //title too long
                     if (newTitle.getText().length() > 20) {
-                        Toast toast = Toast.makeText(PersonalSpaceActivity.this, "Title too long.\n Use up to 20 notes.", Toast.LENGTH_LONG);
-                        toast.show();
+                        Toast.makeText(PersonalSpaceActivity.this, "Title too long.\n Use up to 20 notes.", Toast.LENGTH_LONG).show();
                         return;
                     }
                     //volley post
@@ -444,4 +475,17 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         listOfNotes.add(addNote);
 
     }
+
+//    public void goToMap(View v){
+//        Log.d(TAG,"IN TESTS!!!!!!!!!!!!!!");
+//
+//        Toast.makeText(this,"SUCCESS",Toast.LENGTH_LONG).show();
+//        Intent mapsActivity = new Intent(PersonalSpaceActivity.this, MapsActivity.class);
+//        Bundle loginUserBundle = new Bundle();
+//        mapsActivity.putParcelableArrayListExtra("note_list", (ArrayList<Note>) listOfNotes);
+//        mapsActivity.putExtra("user_lat",gpsUtils.getLatitude());
+//        mapsActivity.putExtra("user_lng",gpsUtils.getLongitude());
+//        startActivity(mapsActivity);
+//
+//    }
 }
