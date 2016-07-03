@@ -63,12 +63,12 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
         //check for permission
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, FINE_PERM);
 
 
         this.noteList = (ListView) findViewById(R.id.ps_list_listview);
         addBtn = (Button) findViewById(R.id.ps_new_note_button);
         gpsUtils = new GPSUtils(this);
+        gpsUtils.getLocation();
 
 
         listOfNotes = new ArrayList<>();
@@ -77,8 +77,8 @@ public class PersonalSpaceActivity extends AppCompatActivity {
         noteListAdapter = new ListAdapter(this, listOfNotes);
 
         noteList.setAdapter(noteListAdapter);
-        new HeavyWorker(this).execute();
-
+//        new HeavyWorker(this).execute();
+        getAllNotes();
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
         addBtn.setOnClickListener(addNewNoteDialog);
@@ -88,6 +88,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     }
 
     public void getAllNotes(){
+        Log.d(TAG, "url: "+BASE_URL + "/note/all?uid="+userId);
         VolleyUtilSingleton.getInstance(PersonalSpaceActivity.this).get(BASE_URL + "/note/all?uid="+userId, getNotesSuccessListener, genericErrorListener);
     }
 
@@ -139,7 +140,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
 
 
                     } catch (Exception e) {
-                        Log.d(TAG, e.toString());
+                        Log.d(TAG, "saveBtn: "+e.toString());
                     }
 
                     //send request and close dialog
@@ -226,7 +227,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     Response.Listener<JSONObject> getNotesSuccessListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
-            Log.d(TAG,response.toString());
+            Log.d(TAG,"getNotesSuccessListener: "+response.toString());
             try {
                 //need to get all notes and add to listOfNotes
                 JSONArray noteObjectsArray = response.getJSONArray("notes");
@@ -260,7 +261,7 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     Response.ErrorListener getNotesErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.d(TAG,error.getMessage());
+            Log.d(TAG,"getNotesErrorListener: "+error.getMessage());
         }
     };
 
@@ -268,11 +269,60 @@ public class PersonalSpaceActivity extends AppCompatActivity {
     Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.d(TAG,error.getMessage());
+            Log.d(TAG,"genericErrorListener");
+            error.printStackTrace();
         }
     };
 
 
+    public void requestPermissions(){
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(PersonalSpaceActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+
+                ActivityCompat.requestPermissions(PersonalSpaceActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        FINE_PERM);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+
+        }
+
+        if (ContextCompat.checkSelfPermission(PersonalSpaceActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+
+            ActivityCompat.requestPermissions(PersonalSpaceActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+
+        }
+
+        if (ContextCompat.checkSelfPermission(PersonalSpaceActivity.this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+
+            ActivityCompat.requestPermissions(PersonalSpaceActivity.this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    FINE_PERM);
+
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+
+        }
+
+    }
 
 
 
