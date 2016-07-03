@@ -24,11 +24,14 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,13 +81,15 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
     private final String LOGIN_PATH = "/login";
 
     private LoginActivity self;
-
+    protected LinearLayout layout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
         this.self = this;
-
+        this.layout = (LinearLayout) findViewById(R.id.layout);
         mUsernameView = (EditText) findViewById(R.id.al_username);
         mPasswordView = (EditText) findViewById(R.id.al_password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -117,6 +122,10 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        // Remove Auto Focus from the Text Fields
+        layout.setFocusable(true);
+        layout.setFocusableInTouchMode(true);
     }
 
     private void populateAutoComplete() {

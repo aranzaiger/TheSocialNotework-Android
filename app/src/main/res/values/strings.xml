@@ -18,5 +18,6 @@
     <string name="title_activity_personal_space">PersonalSpaceActivity</string>
     <string name="nvf_private_label">Private</string>
     <string name="nvf_public_label">Public</string>
+    <string name="logo">Logo</string>
 
 </resources>
