@@ -132,6 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Log.d(TAG, e.toString());
             }
+            Log.d(TAG,"JSON: "+tempJson.toString());
 
             VolleyUtilSingleton.getInstance(RegisterActivity.this).post(BASE_URL + REG_PATH, tempJson, onRegisterSuccess, onRegisterError);
         } else {
@@ -143,9 +144,11 @@ public class RegisterActivity extends AppCompatActivity {
     Response.Listener<JSONObject> onRegisterSuccess = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
+           Log.d(TAG,"reposne: "+ response.toString());
             try {
-                if(!response.isNull("user")) {
-                    Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
+                if(response.getString("message").equals("created")) {
+
+                    Log.d(TAG, "onRegisterSuccess => user created"); // TODO: REMOVE console
                     Intent loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
 //                    Bundle loginUserBundle = new Bundle();
 //                    loginUserBundle.putString("user_id", response.getJSONObject("user").getString("id"));
@@ -153,7 +156,7 @@ public class RegisterActivity extends AppCompatActivity {
                     startActivity(loginActivity);
                 } else {
 //                    showProgress(false);
-                    Log.d(TAG, "Cannot create user, " + response.get("user"));
+                    Log.d(TAG, "Cannot create user, " + response.getString("message"));
                 }
             }catch (Exception e) {
                 Log.e(TAG, "onRegisterSuccess:" + e.getMessage());
