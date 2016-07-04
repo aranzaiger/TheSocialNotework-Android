@@ -18,6 +18,8 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    protected final String TAG = "[TSN / MainActivity]";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "This should Open the new Note thingy", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -44,11 +46,13 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //Change Layout
+        Log.d(TAG, "Changing Fragment to Personal Activity");
         PersonalFragment personalFragment = new PersonalFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, personalFragment);
         ft.commit();
-        Log.d("TAG", "asdasdasdasdasdsssssssssssssssssssssssssssssssss");
+        Log.d(TAG, "Changed");
+
     }
 
     @Override
