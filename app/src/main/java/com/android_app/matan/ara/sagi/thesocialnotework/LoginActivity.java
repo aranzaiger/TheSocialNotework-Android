@@ -226,7 +226,7 @@ public class LoginActivity extends AppCompatActivity{ // implements LoaderCallba
                 // if(response.get("user") != null) {
                 if(!response.isNull("user")) {
                     Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
-                    Intent personalSpaceActivity = new Intent(LoginActivity.this, PersonalSpaceActivity.class);
+                    Intent personalSpaceActivity = new Intent(LoginActivity.this, MainActivity.class);
                     Bundle loginUserBundle = new Bundle();
                     loginUserBundle.putString("user_id", response.getJSONObject("user").getString("id"));
                     personalSpaceActivity.putExtras(loginUserBundle);
