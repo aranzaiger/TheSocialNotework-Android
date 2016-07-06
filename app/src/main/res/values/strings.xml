@@ -7,6 +7,8 @@
     <string name="prompt_password">Password</string>
     <string name="action_login">Login</string>
     <string name="action_register">Register</string>
+    <string name="register">Register</string>
+    <string name="create_new_account">No account yet? Create one for FREE</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
@@ -21,8 +23,10 @@
     <string name="logo">Logo</string>
     <string name="nvf_title">Title</string>
     <string name="nvf_content">Content</string>
-    <string name="throw_me">Throw Me</string>
-    <string name="note_me">Note Me</string>
+    <string name="throw_me">Discard</string>
+    <string name="note_me">Save</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

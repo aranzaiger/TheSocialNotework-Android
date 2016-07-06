@@ -91,10 +91,10 @@ public class GPSUtils extends Service implements LocationListener {
                 if (isNetworkEnabled) {
                     if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         Log.e("TAG", "No Permissions");
-                        ((PersonalSpaceActivity)mContext).setLocationPermission(false);
+                        ((MainActivity)mContext).setLocationPermission(false);
                         return null;
                     }else{
-                        ((PersonalSpaceActivity)mContext).setLocationPermission(true);
+                        ((MainActivity)mContext).setLocationPermission(true);
                     }
                     Log.d(TAG, "Network");
                     if (locationManager != null) {

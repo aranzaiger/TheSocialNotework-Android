@@ -30,8 +30,8 @@ public class HeavyWorker extends AsyncTask< String , Context , Void > {
     protected Void doInBackground ( String ... params ) {
         // Do Your WORK here
 
-        PersonalSpaceActivity ps = (PersonalSpaceActivity)targetCtx;
-        ps.getAllNotes();
+//        MainActivity ps = (MainActivity) targetCtx;
+//        ps.getAllNotes();
 
         return null ;
     }

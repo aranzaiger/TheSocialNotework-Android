@@ -1,17 +1,21 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
  * Created by JERLocal on 7/1/2016.
  */
-public class Note {
+public class Note implements Parcelable{
 
     protected int likes;
     protected ArrayList<String> tags;
     protected float lat, lon;
     protected String id, address, title, body, timestamp;
     protected boolean isPublic;
+
 
 
 
@@ -28,6 +32,31 @@ public class Note {
         this.likes = likes;
         this.tags =  tags;
     }
+
+    protected Note(Parcel in) {
+        likes = in.readInt();
+        tags = in.createStringArrayList();
+        lat = in.readFloat();
+        lon = in.readFloat();
+        id = in.readString();
+        address = in.readString();
+        title = in.readString();
+        body = in.readString();
+        timestamp = in.readString();
+        isPublic = in.readByte() != 0;
+    }
+
+    public static final Creator<Note> CREATOR = new Creator<Note>() {
+        @Override
+        public Note createFromParcel(Parcel in) {
+            return new Note(in);
+        }
+
+        @Override
+        public Note[] newArray(int size) {
+            return new Note[size];
+        }
+    };
 
     @Override
     public String toString() {
@@ -125,6 +154,26 @@ public class Note {
     public void setTags(ArrayList<String> tags) {
         this.tags = tags;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(likes);
+        dest.writeList(tags);
+        dest.writeFloat(lat);
+        dest.writeFloat(lon);
+        dest.writeString(id);
+        dest.writeString(address);
+        dest.writeString(title);
+        dest.writeString(body);
+        dest.writeString(timestamp);
+        dest.writeByte((byte) (isPublic ? 1 : 0));
+    }
+
 
 //    public void save(SQLiteOpenHelper dbHelper, Context context){
 //        SQLiteDatabase db = dbHelper.getWritableDatabase();

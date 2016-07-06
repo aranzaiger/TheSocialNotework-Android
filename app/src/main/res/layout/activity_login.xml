@@ -40,11 +40,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp">
-      <EditText android:id="@+id/al_username"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:inputType="textEmailAddress"
-          android:hint="Usename" />
+        <EditText android:id="@+id/al_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+          android:hint="Username" />
     </android.support.design.widget.TextInputLayout>
 
     <!--  Password Label -->
@@ -72,7 +72,7 @@
         android:background="@color/colorPrimary"
         android:textColor="#ffffff" />
 
-    <TextView android:id="@+id/link_signup"
+    <TextView android:id="@+id/al_register_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"

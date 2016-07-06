@@ -72,7 +72,7 @@ public class PersonalFragment extends Fragment {
 
         this.noteList = (ListView) view.findViewById(R.id.ps_list_listview);
         addBtn = (Button) view.findViewById(R.id.ps_new_note_button);
-        gpsUtils = new GPSUtils(getContext());
+        gpsUtils = ((MainActivity)getActivity()).getGPSUtils();
         gpsUtils.getLocation();
 
 

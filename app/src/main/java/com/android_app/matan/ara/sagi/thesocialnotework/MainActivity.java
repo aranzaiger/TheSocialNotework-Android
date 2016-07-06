@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity
 
     protected final String TAG = "[TSN / MainActivity]";
     protected String userId;
+    private GPSUtils gpsUtils;
+    private boolean locationPermission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,9 @@ public class MainActivity extends AppCompatActivity
         ft.replace(R.id.fragment_container, personalFragment);
         ft.commit();
         Log.d(TAG, "Changed");
+
+        gpsUtils = new GPSUtils(this);
+        gpsUtils.getLocation();
     }
 
     @Override
@@ -114,7 +119,14 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }public GPSUtils getGPSUtils() {
+        return this.gpsUtils;
     }
+
+    public void setLocationPermission(boolean locationPermission) {
+        this.locationPermission = locationPermission;
+    }
+
 
 
 }

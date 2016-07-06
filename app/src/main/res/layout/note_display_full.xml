@@ -1,49 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/ndf_title_textview" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/ndf_body_textview" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/ndf_time_textview" />
+        <TextView
+            android:id="@+id/ndf_title_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/ndf_address_textview" />
+        <TextView
+            android:id="@+id/ndf_body_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Body"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/ndf_tags_textview" />
+        <TextView
+            android:id="@+id/ndf_time_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/ndf_permission_textview" />
+        <TextView
+            android:id="@+id/ndf_address_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/ndf_likes_textview" />
+        <TextView
+            android:id="@+id/ndf_tags_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:textAppearance="?android:attr/textAppearanceListItem" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/ndf_permission_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text" />
+
+        <TextView
+            android:id="@+id/ndf_likes_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text" />
+
+        <ImageButton
+            android:id="@+id/ndf_delete_imagebutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@android:drawable/ic_menu_delete" />
+
+
+    </LinearLayout>
+</ScrollView>
