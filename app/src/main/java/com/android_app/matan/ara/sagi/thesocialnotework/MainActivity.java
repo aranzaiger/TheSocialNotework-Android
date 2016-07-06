@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     protected final String TAG = "[TSN / MainActivity]";
+    protected String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +46,19 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        //get Bundle data (Userid)
+        Bundle b = getIntent().getExtras();
+        userId = b.getString("user_id");
+
         //Change Layout
         Log.d(TAG, "Changing Fragment to Personal Activity");
         PersonalFragment personalFragment = new PersonalFragment();
+        personalFragment.setArguments(b);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, personalFragment);
         ft.commit();
         Log.d(TAG, "Changed");
-
     }
 
     @Override
