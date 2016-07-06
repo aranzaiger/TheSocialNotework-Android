@@ -1,6 +1,8 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -111,6 +113,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             try {
                 if(!response.isNull("user")) {
                     Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
+                    SharedPreferences sharedPref = self.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("UserId", response.getJSONObject("user").getString("id"));
+                    editor.commit();
                     Intent personalSpaceActivity = new Intent(LoginActivity.this, MainActivity.class);
                     Bundle loginUserBundle = new Bundle();
                     loginUserBundle.putString("user_id", response.getJSONObject("user").getString("id"));

@@ -1,8 +1,10 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,11 +18,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -69,23 +74,22 @@ public class PersonalFragment extends Fragment {
 
 
         this.noteList = (ListView) view.findViewById(R.id.ps_list_listview);
-        gpsUtils = ((MainActivity)getActivity()).getGPSUtils();
+        gpsUtils = ((MainActivity) getActivity()).getGPSUtils();
         gpsUtils.getLocation();
         listOfNotes = new ArrayList<>();
         noteListAdapter = new ListAdapter(getContext(), listOfNotes);
         noteList.setAdapter(noteListAdapter);
-//        new HeavyWorker(this).execute();
+        noteList.setOnItemClickListener(new ItemClickedListener());
         MainActivity.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");
         getAllNotes();
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
         // The New "Add Button"
-        FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(addNewNoteDialog);
 
         return view;
     }
-
 
 
     @Override
@@ -100,9 +104,9 @@ public class PersonalFragment extends Fragment {
 //        mListener = null;
     }
 
-    public void getAllNotes(){
-        Log.d(TAG, "url: "+BASE_URL + "/note/all?uid="+userId);
-        VolleyUtilSingleton.getInstance(getActivity()).get(BASE_URL + "/note/all?uid="+userId, getNotesSuccessListener, genericErrorListener);
+    public void getAllNotes() {
+        Log.d(TAG, "url: " + BASE_URL + "/note/all?uid=" + userId);
+        VolleyUtilSingleton.getInstance(getActivity()).get(BASE_URL + "/note/all?uid=" + userId, getNotesSuccessListener, genericErrorListener);
     }
 
     private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
@@ -138,16 +142,14 @@ public class PersonalFragment extends Fragment {
                 public void onClick(View v) {
 
                     //title too short
-                    if (newTitle.getText().length() == 0)
-                    {
+                    if (newTitle.getText().length() == 0) {
                         Toast toast = Toast.makeText(getActivity(), "Title too short.", Toast.LENGTH_LONG);
                         toast.show();
                         return;
                     }
 
                     //title too long
-                    if (newTitle.getText().length() > 20)
-                    {
+                    if (newTitle.getText().length() > 20) {
                         Toast toast = Toast.makeText(getActivity(), "Title too long.\n Use up to 20 notes.", Toast.LENGTH_LONG);
                         toast.show();
                         return;
@@ -169,7 +171,7 @@ public class PersonalFragment extends Fragment {
 
 
                     } catch (Exception e) {
-                        Log.d(TAG, "saveBtn: "+e.toString());
+                        Log.d(TAG, "saveBtn: " + e.toString());
                     }
 
                     //send request and close dialog
@@ -202,21 +204,6 @@ public class PersonalFragment extends Fragment {
                 JSONObject noteObject = response.getJSONObject("note");
                 time.setTime(noteObject.getLong("created_at"));
                 addNoteFromJsonObj(noteObject, time);
-
-//                Note addNote = new Note(
-//                        noteObject.getString("id"),
-//                        Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
-//                        Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
-//                        noteObject.getJSONObject("location").getString("address"),
-//                        noteObject.getString("title"),
-//                        noteObject.getString("body"),
-//                        time.toString(),
-//                        noteObject.getBoolean("is_public"),
-//                        noteObject.getInt("likes"),
-//                        jsonArrayToStringArray(noteObject.getJSONArray("tags"))
-//                );
-//
-//                listOfNotes.add(addNote);
                 noteList.setAdapter(noteListAdapter);
             } catch (Exception e) {
                 Log.e(TAG, "newNoteSuccess:" + e.getMessage());
@@ -239,7 +226,7 @@ public class PersonalFragment extends Fragment {
     Response.Listener<JSONObject> getNotesSuccessListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
-            Log.d(TAG,"getNotesSuccessListener: "+response.toString());
+            Log.d(TAG, "getNotesSuccessListener: " + response.toString());
             MainActivity.dismissLoadingDialog();
             try {
                 //need to get all notes and add to listOfNotes
@@ -250,19 +237,6 @@ public class PersonalFragment extends Fragment {
                     time.setTime(noteObject.getLong("created_at"));
 
                     addNoteFromJsonObj(noteObject, time);
-//                    Note addNote = new Note(
-//                            noteObject.getString("id"),
-//                            Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
-//                            Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
-//                            noteObject.getJSONObject("location").getString("address"),
-//                            noteObject.getString("title"),
-//                            noteObject.getString("body"),
-//                            time.toString(),
-//                            noteObject.getBoolean("is_public"),
-//                            noteObject.getInt("likes"),
-//                            jsonArrayToStringArray(noteObject.getJSONArray("tags"))
-//                    );
-//                    listOfNotes.add(addNote);
                 }
                 noteList.setAdapter(noteListAdapter);
             } catch (Exception e) {
@@ -277,7 +251,7 @@ public class PersonalFragment extends Fragment {
     Response.ErrorListener getNotesErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.d(TAG,"getNotesErrorListener: "+error.getMessage());
+            Log.d(TAG, "getNotesErrorListener: " + error.getMessage());
             MainActivity.dismissLoadingDialog();
         }
     };
@@ -286,28 +260,32 @@ public class PersonalFragment extends Fragment {
     Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.d(TAG,"genericErrorListener");
+            Log.d(TAG, "genericErrorListener");
             MainActivity.dismissLoadingDialog();
             error.printStackTrace();
         }
     };
 
 
-
-    private ArrayList<String> jsonArrayToStringArray(JSONArray jArray){
+    private ArrayList<String> jsonArrayToStringArray(JSONArray jArray) {
         ArrayList<String> stringArray = new ArrayList<String>();
-        for(int i = 0, count = jArray.length(); i< count; i++)
-        {
+        for (int i = 0, count = jArray.length(); i < count; i++) {
             try {
                 JSONObject jsonObject = jArray.getJSONObject(i);
                 stringArray.add(jsonObject.toString());
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         return stringArray;
     }
+
+    Response.Listener<JSONObject> deleteNoteSuccessListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            Log.d(TAG, "deleteNoteSuccessListener: " + response.toString());
+        }
+    };
 
     private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
         Note addNote = new Note(
@@ -323,6 +301,89 @@ public class PersonalFragment extends Fragment {
                 jsonArrayToStringArray(noteObject.getJSONArray("tags"))
         );
         listOfNotes.add(addNote);
+
+    }
+
+    // click on listView item
+    class ItemClickedListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+            //create and configure dialog
+            final Note note = listOfNotes.get(position);
+            final Dialog noteViewDialog = new Dialog(getActivity());
+            noteViewDialog.setContentView(R.layout.note_display_full);
+            noteViewDialog.setTitle("You wrote...");
+
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(noteViewDialog.getWindow().getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+            noteViewDialog.show();
+//                dialog.getWindow().setAttributes(lp);
+
+
+            //get note_view_full layout elements
+            final TextView title = (TextView) noteViewDialog.findViewById(R.id.ndf_title_textview);
+            final TextView body = (TextView) noteViewDialog.findViewById(R.id.ndf_body_textview);
+            final TextView time = (TextView) noteViewDialog.findViewById(R.id.ndf_time_textview);
+            final TextView location = (TextView) noteViewDialog.findViewById(R.id.ndf_address_textview);
+            final TextView likes = (TextView) noteViewDialog.findViewById(R.id.ndf_likes_textview);
+            final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
+            final TextView permission = (TextView) noteViewDialog.findViewById(R.id.ndf_permission_textview);
+            final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
+
+
+            title.setText(note.getTitle());
+            body.setText(note.getBody());
+            time.setText(note.getTimestamp());
+            location.setText("Tags: " + note.getAddress());
+            likes.setText("Likes: " + note.getLikes());
+            tags.setText(note.getTags().toString());
+            permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
+
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    //Put up the Yes/No message box
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder
+                            .setTitle("Delete Note")
+                            .setMessage("Are you sure you want to delete the note?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Yes button clicked, do something
+                                    Toast.makeText(getActivity(), "Item Deleted!",
+                                            Toast.LENGTH_SHORT).show();
+                                    //TODO send delete
+                                    JSONObject delNote = new JSONObject();
+                                    try {
+                                        delNote.put("uid", userId);
+                                        delNote.put("nid", note.getId());
+                                        VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, deleteNoteSuccessListener, genericErrorListener);
+                                        listOfNotes.remove(position);
+
+                                    } catch (JSONException e) {
+                                        Toast.makeText(getActivity(), "Something went wrong.\n Failed to delete note...", Toast.LENGTH_LONG).show();
+                                        e.printStackTrace();
+                                    }
+                                    noteList.setAdapter(noteListAdapter);
+                                    noteViewDialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Yes button clicked, do something
+                                    Toast.makeText(getActivity(), "Note still here!",
+                                            Toast.LENGTH_SHORT).show();
+                                    noteViewDialog.dismiss();
+                                }
+                            })                        //Do nothing on no
+                            .show();
+                }
+            });
+
+        }
+
 
     }
 

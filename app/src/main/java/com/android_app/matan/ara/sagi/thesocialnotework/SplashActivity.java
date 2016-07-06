@@ -1,6 +1,8 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.graphics.drawable.DrawableWrapper;
@@ -31,6 +33,9 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             background.setImageDrawable( getResources().getDrawable(rand_splash()));
         }
+        SharedPreferences sharedPref = this.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
+        final String userId = sharedPref.getString("UserId", null);
+
         Thread timerThread = new Thread(){
             public void run(){
                 try{
@@ -38,7 +43,15 @@ public class SplashActivity extends AppCompatActivity {
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }finally{
-                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                    if(userId == null){
+                        startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                    }else{
+                        Intent personalSpaceActivity = new Intent(SplashActivity.this, MainActivity.class);
+                        Bundle loginUserBundle = new Bundle();
+                        loginUserBundle.putString("user_id", userId);
+                        personalSpaceActivity.putExtras(loginUserBundle);
+                        startActivity(personalSpaceActivity);
+                    }
                     finish();
                 }
             }

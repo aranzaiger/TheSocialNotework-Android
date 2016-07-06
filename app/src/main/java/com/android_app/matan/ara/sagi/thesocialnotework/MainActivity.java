@@ -19,7 +19,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    public static final String LOCAL_DATA_TSN = "TSN_DATA_STORE";
     protected final String TAG = "[TSN / MainActivity]";
     protected String userId;
     private GPSUtils gpsUtils;
