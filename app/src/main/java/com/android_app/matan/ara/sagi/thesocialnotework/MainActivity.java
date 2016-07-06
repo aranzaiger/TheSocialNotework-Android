@@ -1,5 +1,7 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity
     protected String userId;
     private GPSUtils gpsUtils;
     private boolean locationPermission;
+    public static ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +128,25 @@ public class MainActivity extends AppCompatActivity
 
     public void setLocationPermission(boolean locationPermission) {
         this.locationPermission = locationPermission;
+    }
+
+
+
+
+
+    public static void showLoadingDialog(Context context, String title, String msg) {
+        progress = new ProgressDialog(context);
+        progress.setTitle(title);
+        progress.setMessage(msg);
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();
+    }
+
+    public static void dismissLoadingDialog() {
+
+        if (progress != null && progress.isShowing()) {
+            progress.dismiss();
+        }
     }
 
 
