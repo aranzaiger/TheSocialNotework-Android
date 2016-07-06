@@ -2,6 +2,8 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity
     public static ProgressDialog progress;
     private GmapFragment gmapFragment;
     private PersonalFragment personalFragment;
+    private Toolbar toolbar;
     public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
 
 
@@ -45,7 +48,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Personal Notes");
         setSupportActionBar(toolbar);
         gmapFragment = new GmapFragment();
         personalFragment = new PersonalFragment();
@@ -119,13 +123,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_explore) {
-            // Handle the camera action
+            toolbar.setTitle("Explore");
+            setSupportActionBar(toolbar);
         } else if (id == R.id.nav_map) {
-//
+
             Log.d(TAG,"Before going to map");
-//            gmapFragment.("note_list", (ArrayList<Note>) listOfNotes);
-//            gmapFragment.put("user_lat", gpsUtils.getLatitude());
-//            gmapFragment.putExtra("user_lng", gpsUtils.getLongitude());
+            toolbar.setTitle("Map");
+            setSupportActionBar(toolbar);
             ft.replace(R.id.fragment_container, gmapFragment);
             ft.commit();
         } else if (id == R.id.nav_personal) {
@@ -134,9 +138,17 @@ public class MainActivity extends AppCompatActivity
             ft.replace(R.id.fragment_container, personalFragment);
             ft.commit();
         } else if (id == R.id.nav_settings) {
-
+            toolbar.setTitle("Settings");
+            setSupportActionBar(toolbar);
         } else if (id == R.id.nav_logout) {
 
+            SharedPreferences sharedPref = this.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.remove("UserId");
+            editor.commit();
+            Intent loginActivity = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(loginActivity);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
