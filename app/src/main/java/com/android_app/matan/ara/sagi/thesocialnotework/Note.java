@@ -3,7 +3,10 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by JERLocal on 7/1/2016.
@@ -174,28 +177,16 @@ public class Note implements Parcelable{
         dest.writeByte((byte) (isPublic ? 1 : 0));
     }
 
+    public String getTime() {
+        Date d = new Date(timestamp);
+        DateFormat format = new SimpleDateFormat("HH:mm");
+        return format.format(d);
+    }
 
-//    public void save(SQLiteOpenHelper dbHelper, Context context){
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//
-//        values.put(appDB.LocationsEntry.ADDRESS, this.address);
-//
-//        String where = appDB.LocationsEntry._ID + " =?";
-//        String[] whereArgs = {Integer.toString(this.id)};
-//
-//        db.update(appDB.LocationsEntry.TABLE_NAME, values, where, whereArgs);
-//
-//        db.close();
-//
-//        Toast.makeText(context, "Address saved!", Toast.LENGTH_LONG).show();
-//    }
-//
-//    public static Cursor getAll(DBHelper dbHelper) {
-//        SQLiteDatabase db = dbHelper.getReadableDatabase();
-//        String[] selectionArgs = {};
-//
-//        return db.rawQuery("SELECT * FROM "+appDB.LocationsEntry.TABLE_NAME, selectionArgs);
-//    }
+    public String getDate() {
+        Date d = new Date();
+        DateFormat format = new SimpleDateFormat("dd MMM yyy");
+        return format.format(d);
+    }
 
 }

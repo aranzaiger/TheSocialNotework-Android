@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -41,10 +43,8 @@ import java.util.List;
 public class PersonalFragment extends Fragment {
 
     protected ListView noteList;
-    protected Button addBtn;
     private final int FINE_PERM = 0;
     private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
-    private boolean locationPermission;
     private GPSUtils gpsUtils;
     private List<Note> listOfNotes;
     private ListAdapter noteListAdapter;
@@ -64,29 +64,25 @@ public class PersonalFragment extends Fragment {
         Bundle bundle = getArguments();
         this.userId = bundle.getString("user_id");
         Log.d(TAG, "onCreateView: userID: " + userId);
-        this.locationPermission = true;
-
         //check for permission
         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
 
 
         this.noteList = (ListView) view.findViewById(R.id.ps_list_listview);
-        addBtn = (Button) view.findViewById(R.id.ps_new_note_button);
         gpsUtils = ((MainActivity)getActivity()).getGPSUtils();
         gpsUtils.getLocation();
-
-
         listOfNotes = new ArrayList<>();
-        //TODO - remove -add demo notes to view
-//        addDemoNotes(listOfNotes);
         noteListAdapter = new ListAdapter(getContext(), listOfNotes);
-
         noteList.setAdapter(noteListAdapter);
 //        new HeavyWorker(this).execute();
+        MainActivity.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");
         getAllNotes();
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
-        addBtn.setOnClickListener(addNewNoteDialog);
+        // The New "Add Button"
+        FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab);
+        fab.setOnClickListener(addNewNoteDialog);
+
         return view;
     }
 
@@ -107,10 +103,6 @@ public class PersonalFragment extends Fragment {
     public void getAllNotes(){
         Log.d(TAG, "url: "+BASE_URL + "/note/all?uid="+userId);
         VolleyUtilSingleton.getInstance(getActivity()).get(BASE_URL + "/note/all?uid="+userId, getNotesSuccessListener, genericErrorListener);
-    }
-
-    public void setLocationPermission(boolean locationPermission) {
-        this.locationPermission = locationPermission;
     }
 
     private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
@@ -248,6 +240,7 @@ public class PersonalFragment extends Fragment {
         @Override
         public void onResponse(JSONObject response) {
             Log.d(TAG,"getNotesSuccessListener: "+response.toString());
+            MainActivity.dismissLoadingDialog();
             try {
                 //need to get all notes and add to listOfNotes
                 JSONArray noteObjectsArray = response.getJSONArray("notes");
@@ -285,6 +278,7 @@ public class PersonalFragment extends Fragment {
         @Override
         public void onErrorResponse(VolleyError error) {
             Log.d(TAG,"getNotesErrorListener: "+error.getMessage());
+            MainActivity.dismissLoadingDialog();
         }
     };
 
@@ -293,59 +287,10 @@ public class PersonalFragment extends Fragment {
         @Override
         public void onErrorResponse(VolleyError error) {
             Log.d(TAG,"genericErrorListener");
+            MainActivity.dismissLoadingDialog();
             error.printStackTrace();
         }
     };
-
-
-    public void requestPermissions(){
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    FINE_PERM);
-
-            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-
-        }
-
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
-
-            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-
-        }
-
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    FINE_PERM);
-
-            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-
-        }
-
-    }
 
 
 

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="70dp"
         android:layout_height="70dp"
         android:id="@+id/nvm_permission_textview"
-        android:background="@android:drawable/ic_lock_lock"
-        android:layout_weight="0.2"
-        />
+        android:background="@drawable/private_icon"
+        android:gravity="center_vertical|center_horizontal" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -22,21 +21,72 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Note Title"
-            android:id="@+id/nvm_title_textview" />
+            android:id="@+id/nvm_title_textview"
+            android:textStyle="bold"
+            android:textSize="18dp" />
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Date and time"
-            android:id="@+id/nvm_time_textview" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="location"
-            android:id="@+id/nvm_location_textview" />
+            <ImageView
+                android:layout_width="13dp"
+                android:layout_height="match_parent"
+                android:id="@+id/imageView4"
+                android:src="@drawable/date_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Date and time"
+                android:id="@+id/nvm_date_textview"
+                android:textSize="9dp"
+                android:gravity="fill_horizontal|fill_vertical"
+                android:padding="5dp" />
+
+            <ImageView
+                android:layout_width="13dp"
+                android:layout_height="28dp"
+                android:id="@+id/imageView3"
+                android:scaleType="fitCenter"
+                android:src="@drawable/time_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Date and time"
+                android:id="@+id/nvm_time_textview"
+                android:textSize="9dp"
+                android:gravity="fill_horizontal|center_vertical"
+                android:padding="5dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="13dp"
+                android:layout_height="28dp"
+                android:id="@+id/imageView5"
+                android:src="@drawable/location_icon" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="location"
+                android:id="@+id/nvm_location_textview"
+                android:textSize="9dp"
+                android:gravity="fill_horizontal|fill_vertical"
+                android:padding="5dp" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -57,11 +107,26 @@
             android:text="Tags #2"
             android:id="@+id/nvm_tags2_textview" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Likes"
-            android:id="@+id/nvm_likes_textview" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:id="@+id/imageView2"
+                android:src="@drawable/like_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Likes"
+                android:id="@+id/nvm_likes_textview"
+                android:gravity="center_vertical|center_horizontal" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

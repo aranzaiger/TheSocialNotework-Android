@@ -1,6 +1,7 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +58,8 @@ public class ListAdapter extends BaseAdapter {
             v = inflater.inflate(R.layout.note_view_mini , parent , false);
         }
         TextView title = (TextView) v.findViewById(R.id.nvm_title_textview);
-        TextView datetime = (TextView) v.findViewById(R.id.nvm_time_textview);
+        TextView time = (TextView) v.findViewById(R.id.nvm_time_textview);
+        TextView date = (TextView) v.findViewById(R.id.nvm_date_textview);
         TextView location = (TextView) v.findViewById(R.id.nvm_location_textview);
         TextView likes = (TextView) v.findViewById(R.id.nvm_likes_textview);
         TextView permission = (TextView) v.findViewById(R.id.nvm_permission_textview);
@@ -66,10 +68,12 @@ public class ListAdapter extends BaseAdapter {
 //        thumbNail.setImageUrl(url, VolleyUtilSingleTone.getInstance(mContext).getImageLoader());
         Note curNote = mNotes.get(position);
         title.setText(curNote.getTitle());
-        datetime.setText(Html.fromHtml(curNote.getTimestamp()));
+        time.setText(curNote.getTime());
+        date.setText(curNote.getDate());
         location.setText(curNote.getAddress());
-        likes.setText(""+curNote.getLikes());
-        permission.setText(curNote.isPublic() ? "Public":"Private");
+        if(likes !=null )likes.setText(""+curNote.getLikes());
+//        permission.setText(curNote.isPublic() ? "Public":"Private");
+        permission.setBackground(curNote.isPublic() ?  v.getResources().getDrawable(R.drawable.public_icon):  v.getResources().getDrawable(R.drawable.private_icon));
 
 //        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
 //        v.startAnimation(animation);
