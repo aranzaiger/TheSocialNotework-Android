@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity
         gpsUtils.getLocation();
 
         //Change The Avatar
-        new setUserAvatar().execute();
+       Utils.URLtoImageView(menu_avatar, user.getAvatar());
     }
 
     @Override
@@ -200,20 +200,5 @@ public class MainActivity extends AppCompatActivity
   }
 
     public String getUserId(){return user.getId();}
-
-  private class setUserAvatar extends AsyncTask<Void, Void, Bitmap> {
-
-    @Override
-    protected Bitmap doInBackground(Void... v) {
-      Bitmap b = Utils.getBitmapFromURL(self.user.getAvatar());
-      return b;
-    }
-
-    @Override
-    protected void onPostExecute(Bitmap b){
-      self.menu_avatar.setImageBitmap(b);
-    }
-
-  }
 
 }

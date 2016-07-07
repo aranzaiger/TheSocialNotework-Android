@@ -6,7 +6,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -335,6 +338,7 @@ public class PersonalFragment extends Fragment {
       final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
       final TextView permission = (TextView) noteViewDialog.findViewById(R.id.ndf_permission_textview);
       final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
+      final ImageView avatar = (ImageView)noteViewDialog.findViewById(R.id.note_user_avatar);
 
 
       title.setText(note.getTitle());
@@ -344,6 +348,7 @@ public class PersonalFragment extends Fragment {
       likes.setText("Likes: " + note.getLikes());
       tags.setText(note.getTags().toString());
       permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
+      Utils.URLtoImageView(avatar, note.getAvatar());
 
       deleteBtn.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
