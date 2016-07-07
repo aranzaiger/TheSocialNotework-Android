@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private GPSUtils gpsUtils;
     private MainActivity mainActivity;
-    private final int MAX_ZOOM = 16, MIN_ZOOM = 9;
+    private final int MAX_ZOOM = 16, MIN_ZOOM = 9, DEFAULT_ZOOM = 12;
 
 
     public GmapFragment() {
@@ -121,16 +122,26 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
             }
         });
-        
+
         LatLng userLocation = new LatLng(gpsUtils.getLatitude(), gpsUtils.getLongitude());
 //        mMap.addMarker(new MarkerOptions().position(userLocation).title("I Am Here!"));
         if (ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         mMap.setMyLocationEnabled(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 12));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, DEFAULT_ZOOM));
 
+        //get my notes
         VolleyUtilSingleton.getInstance(getActivity()).get(Utils.BASE_URL + "/note/all?uid=" + mainActivity.getUserId(), getNotesSuccessListener, Utils.genericErrorListener);
+
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("id",mainActivity.getUserId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //get other notes
+        VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/getPublic", jsonObj, getNotesSuccessListener, Utils.genericErrorListener);
 
 
     }
@@ -163,12 +174,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerOptions, List<MarkerOptions>> {
         GoogleMap mMap;
-//        GmapFragment gmap;
 
         public getMarkersFromNotes(GoogleMap map) {
             mMap = map;
-//            gmap = GmapFragment.
-//            mMap = GmapFragment.getMap();
             Log.d(TAG, "in async ctor");
         }
 
@@ -190,7 +198,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         protected List<MarkerOptions> doInBackground(List<Note>... listOfNotes) {
             Log.d(TAG, "in async BG");
 
-            String url = "http://www.aljazeera.com/mritems/images/site/DefaultAvatar.jpg";
             List<MarkerOptions> markerOptionList = new ArrayList<>();
 //            for (int i = 0 ; i< listOfNotes.length; i++)
             for (Note n : listOfNotes[0]) {
@@ -199,7 +206,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         .title(n.getTitle())
                         .position(new LatLng(n.getLat(), n.getLon()))
                         .snippet(n.getBody())
-                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(Utils.getBitmapFromURL(url), 80, 80, false)));
+                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(Utils.getBitmapFromURL(n.getAvatar()), 80, 80, false)));
                 publishProgress(mo);
 //                );
 
@@ -208,7 +215,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
 
         }
-//Bitmap.createScaledBitmap(myBitmap, 80, 80, false);
 
     }
 
