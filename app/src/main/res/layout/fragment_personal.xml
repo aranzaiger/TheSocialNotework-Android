@@ -14,12 +14,13 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="com.android_app.matan.ara.sagi.thesocialnotework.PersonalSpaceActivity">
+        tools:context="com.android_app.matan.ara.sagi.thesocialnotework.PersonalSpaceActivity"
+      android:layout_marginBottom="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.2"
+            android:layout_weight="0.1"
             android:orientation="horizontal">
 
             <TextView
@@ -28,6 +29,12 @@
                 android:layout_height="match_parent"
                 android:text="Filters and Shit"
                 android:layout_weight="0.8"/>
+
+          <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:spinnerMode="dropdown" />
 
         </LinearLayout>
 
