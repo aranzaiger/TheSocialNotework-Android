@@ -75,8 +75,8 @@ public class ListAdapter extends BaseAdapter {
 //        permission.setText(curNote.isPublic() ? "Public":"Private");
         permission.setBackground(curNote.isPublic() ?  v.getResources().getDrawable(R.drawable.public_icon):  v.getResources().getDrawable(R.drawable.private_icon));
 
-//        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
-//        v.startAnimation(animation);
+        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+        v.startAnimation(animation);
         lastPosition = position;
         return v;
     }
