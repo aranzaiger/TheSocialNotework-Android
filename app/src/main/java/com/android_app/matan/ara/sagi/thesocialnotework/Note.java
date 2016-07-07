@@ -11,18 +11,16 @@ import java.util.Date;
 /**
  * Created by JERLocal on 7/1/2016.
  */
-public class Note implements Parcelable{
+public class Note implements Parcelable {
 
     protected int likes;
     protected ArrayList<String> tags;
     protected float lat, lon;
-    protected String id, address, title, body, timestamp, avatar;
+    protected String id, address, title, body, timestamp, avatar, ownerId;
     protected boolean isPublic;
 
 
-
-
-    public Note(String id, float lat, float lon, String address, String title, String body, String timestamp, boolean isPublic, int likes,String avatar, ArrayList<String> tags) {
+    public Note(String id, float lat, float lon, String address, String title, String body, String timestamp, boolean isPublic, int likes, String avatar, String ownerId, ArrayList<String> tags) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -33,10 +31,10 @@ public class Note implements Parcelable{
         this.timestamp = timestamp;
         this.isPublic = isPublic;
         this.likes = likes;
-        this.tags =  tags;
+        this.tags = tags;
         this.avatar = avatar;
+        this.ownerId = ownerId;
     }
-
 
 
     protected Note(Parcel in) {
@@ -51,6 +49,7 @@ public class Note implements Parcelable{
         body = in.readString();
         timestamp = in.readString();
         avatar = in.readString();
+        ownerId = in.readString();
         isPublic = in.readByte() != 0;
     }
 
@@ -66,18 +65,21 @@ public class Note implements Parcelable{
         }
     };
 
+
     @Override
     public String toString() {
         return "Note{" +
                 "id=" + id +
                 ", lat=" + lat +
                 ", lon=" + lon +
+
                 ", address='" + address + '\'' +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 ", timestamp=" + timestamp +
                 ", isPublic=" + isPublic +
-                ", avatar=" + avatar+
+                ", avatar=" + avatar +
+                ", ownerId=" + ownerId +
                 '}';
     }
 
@@ -146,8 +148,9 @@ public class Note implements Parcelable{
     }
 
     public String getLocationAndTime() {
-        return getTimestamp()+" at "+ getAddress();
+        return getTimestamp() + " at " + getAddress();
     }
+
     public int getLikes() {
         return likes;
     }
@@ -163,9 +166,23 @@ public class Note implements Parcelable{
     public void setTags(ArrayList<String> tags) {
         this.tags = tags;
     }
-    public String getAvatar() {return avatar;}
 
-    public void setAvatar(String avatar) {this.avatar = avatar;    }
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
 
     @Override
     public int describeContents() {
@@ -184,6 +201,7 @@ public class Note implements Parcelable{
         dest.writeString(body);
         dest.writeString(timestamp);
         dest.writeString(avatar);
+        dest.writeString(ownerId);
         dest.writeByte((byte) (isPublic ? 1 : 0));
     }
 
