@@ -34,7 +34,7 @@ public class SplashActivity extends AppCompatActivity {
             background.setImageDrawable( getResources().getDrawable(rand_splash()));
         }
         SharedPreferences sharedPref = this.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
-        final String userId = sharedPref.getString("UserId", null);
+        final String userData = sharedPref.getString("UserData", null);
 
         Thread timerThread = new Thread(){
             public void run(){
@@ -43,12 +43,12 @@ public class SplashActivity extends AppCompatActivity {
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }finally{
-                    if(userId == null){
+                    if(userData == null){
                         startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                     }else{
                         Intent personalSpaceActivity = new Intent(SplashActivity.this, MainActivity.class);
                         Bundle loginUserBundle = new Bundle();
-                        loginUserBundle.putString("user_id", userId);
+                        loginUserBundle.putString("UserData", userData);
                         personalSpaceActivity.putExtras(loginUserBundle);
                         startActivity(personalSpaceActivity);
                     }

@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
@@ -19,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -27,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,13 +40,14 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String LOCAL_DATA_TSN = "TSN_DATA_STORE";
     protected final String TAG = "[TSN / MainActivity]";
-    protected String userId;
+    protected User user;
     private GPSUtils gpsUtils;
     private boolean locationPermission;
     private GmapFragment gmapFragment;
     private PersonalFragment personalFragment;
     private Toolbar toolbar;
     public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
+    private ImageView menu_avatar;
 
 
     @Override
@@ -69,9 +75,12 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        //get Bundle data (Userid)
+        //get Bundle data (UserString)
         Bundle b = getIntent().getExtras();
-        userId = b.getString("user_id");
+        this.user  = new User(b.getString("UserData"));
+        menu_avatar = (ImageView)findViewById(R.id.user_avatar);
+        //TODO - Change the menu_avatar to user.getAvatar()
+
 
         //Change Layout
         Log.d(TAG, "Changing Fragment to Personal Activity");
@@ -173,6 +182,10 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    public String getUserId(){return userId;}
+  public User getUser(){
+    return user;
+  }
+
+    public String getUserId(){return user.getId();}
 
 }
