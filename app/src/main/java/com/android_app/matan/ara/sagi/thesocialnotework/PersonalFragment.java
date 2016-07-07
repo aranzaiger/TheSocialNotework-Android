@@ -55,6 +55,7 @@ public class PersonalFragment extends Fragment {
   private ListAdapter noteListAdapter;
   private String userId;
   private final String TAG = "[TSN/PersonalFragment]";
+  private MainActivity activity;
 
   public PersonalFragment() {
     // Required empty public constructor
@@ -66,21 +67,22 @@ public class PersonalFragment extends Fragment {
                            Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_personal, container, false);
     // Inflate the layout for this fragment
+    activity = (MainActivity) getActivity();
     Bundle bundle = getArguments();
-    this.userId = bundle.getString("user_id");
+    this.userId = activity.getUserId();
     Log.d(TAG, "onCreateView: userID: " + userId);
     //check for permission
-    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
+    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
 
 
     this.noteList = (ListView) view.findViewById(R.id.ps_list_listview);
-    gpsUtils = ((MainActivity) getActivity()).getGPSUtils();
+    gpsUtils = activity.getGPSUtils();
     gpsUtils.getLocation();
     listOfNotes = new ArrayList<>();
     noteListAdapter = new ListAdapter(getContext(), listOfNotes);
     noteList.setAdapter(noteListAdapter);
     noteList.setOnItemClickListener(new ItemClickedListener());
-    MainActivity.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");
+    MainActivity.showLoadingDialog(activity, "Fetching..", "getting your notes");
     getAllNotes();
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
