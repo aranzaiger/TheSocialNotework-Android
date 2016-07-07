@@ -111,7 +111,7 @@ public class User {
   }
 
   public String Serialise(){
-    return id + "||" + username + "||" + password + "||" + email + "||" + serialiseNoteList();
+    return id + ATTARS_DELIMETER + username + ATTARS_DELIMETER + password + ATTARS_DELIMETER + email + ATTARS_DELIMETER +avatar + ATTARS_DELIMETER + serialiseNoteList();
   }
 
   private String serialiseNoteList() {
@@ -126,7 +126,7 @@ public class User {
   }
 
   public String toString(){
-    return "Id: "+id+" UserName: " + username +" Password: " +password +" email: " + email+ " Liked Notes: "+liked_notes.toString();
+    return "Id: "+id+" UserName: " + username +" Password: " +password +" email: " + email+ " Avatar: " +avatar+" Liked Notes: "+liked_notes.toString();
   }
 
 

@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,12 +50,15 @@ public class MainActivity extends AppCompatActivity
     private Toolbar toolbar;
     public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private ImageView menu_avatar;
+  private MainActivity self;
+  private NavigationView nav_view;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.self = this;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Personal Notes");
         setSupportActionBar(toolbar);
@@ -61,6 +66,8 @@ public class MainActivity extends AppCompatActivity
         personalFragment = new PersonalFragment();
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+
 
 
 
@@ -78,8 +85,11 @@ public class MainActivity extends AppCompatActivity
         //get Bundle data (UserString)
         Bundle b = getIntent().getExtras();
         this.user  = new User(b.getString("UserData"));
-        menu_avatar = (ImageView)findViewById(R.id.user_avatar);
-        //TODO - Change the menu_avatar to user.getAvatar()
+
+        //Get The Nav_View Avatar View
+        nav_view = (NavigationView) findViewById(R.id.nav_view);
+        View header_v = nav_view.getHeaderView(0);
+        menu_avatar = (ImageView)header_v.findViewById(R.id.nav_user_avatar);
 
 
         //Change Layout
@@ -92,6 +102,9 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "Changed");
         gpsUtils = new GPSUtils(this);
         gpsUtils.getLocation();
+
+        //Change The Avatar
+        new setUserAvatar().execute();
     }
 
     @Override
@@ -156,7 +169,7 @@ public class MainActivity extends AppCompatActivity
 
             SharedPreferences sharedPref = this.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.remove("UserId");
+            editor.remove("UserData");
             editor.commit();
             Intent loginActivity = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(loginActivity);
@@ -187,5 +200,20 @@ public class MainActivity extends AppCompatActivity
   }
 
     public String getUserId(){return user.getId();}
+
+  private class setUserAvatar extends AsyncTask<Void, Void, Bitmap> {
+
+    @Override
+    protected Bitmap doInBackground(Void... v) {
+      Bitmap b = Utils.getBitmapFromURL(self.user.getAvatar());
+      return b;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap b){
+      self.menu_avatar.setImageBitmap(b);
+    }
+
+  }
 
 }
