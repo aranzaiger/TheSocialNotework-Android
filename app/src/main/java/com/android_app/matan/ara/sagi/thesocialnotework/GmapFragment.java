@@ -1,10 +1,12 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 //import android.app.Fragment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -72,7 +74,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        mainActivity = (MainActivity)getActivity();
+        mainActivity = (MainActivity) getActivity();
 
         gpsUtils = mainActivity.getGPSUtils();
 
@@ -108,11 +110,22 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
         mMap = googleMap;
 
-        VolleyUtilSingleton.getInstance(getActivity()).get(mainActivity.BASE_URL + "/note/all?uid=" +mainActivity.getUserId() , getNotesSuccessListener, mainActivity.genericErrorListener);
+        VolleyUtilSingleton.getInstance(getActivity()).get(mainActivity.BASE_URL + "/note/all?uid=" + mainActivity.getUserId(), getNotesSuccessListener, mainActivity.genericErrorListener);
 
         LatLng userLocation = new LatLng(gpsUtils.getLatitude(), gpsUtils.getLongitude());
         mMap.addMarker(new MarkerOptions().position(userLocation).title("I Am Here!"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+        if (ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 12));
 
     }
 
