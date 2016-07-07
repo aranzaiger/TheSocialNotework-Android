@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
     private void attemptLogin() {
-        MainActivity.showLoadingDialog(this, "Connecting", "Authenticating data");
+        Utils.showLoadingDialog(this, "Connecting", "Authenticating data");
         mPasswordView.setError(null);
         if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString())) {
 
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
             VolleyUtilSingleton.getInstance(LoginActivity.this).post(BASE_URL + LOGIN_PATH, tempJson, onLoginSuccess, onLoginError);
         } else {
-            MainActivity.dismissLoadingDialog();
+            Utils.dismissLoadingDialog();
             Log.d(TAG, "Invalid params - make sure username exist & password is 4 characters or more");
         }
 
@@ -120,10 +120,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Bundle loginUserBundle = new Bundle();
                     loginUserBundle.putString("user_id", response.getJSONObject("user").getString("id"));
                     personalSpaceActivity.putExtras(loginUserBundle);
-                    MainActivity.dismissLoadingDialog();
+                    Utils.dismissLoadingDialog();
                     startActivity(personalSpaceActivity);
                 } else {
-                    MainActivity.dismissLoadingDialog();
+                    Utils.dismissLoadingDialog();
                     Toast.makeText(self, "Username or Password are incorrect", Toast.LENGTH_LONG).show();
                     self.mUsernameView.getText().clear();
                     self.mPasswordView.getText().clear();
@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Response.ErrorListener onLoginError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            MainActivity.dismissLoadingDialog();
+            Utils.dismissLoadingDialog();
             Toast.makeText(self , "Username Or Password Incorrect", Toast.LENGTH_LONG).show();
             //Clean texts
             self.mUsernameView.getText().clear();

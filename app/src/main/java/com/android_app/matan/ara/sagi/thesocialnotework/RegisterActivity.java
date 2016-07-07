@@ -75,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void attemptRegister() {
-        MainActivity.showLoadingDialog(this, "Registering", "Please Wait...");
+        Utils.showLoadingDialog(this, "Registering", "Please Wait...");
         Log.d(TAG, "in attemptRegister: Registering..");
         if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString(), mEmailView.getText().toString())) {
             Log.d(TAG, "params are valid");
@@ -94,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             Log.d(TAG,"JSON: "+tempJson.toString());
             VolleyUtilSingleton.getInstance(RegisterActivity.this).post(BASE_URL + REG_PATH, tempJson, onRegisterSuccess, onRegisterError);
         } else {
-            MainActivity.dismissLoadingDialog();
+            Utils.dismissLoadingDialog();
             Log.d(TAG, "Invalid params - make sure username exist, password is 4 characters or more & email is valid");
             Toast.makeText(this, "Make Sure tou have entered a valid email. password at least 4 chars", Toast.LENGTH_LONG).show();
         }
@@ -104,7 +104,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         @Override
         public void onResponse(JSONObject response) {
            Log.d(TAG,"response: "+ response.toString());
-            MainActivity.dismissLoadingDialog();
+            Utils.dismissLoadingDialog();
             try {
                 if(response.getString("message").equals("created")) {
                     Log.d(TAG, "onRegisterSuccess => user created"); // TODO: REMOVE console
@@ -125,7 +125,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     Response.ErrorListener onRegisterError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            MainActivity.dismissLoadingDialog();
+            Utils.dismissLoadingDialog();
             Toast.makeText(self , "Username is already taken. maybe: " + mUsernameView.getText().toString()+"_666 ? :)", Toast.LENGTH_LONG).show();
             Log.d(TAG, "onRegisterError: msg: " + error.getMessage());
         }
