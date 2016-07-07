@@ -53,7 +53,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private final int MAX_ZOOM = 16, MIN_ZOOM = 9;
 
 
-    public GmapFragment() {}
+    public GmapFragment() {
+    }
 
 
     public static GmapFragment newInstance(String param1, String param2) {
@@ -159,10 +160,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     };
 
 
-
-
-
-
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerOptions, List<MarkerOptions>> {
         GoogleMap mMap;
 //        GmapFragment gmap;
@@ -201,7 +198,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         .title(n.getTitle())
                         .position(new LatLng(n.getLat(), n.getLon()))
                         .snippet(n.getBody())
-                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(Utils.getBitmapFromURL(url),80,80,false)));
+                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(Utils.getBitmapFromURL(url), 80, 80, false)));
                 publishProgress(mo);
 //                );
 

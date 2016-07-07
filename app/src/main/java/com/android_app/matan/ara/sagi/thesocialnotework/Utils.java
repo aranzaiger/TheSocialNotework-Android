@@ -30,8 +30,6 @@ public class Utils {
     public static ProgressDialog progress;
 
 
-
-
     public static Bitmap getBitmapFromURL(String imageUrl) {
 
         try {
@@ -72,7 +70,6 @@ public class Utils {
             progress.dismiss();
         }
     }
-
 
 
     public static Note getNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
