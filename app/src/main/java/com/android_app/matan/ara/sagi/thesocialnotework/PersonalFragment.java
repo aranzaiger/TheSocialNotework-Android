@@ -301,6 +301,7 @@ public class PersonalFragment extends Fragment {
       time.toString(),
       noteObject.getBoolean("is_public"),
       noteObject.getInt("likes"),
+      noteObject.getString("avatar"),
       jsonArrayToStringArray(noteObject.getJSONArray("tags"))
     );
     listOfNotes.add(addNote);
