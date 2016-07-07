@@ -3,9 +3,11 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 /**
  * Created by aran on 5/26/16.
  */
-        import com.android.volley.toolbox.ImageLoader.ImageCache;
-        import android.graphics.Bitmap;
-        import android.support.v4.util.LruCache;
+
+import com.android.volley.toolbox.ImageLoader.ImageCache;
+
+import android.graphics.Bitmap;
+import android.support.v4.util.LruCache;
 
 /**
  * A class to extend the LruCache class - for better image caching

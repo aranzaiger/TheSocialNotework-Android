@@ -7,39 +7,39 @@ import android.os.AsyncTask;
 /**
  * Created by aranza on 7/2/2016.
  */
-public class HeavyWorker extends AsyncTask< String , Context , Void > {
+public class HeavyWorker extends AsyncTask<String, Context, Void> {
 
-    private ProgressDialog progressDialog ;
-    private Context targetCtx ;
+    private ProgressDialog progressDialog;
+    private Context targetCtx;
 
-    public HeavyWorker ( Context context ) {
-        this.targetCtx = context ;
-        progressDialog = new ProgressDialog ( targetCtx ) ;
-        progressDialog.setCancelable ( false ) ;
-        progressDialog.setMessage ( "Retrieving data..." ) ;
-        progressDialog.setTitle ( "Please wait" ) ;
-        progressDialog.setIndeterminate ( true ) ;
+    public HeavyWorker(Context context) {
+        this.targetCtx = context;
+        progressDialog = new ProgressDialog(targetCtx);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.setTitle("Please wait");
+        progressDialog.setIndeterminate(true);
     }
 
-    @ Override
-    protected void onPreExecute ( ) {
-        progressDialog.show ( ) ;
+    @Override
+    protected void onPreExecute() {
+        progressDialog.show();
     }
 
-    @ Override
-    protected Void doInBackground ( String ... params ) {
+    @Override
+    protected Void doInBackground(String... params) {
         // Do Your WORK here
 
 //        MainActivity ps = (MainActivity) targetCtx;
 //        ps.getAllNotes();
 
-        return null ;
+        return null;
     }
 
-    @ Override
-    protected void onPostExecute ( Void result ) {
-        if(progressDialog != null && progressDialog.isShowing()){
-            progressDialog.dismiss ( ) ;
+    @Override
+    protected void onPostExecute(Void result) {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
         }
     }
 }

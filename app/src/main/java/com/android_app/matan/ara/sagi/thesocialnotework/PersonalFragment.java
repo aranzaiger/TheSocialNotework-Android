@@ -82,7 +82,7 @@ public class PersonalFragment extends Fragment {
     noteListAdapter = new ListAdapter(getContext(), listOfNotes);
     noteList.setAdapter(noteListAdapter);
     noteList.setOnItemClickListener(new ItemClickedListener());
-    MainActivity.showLoadingDialog(activity, "Fetching..", "getting your notes");
+    Utils.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");
     getAllNotes();
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
@@ -97,19 +97,19 @@ public class PersonalFragment extends Fragment {
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);
-    MainActivity.dismissLoadingDialog();
+    Utils.dismissLoadingDialog();
     Log.d(TAG, "onAttach");
   }
 
   @Override
   public void onDetach() {
     super.onDetach();
-    MainActivity.dismissLoadingDialog();
+    Utils.dismissLoadingDialog();
   }
 
   public void getAllNotes() {
     Log.d(TAG, "url: " + BASE_URL + "/note/all?uid=" + userId);
-    VolleyUtilSingleton.getInstance(getActivity()).get(BASE_URL + "/note/all?uid=" + userId, getNotesSuccessListener, genericErrorListener);
+    VolleyUtilSingleton.getInstance(getActivity()).get(BASE_URL + "/note/all?uid=" + userId, getNotesSuccessListener, Utils.genericErrorListener);
   }
 
   private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
@@ -178,7 +178,7 @@ public class PersonalFragment extends Fragment {
           }
 
           //send request and close dialog
-          VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/upsert", noteJson, newNoteSuccessListener, genericErrorListener);
+          VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/upsert", noteJson, newNoteSuccessListener, Utils.genericErrorListener);
           dialog.dismiss();
         }
       });
@@ -216,13 +216,13 @@ public class PersonalFragment extends Fragment {
   };
 
 
-  //response Error listener for adding new note
-  Response.ErrorListener newNoteErrorListener = new Response.ErrorListener() {
-    @Override
-    public void onErrorResponse(VolleyError error) {
-      Log.d(TAG, "newNoteError: msg: " + error.getMessage());
-    }
-  };
+//  //response Error listener for adding new note
+//  Response.ErrorListener newNoteErrorListener = new Response.ErrorListener() {
+//    @Override
+//    public void onErrorResponse(VolleyError error) {
+//      Log.d(TAG, "newNoteError: msg: " + error.getMessage());
+//    }
+//  };
 
 
   //response listener for getting all user notes
@@ -230,7 +230,7 @@ public class PersonalFragment extends Fragment {
     @Override
     public void onResponse(JSONObject response) {
       Log.d(TAG, "getNotesSuccessListener: " + response.toString());
-      MainActivity.dismissLoadingDialog();
+      Utils.dismissLoadingDialog();
       try {
         //need to get all notes and add to listOfNotes
         JSONArray noteObjectsArray = response.getJSONArray("notes");
@@ -250,24 +250,24 @@ public class PersonalFragment extends Fragment {
   };
 
 
-  //response ErrorListener for getting all user notes
-  Response.ErrorListener getNotesErrorListener = new Response.ErrorListener() {
-    @Override
-    public void onErrorResponse(VolleyError error) {
-      Log.d(TAG, "getNotesErrorListener: " + error.getMessage());
-      MainActivity.dismissLoadingDialog();
-    }
-  };
+//  //response ErrorListener for getting all user notes
+//  Response.ErrorListener getNotesErrorListener = new Response.ErrorListener() {
+//    @Override
+//    public void onErrorResponse(VolleyError error) {
+//      Log.d(TAG, "getNotesErrorListener: " + error.getMessage());
+//      MainActivity.dismissLoadingDialog();
+//    }
+//  };
 
-  //Generic response ErrorListener
-  Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
-    @Override
-    public void onErrorResponse(VolleyError error) {
-      Log.d(TAG, "genericErrorListener");
-      MainActivity.dismissLoadingDialog();
-      error.printStackTrace();
-    }
-  };
+//  //Generic response ErrorListener
+//  Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
+//    @Override
+//    public void onErrorResponse(VolleyError error) {
+//      Log.d(TAG, "genericErrorListener");
+//      MainActivity.dismissLoadingDialog();
+//      error.printStackTrace();
+//    }
+//  };
 
 
   private ArrayList<String> jsonArrayToStringArray(JSONArray jArray) {
@@ -362,7 +362,7 @@ public class PersonalFragment extends Fragment {
                 try {
                   delNote.put("uid", userId);
                   delNote.put("nid", note.getId());
-                  VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, deleteNoteSuccessListener, genericErrorListener);
+                  VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, deleteNoteSuccessListener, Utils.genericErrorListener);
                   listOfNotes.remove(position);
 
                 } catch (JSONException e) {

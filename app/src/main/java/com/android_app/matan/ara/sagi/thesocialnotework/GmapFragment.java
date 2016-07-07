@@ -50,9 +50,11 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private GPSUtils gpsUtils;
     private MainActivity mainActivity;
+    private final int MAX_ZOOM = 16, MIN_ZOOM = 9;
 
 
-    public GmapFragment() {}
+    public GmapFragment() {
+    }
 
 
     public static GmapFragment newInstance(String param1, String param2) {
@@ -110,17 +112,17 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-                if (cameraPosition.zoom > 14) {
-                    getMap().animateCamera(CameraUpdateFactory.zoomTo(14));
+                if (cameraPosition.zoom > MAX_ZOOM) {
+                    getMap().animateCamera(CameraUpdateFactory.zoomTo(MAX_ZOOM));
                 }
-                if (cameraPosition.zoom < 8) {
-                    getMap().animateCamera(CameraUpdateFactory.zoomTo(8));
+                if (cameraPosition.zoom < MIN_ZOOM) {
+                    getMap().animateCamera(CameraUpdateFactory.zoomTo(MIN_ZOOM));
                 }
 
             }
         });
 
-        VolleyUtilSingleton.getInstance(getActivity()).get(mainActivity.BASE_URL + "/note/all?uid=" + mainActivity.getUserId(), getNotesSuccessListener, mainActivity.genericErrorListener);
+        VolleyUtilSingleton.getInstance(getActivity()).get(Utils.BASE_URL + "/note/all?uid=" + mainActivity.getUserId(), getNotesSuccessListener, Utils.genericErrorListener);
 //        VolleyUtilSingleton.getInstance(getActivity()).get(mainActivity.BASE_URL + "/note/all?uid=" + mainActivity.getUserId(), getNotesSuccessListener, mainActivity.genericErrorListener);
         LatLng userLocation = new LatLng(gpsUtils.getLatitude(), gpsUtils.getLongitude());
 //        mMap.addMarker(new MarkerOptions().position(userLocation).title("I Am Here!"));
@@ -146,7 +148,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                 for (int i = 0; i < noteObjectsArray.length(); i++) {
                     JSONObject noteObject = noteObjectsArray.getJSONObject(i);
                     time.setTime(noteObject.getLong("created_at"));
-                    listOfNotes.add(mainActivity.getNoteFromJsonObj(noteObject, time));
+                    listOfNotes.add(Utils.getNoteFromJsonObj(noteObject, time));
                 }
                 new getMarkersFromNotes(mMap).execute(listOfNotes);
 //                noteList.setAdapter(noteListAdapter);
@@ -156,25 +158,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
     };
-
-
-
-    public Bitmap getBitmapFromURL(String imageUrl) {
-
-        try {
-            URL url = new URL(imageUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            Log.d(TAG, "image: " + myBitmap.toString());
-            return Bitmap.createScaledBitmap(myBitmap, 80, 80, false);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
 
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerOptions, List<MarkerOptions>> {
@@ -215,7 +198,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         .title(n.getTitle())
                         .position(new LatLng(n.getLat(), n.getLon()))
                         .snippet(n.getBody())
-                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromURL(url)));
+                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(Utils.getBitmapFromURL(url), 80, 80, false)));
                 publishProgress(mo);
 //                );
 
@@ -224,7 +207,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
 
         }
-
+//Bitmap.createScaledBitmap(myBitmap, 80, 80, false);
 
     }
 

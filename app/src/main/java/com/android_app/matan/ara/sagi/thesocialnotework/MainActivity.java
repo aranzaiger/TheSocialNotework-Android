@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity
     protected User user;
     private GPSUtils gpsUtils;
     private boolean locationPermission;
-    public static ProgressDialog progress;
     private GmapFragment gmapFragment;
     private PersonalFragment personalFragment;
     private Toolbar toolbar;
@@ -181,62 +180,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    public static void showLoadingDialog(Context context, String title, String msg) {
-        progress = new ProgressDialog(context);
-        progress.setTitle(title);
-        progress.setMessage(msg);
-        progress.setCanceledOnTouchOutside(false);
-        progress.show();
-    }
 
-    public static void dismissLoadingDialog() {
-
-        if (progress != null && progress.isShowing()) {
-            progress.dismiss();
-        }
-    }
-
-    //    //Generic response ErrorListener
-    Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Log.d(TAG, "genericErrorListener");
-            error.printStackTrace();
-        }
-    };
-
-        public Note getNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
-//            List<Note> listOfNotes = new ArrayList<>();
-
-            Note note = new Note(
-                noteObject.getString("id"),
-                Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
-                Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
-                noteObject.getJSONObject("location").getString("address"),
-                noteObject.getString("title"),
-                noteObject.getString("body"),
-                time.toString(),
-                noteObject.getBoolean("is_public"),
-                noteObject.getInt("likes"),
-                jsonArrayToStringArray(noteObject.getJSONArray("tags"))
-        );
-            return note;
-//        listOfNotes.add(addNote);
-
-    }
-
-    public ArrayList<String> jsonArrayToStringArray(JSONArray jArray) {
-        ArrayList<String> stringArray = new ArrayList<String>();
-        for (int i = 0, count = jArray.length(); i < count; i++) {
-            try {
-                JSONObject jsonObject = jArray.getJSONObject(i);
-                stringArray.add(jsonObject.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return stringArray;
-    }
 
   public User getUser(){
     return user;
