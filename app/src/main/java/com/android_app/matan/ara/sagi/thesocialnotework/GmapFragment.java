@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -182,8 +183,16 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     Note note = eventMarkerMap.get(marker);
                     final Dialog noteViewDialog = new Dialog(getActivity());
                     noteViewDialog.setContentView(R.layout.note_display_full);
-                    noteViewDialog.setTitle("Someone wrote...");
+
+                    boolean isOwner = note.getOwnerId() == mainActivity.getUserId();
+                    if (isOwner)
+                        noteViewDialog.setTitle("I wrote...");
+                    else
+                        noteViewDialog.setTitle("Someone wrote...");
+
                     noteViewDialog.show();
+
+
 
 
                     //get note_view_full layout elements
@@ -194,6 +203,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     final TextView likes = (TextView) noteViewDialog.findViewById(R.id.ndf_likes_textview);
                     final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
                     final TextView permission = (TextView) noteViewDialog.findViewById(R.id.ndf_permission_textview);
+                    final ImageView avatar = (ImageView) noteViewDialog.findViewById(R.id.note_user_avatar);
                     final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
 
 
@@ -203,7 +213,15 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     location.setText("Tags: " + note.getAddress());
                     likes.setText("Likes: " + note.getLikes());
                     tags.setText(note.getTags().toString());
-                    permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
+//                    avatar.setImageBitmap();
+                    if (isOwner) {
+                        permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
+                    }
+                    else{
+                        deleteBtn.setBackgroundResource(R.drawable.like_icon);
+                    }
+
+
 
 
 //                    deleteBtn.setOnClickListener(new View.OnClickListener() {
