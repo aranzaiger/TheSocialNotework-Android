@@ -16,13 +16,13 @@ public class Note implements Parcelable{
     protected int likes;
     protected ArrayList<String> tags;
     protected float lat, lon;
-    protected String id, address, title, body, timestamp;
+    protected String id, address, title, body, timestamp, avatar;
     protected boolean isPublic;
 
 
 
 
-    public Note(String id, float lat, float lon, String address, String title, String body, String timestamp, boolean isPublic, int likes, ArrayList<String> tags) {
+    public Note(String id, float lat, float lon, String address, String title, String body, String timestamp, boolean isPublic, int likes,String avatar, ArrayList<String> tags) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -34,18 +34,23 @@ public class Note implements Parcelable{
         this.isPublic = isPublic;
         this.likes = likes;
         this.tags =  tags;
+        this.avatar = avatar;
     }
+
+
 
     protected Note(Parcel in) {
         likes = in.readInt();
         tags = in.createStringArrayList();
         lat = in.readFloat();
         lon = in.readFloat();
+
         id = in.readString();
         address = in.readString();
         title = in.readString();
         body = in.readString();
         timestamp = in.readString();
+        avatar = in.readString();
         isPublic = in.readByte() != 0;
     }
 
@@ -72,6 +77,7 @@ public class Note implements Parcelable{
                 ", body='" + body + '\'' +
                 ", timestamp=" + timestamp +
                 ", isPublic=" + isPublic +
+                ", avatar=" + avatar+
                 '}';
     }
 
@@ -157,6 +163,9 @@ public class Note implements Parcelable{
     public void setTags(ArrayList<String> tags) {
         this.tags = tags;
     }
+    public String getAvatar() {return avatar;}
+
+    public void setAvatar(String avatar) {this.avatar = avatar;    }
 
     @Override
     public int describeContents() {
@@ -174,6 +183,7 @@ public class Note implements Parcelable{
         dest.writeString(title);
         dest.writeString(body);
         dest.writeString(timestamp);
+        dest.writeString(avatar);
         dest.writeByte((byte) (isPublic ? 1 : 0));
     }
 
