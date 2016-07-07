@@ -20,7 +20,7 @@ public class VolleyUtilSingleton {
 
     private static VolleyUtilSingleton mInstance;
     private RequestQueue mRequestQueue;
-//    private ImageLoader mImageLoader;
+    private ImageLoader mImageLoader;
     private static Context mCtx;
     private final String TAG = "VolleyUtilSingleton";
 
@@ -29,7 +29,7 @@ public class VolleyUtilSingleton {
         mCtx = context;
         mRequestQueue = getRequestQueue();
 
-//        mImageLoader = new ImageLoader(this.mRequestQueue,new LruBitmapCache());
+        mImageLoader = new ImageLoader(this.mRequestQueue,new LruBitmapCache());
     }
 
     public static synchronized VolleyUtilSingleton getInstance(Context context) {
@@ -52,9 +52,9 @@ public class VolleyUtilSingleton {
         getRequestQueue().add(req);
     }
 
-//    public ImageLoader getImageLoader() {
-//        return mImageLoader;
-//    }
+    public ImageLoader getImageLoader() {
+        return mImageLoader;
+    }
 
     public void newUser(String url, JSONObject body) {
         JsonObjectRequest request =

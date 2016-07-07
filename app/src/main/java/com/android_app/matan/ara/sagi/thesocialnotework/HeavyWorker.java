@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 /**
- * Created by JERLocal on 7/2/2016.
+ * Created by aranza on 7/2/2016.
  */
 public class HeavyWorker extends AsyncTask< String , Context , Void > {
 

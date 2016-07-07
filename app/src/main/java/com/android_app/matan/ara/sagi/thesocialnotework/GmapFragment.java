@@ -2,8 +2,11 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 //import android.app.Fragment;
 import android.support.v4.app.ActivityCompat;
@@ -19,15 +22,23 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 
 public class GmapFragment extends Fragment implements OnMapReadyCallback {
@@ -40,24 +51,10 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private GPSUtils gpsUtils;
     private MainActivity mainActivity;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+    public GmapFragment() {}
 
 
-    public GmapFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GmapFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static GmapFragment newInstance(String param1, String param2) {
         GmapFragment fragment = new GmapFragment();
         Bundle args = new Bundle();
@@ -67,13 +64,13 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         return fragment;
     }
 
+    public GoogleMap getMap() {
+        return mMap;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         mainActivity = (MainActivity) getActivity();
 
         gpsUtils = mainActivity.getGPSUtils();
@@ -105,23 +102,29 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         super.onDetach();
     }
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                if (cameraPosition.zoom > 14) {
+                    getMap().animateCamera(CameraUpdateFactory.zoomTo(14));
+                }
+                if (cameraPosition.zoom < 8) {
+                    getMap().animateCamera(CameraUpdateFactory.zoomTo(8));
+                }
+
+            }
+        });
 
         VolleyUtilSingleton.getInstance(getActivity()).get(mainActivity.BASE_URL + "/note/all?uid=" + mainActivity.getUserId(), getNotesSuccessListener, mainActivity.genericErrorListener);
-
+//        VolleyUtilSingleton.getInstance(getActivity()).get(mainActivity.BASE_URL + "/note/all?uid=" + mainActivity.getUserId(), getNotesSuccessListener, mainActivity.genericErrorListener);
         LatLng userLocation = new LatLng(gpsUtils.getLatitude(), gpsUtils.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(userLocation).title("I Am Here!"));
+//        mMap.addMarker(new MarkerOptions().position(userLocation).title("I Am Here!"));
         if (ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -143,36 +146,87 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                 for (int i = 0; i < noteObjectsArray.length(); i++) {
                     JSONObject noteObject = noteObjectsArray.getJSONObject(i);
                     time.setTime(noteObject.getLong("created_at"));
-
                     listOfNotes.add(mainActivity.getNoteFromJsonObj(noteObject, time));
                 }
-                addNotesToMap(listOfNotes);
+                new getMarkersFromNotes(mMap).execute(listOfNotes);
 //                noteList.setAdapter(noteListAdapter);
             } catch (Exception e) {
                 Log.e(TAG, "newNoteSuccess:" + e.getMessage());
+                e.printStackTrace();
             }
         }
     };
 
-    private void addNotesToMap(List<Note> listOfNotes) {
-        for(Note note : listOfNotes){
-            String title = note.getTitle();
-            float lat = note.getLat();
-            float lng = note.getLon();
-            mMap.addMarker(new MarkerOptions().position(new LatLng(lat,lng)).title(title));
+
+
+    public Bitmap getBitmapFromURL(String imageUrl) {
+
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            Log.d(TAG, "image: " + myBitmap.toString());
+            return Bitmap.createScaledBitmap(myBitmap, 80, 80, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerOptions, List<MarkerOptions>> {
+        GoogleMap mMap;
+//        GmapFragment gmap;
+
+        public getMarkersFromNotes(GoogleMap map) {
+            mMap = map;
+//            gmap = GmapFragment.
+//            mMap = GmapFragment.getMap();
+            Log.d(TAG, "in async ctor");
+        }
+
+        @Override
+        protected void onProgressUpdate(MarkerOptions... mo) {
+            mMap.addMarker(mo[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<MarkerOptions> markerOptionList) {
+            for (MarkerOptions mo : markerOptionList) {
+                mMap.addMarker(mo);
+            }
+            Log.d(TAG, "in async post");
+
+        }
+
+        @Override
+        protected List<MarkerOptions> doInBackground(List<Note>... listOfNotes) {
+            Log.d(TAG, "in async BG");
+
+            String url = "http://www.aljazeera.com/mritems/images/site/DefaultAvatar.jpg";
+            List<MarkerOptions> markerOptionList = new ArrayList<>();
+//            for (int i = 0 ; i< listOfNotes.length; i++)
+            for (Note n : listOfNotes[0]) {
+//                markerOptionList.add(
+                MarkerOptions mo = new MarkerOptions()
+                        .title(n.getTitle())
+                        .position(new LatLng(n.getLat(), n.getLon()))
+                        .snippet(n.getBody())
+                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromURL(url)));
+                publishProgress(mo);
+//                );
+
+            }
+            return markerOptionList;
+
+
+        }
+
+
+    }
+
 
 }
