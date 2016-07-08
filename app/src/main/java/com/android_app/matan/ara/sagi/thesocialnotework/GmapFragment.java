@@ -184,9 +184,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     final Dialog noteViewDialog = new Dialog(getActivity());
                     noteViewDialog.setContentView(R.layout.note_display_full);
 
-                    boolean isOwner = note.getOwnerId() == mainActivity.getUserId();
+                    boolean isOwner = note.getOwnerId().equals(mainActivity.getUserId());
                     if (isOwner)
-                        noteViewDialog.setTitle("I wrote...");
+                        noteViewDialog.setTitle("You wrote...");
                     else
                         noteViewDialog.setTitle("Someone wrote...");
 
@@ -210,14 +210,15 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     title.setText(note.getTitle());
                     body.setText(note.getBody());
                     time.setText(note.getTimestamp());
-                    location.setText("Tags: " + note.getAddress());
+                    location.setText("Address: " + note.getAddress());
                     likes.setText("Likes: " + note.getLikes());
                     tags.setText(note.getTags().toString());
-//                    avatar.setImageBitmap();
+                    Utils.URLtoImageView(avatar, note.getAvatar());
                     if (isOwner) {
                         permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
                     }
                     else{
+                        permission.setText("");
                         deleteBtn.setBackgroundResource(R.drawable.like_icon);
                     }
 

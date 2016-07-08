@@ -88,6 +88,7 @@ public class Utils {
                 noteObject.getBoolean("is_public"),
                 noteObject.getInt("likes"),
                 noteObject.getString("avatar"),
+                noteObject.getString("owner_id"),
                 jsonArrayToStringArray(noteObject.getJSONArray("tags"))
         );
         return note;
