@@ -40,7 +40,8 @@ public class Utils {
     public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     public static ProgressDialog progress;
     private static HashMap<String, Bitmap> bitmapHash = new HashMap<>();
-
+    private static boolean mLocationPermission = false;
+    private static boolean mCameraPermission = false;
 
 
     public static Bitmap getBitmapFromURL(String url) {
@@ -181,6 +182,26 @@ public class Utils {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return output;
+    }
+
+
+
+
+    public static void setLocationPermission(boolean locationPermission) {
+        mLocationPermission = locationPermission;
+    }
+    public static void setCameraPermission(boolean cameraPermission) {
+        mCameraPermission = cameraPermission;
+    }
+    public static boolean arePermissionsGranted() {
+        return (mLocationPermission && mCameraPermission);
+    }
+
+    public static boolean isCameraPermissionGranted(){
+        return mCameraPermission;
+    }
+    public static boolean isLocationPermissionGranted(){
+        return mLocationPermission;
     }
 
 

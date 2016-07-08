@@ -1,12 +1,16 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import android.*;
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class SettingsFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
@@ -105,10 +110,17 @@ public class SettingsFragment extends Fragment {
 
         public void onClick(View v)
         {
+            if (ActivityCompat.checkSelfPermission((MainActivity) getActivity(),
+                    Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "in camera Button");
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+            }
+            else{
+                Toast.makeText(getActivity(), "No Location Permissions granted.\n\"An App is nothing without its permissions\"", Toast.LENGTH_LONG).show();
 
-            Log.d(TAG, "in camera Button");
-            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+            }
 
         }
 

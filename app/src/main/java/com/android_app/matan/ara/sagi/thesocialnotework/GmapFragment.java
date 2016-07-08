@@ -322,7 +322,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
     };
-    
+
 
 
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerNoteStruct, Void> {
