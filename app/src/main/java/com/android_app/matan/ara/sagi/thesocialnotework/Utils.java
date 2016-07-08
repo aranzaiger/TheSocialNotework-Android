@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -105,4 +107,29 @@ public class Utils {
         }
         return stringArray;
     }
+
+  public static void URLtoImageView(ImageView iv, String url){
+    new setUserAvatar(iv, url).execute();
+  }
+
+  private static class setUserAvatar extends AsyncTask<Void, Void, Bitmap> {
+    private ImageView iv;
+    private String url;
+    public setUserAvatar(ImageView imageView, String url){
+      this.iv = imageView;
+      this.url = url;
+    }
+
+    @Override
+    protected Bitmap doInBackground(Void... v) {
+      Bitmap b = Utils.getBitmapFromURL(url);
+      return b;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap b){
+      iv.setImageBitmap(b);
+    }
+
+  }
 }
