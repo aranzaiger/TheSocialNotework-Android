@@ -15,13 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-
 public class SettingsFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -137,6 +130,7 @@ public class SettingsFragment extends Fragment {
 
 //            Bitmap imageBitmap = (Bitmap) extras.get("data");
             avatarImage.setImageBitmap(imageBitmap);
+
         }
     }
 
