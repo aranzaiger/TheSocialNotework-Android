@@ -212,7 +212,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     time.setText(note.getTimestamp());
                     location.setText("Address: " + note.getAddress());
                     likes.setText("Likes: " + note.getLikes());
-                    tags.setText(note.getTags().toString());
+                    tags.setText("Tags: "+note.getTags().toString());
                     Utils.URLtoImageView(avatar, note.getAvatar());
                     if (isOwner) {
                         permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));

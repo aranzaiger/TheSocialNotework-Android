@@ -347,7 +347,7 @@ public class PersonalFragment extends Fragment {
             time.setText(note.getTimestamp());
             location.setText("Address: " + note.getAddress());
             likes.setText("Likes: " + note.getLikes());
-            tags.setText(note.getTags().toString());
+            tags.setText("Tags: "+ note.getTags().toString());
             permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
             Utils.URLtoImageView(avatar, note.getAvatar());
 
