@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -316,36 +317,38 @@ public class PersonalFragment extends Fragment {
             //create and configure dialog
             final Note note = listOfNotes.get(position);
             final Dialog noteViewDialog = new Dialog(getActivity());
+            noteViewDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             noteViewDialog.setContentView(R.layout.note_display_full);
-            noteViewDialog.setTitle("You wrote...");
+//            noteViewDialog.setTitle("You wrote...");
 
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(noteViewDialog.getWindow().getAttributes());
             lp.width = WindowManager.LayoutParams.MATCH_PARENT;
             lp.height = WindowManager.LayoutParams.MATCH_PARENT;
             noteViewDialog.show();
-//                dialog.getWindow().setAttributes(lp);
 
 
             //get note_view_full layout elements
             final TextView title = (TextView) noteViewDialog.findViewById(R.id.ndf_title_textview);
             final TextView body = (TextView) noteViewDialog.findViewById(R.id.ndf_body_textview);
             final TextView time = (TextView) noteViewDialog.findViewById(R.id.ndf_time_textview);
+            final TextView date = (TextView) noteViewDialog.findViewById(R.id.ndf_date_textview);
             final TextView location = (TextView) noteViewDialog.findViewById(R.id.ndf_address_textview);
             final TextView likes = (TextView) noteViewDialog.findViewById(R.id.ndf_likes_textview);
-            final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
+//            final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
             final TextView permission = (TextView) noteViewDialog.findViewById(R.id.ndf_permission_textview);
             final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
-            final ImageView avatar = (ImageView) noteViewDialog.findViewById(R.id.note_user_avatar);
+            final ImageView avatar = (RoundAvatarImageView) noteViewDialog.findViewById(R.id.note_user_avatar);
 
 
             title.setText(note.getTitle());
             body.setText(note.getBody());
-            time.setText(note.getTimestamp());
-            location.setText("Address: " + note.getAddress());
-            likes.setText("Likes: " + note.getLikes());
-            tags.setText("Tags: "+ note.getTags().toString());
-            permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
+            date.setText(note.getDate());
+            time.setText(note.getTime());
+            location.setText(note.getAddress());
+            if(likes !=null )likes.setText("" + note.getLikes());
+//            tags.setText("Tags: "+ note.getTags().toString());
+            permission.setText("" + (note.isPublic() ? "Public" : "Private"));
             Utils.URLtoImageView(avatar, note.getAvatar());
 
             deleteBtn.setOnClickListener(new View.OnClickListener() {

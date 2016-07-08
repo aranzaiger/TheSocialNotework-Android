@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -176,14 +177,15 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
                     final Note note = eventMarkerMap.get(marker);
                     final Dialog noteViewDialog = new Dialog(getActivity());
+
+                    noteViewDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     noteViewDialog.setContentView(R.layout.note_display_full);
 
                     boolean isOwner = note.getOwnerId().equals(mainActivity.getUserId());
-                    if (isOwner)
-                        noteViewDialog.setTitle("You wrote...");
-                    else
-                        noteViewDialog.setTitle("Someone wrote...");
-
+//                    if (isOwner)
+//                        noteViewDialog.setTitle("You wrote...");
+//                    else
+//                        noteViewDialog.setTitle("Someone wrote...");
                     noteViewDialog.show();
 
 
@@ -191,24 +193,29 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     final TextView title = (TextView) noteViewDialog.findViewById(R.id.ndf_title_textview);
                     final TextView body = (TextView) noteViewDialog.findViewById(R.id.ndf_body_textview);
                     final TextView time = (TextView) noteViewDialog.findViewById(R.id.ndf_time_textview);
+                    final TextView date = (TextView) noteViewDialog.findViewById(R.id.ndf_date_textview);
                     final TextView location = (TextView) noteViewDialog.findViewById(R.id.ndf_address_textview);
                     final TextView likes = (TextView) noteViewDialog.findViewById(R.id.ndf_likes_textview);
-                    final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
+//                    final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
                     final TextView permission = (TextView) noteViewDialog.findViewById(R.id.ndf_permission_textview);
                     final ImageView avatar = (ImageView) noteViewDialog.findViewById(R.id.note_user_avatar);
+                    final ImageView permissionImg = (ImageView) noteViewDialog.findViewById(R.id.permission_image);
                     final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
 
 
                     title.setText(note.getTitle());
                     body.setText(note.getBody());
-                    time.setText(note.getTimestamp());
-                    location.setText("Address: " + note.getAddress());
-                    likes.setText("Likes: " + note.getLikes());
-                    tags.setText("Tags: " + note.getTags().toString());
+                    time.setText(note.getTime());
+                    date.setText(note.getDate());
+
+                    location.setText("" + note.getAddress());
+                    likes.setText("" + note.getLikes());
+//                    tags.setText("Tags: " + note.getTags().toString());
                     Utils.URLtoImageView(avatar, note.getAvatar());
                     if (isOwner) {
-                        permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
+                        permission.setText("" + (note.isPublic() ? "Public" : "Private"));
                     } else {
+                        permissionImg.setVisibility(View.INVISIBLE);
                         permission.setText("");
                         deleteBtn.setBackgroundResource(R.drawable.like_icon);
                     }
