@@ -213,7 +213,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     }
 
 
-                    if (isOwner) {
+                    if (isOwner)
+                    {
                         deleteBtn.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
                                 //Put up the Yes/No message box
@@ -258,11 +259,35 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
 
                     }
+                    else{
+                        //like Btn
+                        deleteBtn.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                //add like only if user is didnt like already
+                                if (!mainActivity.getUser().getLiked_notes().contains(note.getId())) {
+
+                                    JSONObject jsonObj = new JSONObject();
+                                    try {
+                                        jsonObj.put("uid", mainActivity.getUserId());
+                                        jsonObj.put("nid", note.getId());
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, getNotesSuccessListener, Utils.genericErrorListener);
+                                    mainActivity.getUser().getLiked_notes().add(note.getId());
+                                    likes.setText("Likes: "+(note.getLikes()+1));
+                                }
+                            }
+                        });
+                    }
                 }
+
             });
 
             return null;
         }
+
     };
 
 
