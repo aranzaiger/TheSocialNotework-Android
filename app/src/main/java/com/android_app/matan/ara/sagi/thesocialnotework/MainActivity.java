@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private boolean locationPermission;
     private GmapFragment gmapFragment;
     private PersonalFragment personalFragment;
+    private SettingsFragment settingsFragment;
     private Toolbar toolbar;
     public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private ImageView menu_avatar;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         gmapFragment = new GmapFragment();
         personalFragment = new PersonalFragment();
+        settingsFragment = new SettingsFragment();
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -165,6 +167,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             toolbar.setTitle("Settings");
             setSupportActionBar(toolbar);
+            ft.replace(R.id.fragment_container, settingsFragment);
+            ft.commit();
         } else if (id == R.id.nav_logout) {
 
             SharedPreferences sharedPref = this.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
