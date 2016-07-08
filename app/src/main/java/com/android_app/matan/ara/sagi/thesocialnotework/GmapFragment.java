@@ -31,6 +31,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -314,19 +315,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
     };
-
-
-    private View.OnClickListener cameraBtnListener = new View.OnClickListener()
-    {
-
-        public void onClick(View v)
-        {
-
-            Log.d(TAG, "in camera Button");
-
-        }
-
-    };
+    
 
 
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerNoteStruct, Void> {
@@ -349,18 +338,21 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         @Override
         protected Void doInBackground(List<Note>... listOfNotes) {
             Log.d(TAG, "in async BG");
+
+            BitmapDescriptor b;
+
             for (Note n : listOfNotes[0]) {
+                b = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(Utils.getBitmapFromURL(n.getAvatar()), 80, 80, false));
                 MarkerOptions mo = new MarkerOptions()
                         .title(n.getTitle())
                         .position(new LatLng(n.getLat(), n.getLon()))
                         .snippet(n.getBody())
-                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(Utils.getBitmapFromURL(n.getAvatar()), 80, 80, false)));
+                        .icon(b);
 
                 publishProgress(new MarkerNoteStruct(n,mo));
 
             }
             return null;
-//            return markerOptionList;
 
 
         }

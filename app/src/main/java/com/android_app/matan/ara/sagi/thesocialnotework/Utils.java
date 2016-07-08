@@ -10,6 +10,8 @@ import android.widget.ImageView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by JERLocal on 7/7/2016.
@@ -30,22 +33,31 @@ public class Utils {
     public static final String TAG = "Utils";
     public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     public static ProgressDialog progress;
+    private static HashMap<String, Bitmap> bitmapHash = new HashMap<>();
 
 
-    public static Bitmap getBitmapFromURL(String imageUrl) {
 
-        try {
-            URL url = new URL(imageUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    public static Bitmap getBitmapFromURL(String url) {
+        if (Utils.bitmapHash.containsKey(url)){
+            Log.d(TAG, "getBitmapFromURL: Found is hash");
+            return bitmapHash.get(url);
+        } else {
+            Log.d(TAG, "getBitmapFromURL: New value to HashMap");
+            try {
+                URL new_url = new URL(url);
+                HttpURLConnection connection = (HttpURLConnection) new_url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                bitmapHash.put(url, myBitmap);
+                return myBitmap;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
+
     }
 
 
@@ -130,8 +142,10 @@ public class Utils {
 
     @Override
     protected Bitmap doInBackground(Void... v) {
-      Bitmap b = Utils.getBitmapFromURL(url);
-      return b;
+//        Bitmap b;
+
+        return Utils.getBitmapFromURL(url);
+
     }
 
     @Override
