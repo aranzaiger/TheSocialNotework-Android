@@ -51,7 +51,6 @@ import java.util.List;
 public class PersonalFragment extends Fragment {
 
     protected ListView noteList;
-    private final int FINE_PERM = 0;
     private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private GPSUtils gpsUtils;
     private List<Note> listOfNotes;
@@ -59,6 +58,8 @@ public class PersonalFragment extends Fragment {
     private String userId;
     private final String TAG = "[TSN/PersonalFragment]";
     private MainActivity activity;
+    private final int FINE_PERM = 0, CAMERA_PERM = 1;
+
 
     public PersonalFragment() {
         // Required empty public constructor
@@ -74,8 +75,18 @@ public class PersonalFragment extends Fragment {
         Bundle bundle = getArguments();
         this.userId = activity.getUserId();
         Log.d(TAG, "onCreateView: userID: " + userId);
-        //check for permission
-        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
+
+        ActivityCompat.requestPermissions(activity, new String[]{
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.CAMERA
+                },
+                FINE_PERM
+            );
+//        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
+
+//        if (!Utils.arePermissionsGranted()) {
+//            Toast.makeText(getContext(), "Missing some Permissions...\nPlease go to app info and enable them", Toast.LENGTH_LONG).show();
+//        }
 
 
         this.noteList = (ListView) view.findViewById(R.id.ps_list_listview);
@@ -287,10 +298,7 @@ public class PersonalFragment extends Fragment {
     }
 
 
-
-
-
-            private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
+    private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
         Note addNote = new Note(
                 noteObject.getString("id"),
                 Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
@@ -344,7 +352,7 @@ public class PersonalFragment extends Fragment {
             time.setText(note.getTimestamp());
             location.setText("Address: " + note.getAddress());
             likes.setText("Likes: " + note.getLikes());
-            tags.setText("Tags: "+ note.getTags().toString());
+            tags.setText("Tags: " + note.getTags().toString());
             permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
             Utils.URLtoImageView(avatar, note.getAvatar());
 
@@ -393,5 +401,8 @@ public class PersonalFragment extends Fragment {
 
 
     }
+
+
+
 
 }

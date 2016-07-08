@@ -1,9 +1,11 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import android.*;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +27,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -44,15 +48,15 @@ public class MainActivity extends AppCompatActivity
     protected final String TAG = "[TSN / MainActivity]";
     protected User user;
     private GPSUtils gpsUtils;
-    private boolean locationPermission;
     private GmapFragment gmapFragment;
     private PersonalFragment personalFragment;
     private SettingsFragment settingsFragment;
     private Toolbar toolbar;
     public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private ImageView menu_avatar;
-  private MainActivity self;
-  private NavigationView nav_view;
+    private MainActivity self;
+    private NavigationView nav_view;
+    private final int FINE_PERM = 0, CAMERA_PERM = 1;
 
 
     @Override
@@ -60,6 +64,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.self = this;
+
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Personal Notes");
         setSupportActionBar(toolbar);
@@ -68,11 +74,6 @@ public class MainActivity extends AppCompatActivity
         settingsFragment = new SettingsFragment();
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-
-
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -86,12 +87,12 @@ public class MainActivity extends AppCompatActivity
 
         //get Bundle data (UserString)
         Bundle b = getIntent().getExtras();
-        this.user  = new User(b.getString("UserData"));
+        this.user = new User(b.getString("UserData"));
 
         //Get The Nav_View Avatar View
         nav_view = (NavigationView) findViewById(R.id.nav_view);
         View header_v = nav_view.getHeaderView(0);
-        menu_avatar = (ImageView)header_v.findViewById(R.id.nav_user_avatar);
+        menu_avatar = (ImageView) header_v.findViewById(R.id.nav_user_avatar);
 
 
         //Change Layout
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity
         gpsUtils.getLocation();
 
         //Change The Avatar
-       Utils.URLtoImageView(menu_avatar, user.getAvatar());
+        Utils.URLtoImageView(menu_avatar, user.getAvatar());
     }
 
     @Override
@@ -154,14 +155,14 @@ public class MainActivity extends AppCompatActivity
             setSupportActionBar(toolbar);
         } else if (id == R.id.nav_map) {
 
-            Log.d(TAG,"Before going to map");
+            Log.d(TAG, "Before going to map");
             toolbar.setTitle("Map");
             setSupportActionBar(toolbar);
             ft.replace(R.id.fragment_container, gmapFragment);
             ft.commit();
         } else if (id == R.id.nav_personal) {
 
-            Log.d(TAG,"Before going to personal");
+            Log.d(TAG, "Before going to personal");
             ft.replace(R.id.fragment_container, personalFragment);
             ft.commit();
         } else if (id == R.id.nav_settings) {
@@ -189,20 +190,44 @@ public class MainActivity extends AppCompatActivity
         return this.gpsUtils;
     }
 
-    public void setLocationPermission(boolean locationPermission) {
-        this.locationPermission = locationPermission;
+
+    public User getUser() {
+        return user;
     }
 
+    public String getUserId() {
+        return user.getId();
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: in func");
+        switch (requestCode) {
+            case FINE_PERM: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 1) {
+                    if (!(grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                        Log.d(TAG, "onRequestPermissionsResult: Did Not get permission for location");
+                        Toast.makeText(MainActivity.this, "No Location Permissions granted.\n\"An App is nothing without its permissions\"", Toast.LENGTH_LONG).show();
+                        System.exit(0);
 
+                    }
 
+                    if (!(grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
+                        Log.d(TAG, "onRequestPermissionsResult:DIDNT  get permission for camera");
+                        Toast.makeText(MainActivity.this, "No Camera Permissions granted.\nyou will not be able to change avatar", Toast.LENGTH_LONG).show();
+                        Utils.setCameraPermission(false);
+                    } else {
+                        Utils.setCameraPermission(true);
+                    }
+                    return;
+                }
+            }
+        }
 
-
-
-  public User getUser(){
-    return user;
-  }
-
-    public String getUserId(){return user.getId();}
-
+    }
 }
+
+
+

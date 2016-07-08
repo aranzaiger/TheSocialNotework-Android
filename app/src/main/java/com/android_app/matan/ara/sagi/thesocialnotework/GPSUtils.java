@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class GPSUtils extends Service implements LocationListener {
 
-    private static final String TAG ="GPSUtils" ;
+    private static final String TAG = "GPSUtils";
     private final Context mContext;
 
     // flag for GPS status
@@ -53,7 +53,7 @@ public class GPSUtils extends Service implements LocationListener {
         getLocation();
     }
 
-//    public Location getLocation() {
+    //    public Location getLocation() {
 //        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 //        if (locationManager != null) {
 //            Location lastKnownLocationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -69,14 +69,14 @@ public class GPSUtils extends Service implements LocationListener {
 //            return null;
 //        }
     public Location getLocation() {
-            try {
-                Log.d("TAG","in get location");
-                locationManager =
-                        (LocationManager) mContext
-                                .getSystemService(LOCATION_SERVICE);
+        try {
+            Log.d("TAG", "in get location");
+            locationManager =
+                    (LocationManager) mContext
+                            .getSystemService(LOCATION_SERVICE);
 
-                // getting GPS status
-                isGPSEnabled = locationManager
+            // getting GPS status
+            isGPSEnabled = locationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
             // getting network status
@@ -91,10 +91,10 @@ public class GPSUtils extends Service implements LocationListener {
                 if (isNetworkEnabled) {
                     if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         Log.e("TAG", "No Permissions");
-                        ((MainActivity)mContext).setLocationPermission(false);
+                        Utils.setLocationPermission(false);
                         return null;
-                    }else{
-                        ((MainActivity)mContext).setLocationPermission(true);
+                    } else {
+                        Utils.setLocationPermission(true);
                     }
                     Log.d(TAG, "Network");
                     if (locationManager != null) {
@@ -120,9 +120,8 @@ public class GPSUtils extends Service implements LocationListener {
                             }
                         }
                     }
-                }
-                else{
-                    location =  locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                } else {
+                    location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
                 }
             }
 
@@ -133,7 +132,7 @@ public class GPSUtils extends Service implements LocationListener {
         return location;
     }
 
-    public void showSettingsAlert(){
+    public void showSettingsAlert() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
         // Setting Dialog Title
@@ -144,7 +143,7 @@ public class GPSUtils extends Service implements LocationListener {
 
         // On pressing Settings button
         alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mContext.startActivity(intent);
             }
@@ -188,13 +187,13 @@ public class GPSUtils extends Service implements LocationListener {
         return null;
     }
 
-    public List<Address> getFromLocation(double latitude, double longitude, int maxResults){
+    public List<Address> getFromLocation(double latitude, double longitude, int maxResults) {
         try {
             List<Address> addresses;
 
             geocoder = new Geocoder(mContext);
             if (latitude != 0 || longitude != 0) {
-                addresses = geocoder.getFromLocation(latitude ,
+                addresses = geocoder.getFromLocation(latitude,
                         longitude, maxResults);
                 return addresses;
 
@@ -212,11 +211,11 @@ public class GPSUtils extends Service implements LocationListener {
 
     /**
      * Function to get latitude
-     * */
-    public double getLatitude(){
-        if(location != null){
+     */
+    public double getLatitude() {
+        if (location != null) {
             latitude = location.getLatitude();
-        }else{
+        } else {
             Log.d("Tag", "Got NULL");
         }
 
@@ -226,9 +225,9 @@ public class GPSUtils extends Service implements LocationListener {
 
     /**
      * Function to get longitude
-     * */
-    public double getLongitude(){
-        if(location != null){
+     */
+    public double getLongitude() {
+        if (location != null) {
             longitude = location.getLongitude();
         }
 
@@ -236,21 +235,20 @@ public class GPSUtils extends Service implements LocationListener {
         return longitude;
     }
 
-    public Location getLastKnownLocation(){
+    public Location getLastKnownLocation() {
         if (location == null)
             return getLocation();
         return location;
     }
 
     public String getAddress() {
-        String address="";
+        String address = "";
 
 
-
-        List<Address> listAddress = getFromLocation(getLatitude(),getLongitude(),1);
+        List<Address> listAddress = getFromLocation(getLatitude(), getLongitude(), 1);
         for (int i = 0; i <= listAddress.get(0).getMaxAddressLineIndex(); i++) {
             listAddress.get(0).getAddressLine(i);
-            address += listAddress.get(0).getAddressLine(i)+" ";
+            address += listAddress.get(0).getAddressLine(i) + " ";
         }
         return address;
     }
