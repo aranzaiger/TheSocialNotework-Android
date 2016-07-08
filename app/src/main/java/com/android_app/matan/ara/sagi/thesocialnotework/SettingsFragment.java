@@ -107,8 +107,8 @@ public class SettingsFragment extends Fragment {
         {
 
             Log.d(TAG, "in camera Button");
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
 
         }
 

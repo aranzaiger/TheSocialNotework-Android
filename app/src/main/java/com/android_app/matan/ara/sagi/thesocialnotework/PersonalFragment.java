@@ -286,14 +286,11 @@ public class PersonalFragment extends Fragment {
         return stringArray;
     }
 
-    Response.Listener<JSONObject> deleteNoteSuccessListener = new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
-            Log.d(TAG, "deleteNoteSuccessListener: " + response.toString());
-        }
-    };
 
-    private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
+
+
+
+            private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
         Note addNote = new Note(
                 noteObject.getString("id"),
                 Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
@@ -369,7 +366,7 @@ public class PersonalFragment extends Fragment {
                                     try {
                                         delNote.put("uid", userId);
                                         delNote.put("nid", note.getId());
-                                        VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, deleteNoteSuccessListener, Utils.genericErrorListener);
+                                        VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, Utils.deleteNoteSuccessListener, Utils.genericErrorListener);
                                         listOfNotes.remove(position);
 
                                     } catch (JSONException e) {

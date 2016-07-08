@@ -58,6 +58,13 @@ public class Utils {
         }
     };
 
+    public static Response.Listener<JSONObject> deleteNoteSuccessListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            Log.d(TAG, "deleteNoteSuccessListener: " + response.toString());
+        }
+    };
+
     public static void showLoadingDialog(Context context, String title, String msg) {
         progress = new ProgressDialog(context);
         progress.setTitle(title);
@@ -133,4 +140,6 @@ public class Utils {
     }
 
   }
+
+
 }

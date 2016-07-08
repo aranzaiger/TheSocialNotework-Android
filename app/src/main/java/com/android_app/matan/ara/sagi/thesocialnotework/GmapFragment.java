@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -169,18 +170,10 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         // Defines the contents of the InfoWindow
         @Override
         public View getInfoContents(Marker args) {
-
-//            LatLng clickMarkerLatLng = args.getPosition();
-
-            // Getting view from the layout file info_window_layout
-
-            // Getting the position from the marker
-
-
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                public void onInfoWindowClick(Marker marker) {
+                public void onInfoWindowClick(final Marker marker) {
 
-                    Note note = eventMarkerMap.get(marker);
+                    final Note note = eventMarkerMap.get(marker);
                     final Dialog noteViewDialog = new Dialog(getActivity());
                     noteViewDialog.setContentView(R.layout.note_display_full);
 
@@ -191,8 +184,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         noteViewDialog.setTitle("Someone wrote...");
 
                     noteViewDialog.show();
-
-
 
 
                     //get note_view_full layout elements
@@ -212,61 +203,61 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     time.setText(note.getTimestamp());
                     location.setText("Address: " + note.getAddress());
                     likes.setText("Likes: " + note.getLikes());
-                    tags.setText("Tags: "+note.getTags().toString());
+                    tags.setText("Tags: " + note.getTags().toString());
                     Utils.URLtoImageView(avatar, note.getAvatar());
                     if (isOwner) {
                         permission.setText("Permission: " + (note.isPublic() ? "Public" : "Private"));
-                    }
-                    else{
+                    } else {
                         permission.setText("");
                         deleteBtn.setBackgroundResource(R.drawable.like_icon);
                     }
 
 
-
-
-//                    deleteBtn.setOnClickListener(new View.OnClickListener() {
-//                        public void onClick(View v) {
-//                            //Put up the Yes/No message box
-//                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                            builder
-//                                    .setTitle("Delete Note")
-//                                    .setMessage("Are you sure you want to delete the note?")
-//                                    .setIcon(android.R.drawable.ic_dialog_alert)
-//                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialog, int which) {
-//                                            //Yes button clicked, do something
-//                                            Toast.makeText(getActivity(), "Item Deleted!",
-//                                                    Toast.LENGTH_SHORT).show();
-//                                            //TODO send delete
-//                                            JSONObject delNote = new JSONObject();
-//                                            try {
-//                                                delNote.put("uid", userId);
-//                                                delNote.put("nid", note.getId());
-//                                                VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, deleteNoteSuccessListener, Utils.genericErrorListener);
+                    if (isOwner) {
+                        deleteBtn.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                //Put up the Yes/No message box
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder
+                                        .setTitle("Delete Note")
+                                        .setMessage("Are you sure you want to delete the note?")
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //Yes button clicked, do something
+                                                Toast.makeText(getActivity(), "Item Deleted!",
+                                                        Toast.LENGTH_SHORT).show();
+                                                //TODO send delete
+                                                JSONObject delNote = new JSONObject();
+                                                try {
+                                                    delNote.put("uid", mainActivity.getUserId());
+                                                    delNote.put("nid", note.getId());
+                                                    VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/delete", delNote, Utils.deleteNoteSuccessListener, Utils.genericErrorListener);
 //                                                listOfNotes.remove(position);
-//
-//                                            } catch (JSONException e) {
-//                                                Toast.makeText(getActivity(), "Something went wrong.\n Failed to delete note...", Toast.LENGTH_LONG).show();
-//                                                e.printStackTrace();
-//                                            }
+                                                    marker.remove();
+
+                                                } catch (JSONException e) {
+                                                    Toast.makeText(getActivity(), "Something went wrong.\n Failed to delete note...", Toast.LENGTH_LONG).show();
+                                                    e.printStackTrace();
+                                                }
 //                                            noteList.setAdapter(noteListAdapter);
-//                                            noteViewDialog.dismiss();
-//                                        }
-//                                    })
-//                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialog, int which) {
-//                                            //Yes button clicked, do something
-//                                            Toast.makeText(getActivity(), "Canceled",
-//                                                    Toast.LENGTH_SHORT).show();
-//                                            noteViewDialog.dismiss();
-//                                        }
-//                                    })                        //Do nothing on no
-//                                    .show();
-//                        }
-//                    });
+                                                noteViewDialog.dismiss();
+                                            }
+                                        })
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //Yes button clicked, do something
+                                                Toast.makeText(getActivity(), "Canceled",
+                                                        Toast.LENGTH_SHORT).show();
+                                                noteViewDialog.dismiss();
+                                            }
+                                        })                        //Do nothing on no
+                                        .show();
+                            }
+                        });
 
 
+                    }
                 }
             });
 
@@ -297,6 +288,19 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                 e.printStackTrace();
             }
         }
+    };
+
+
+    private View.OnClickListener cameraBtnListener = new View.OnClickListener()
+    {
+
+        public void onClick(View v)
+        {
+
+            Log.d(TAG, "in camera Button");
+
+        }
+
     };
 
 
