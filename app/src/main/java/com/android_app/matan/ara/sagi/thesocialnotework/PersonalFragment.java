@@ -27,6 +27,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -61,6 +62,22 @@ public class PersonalFragment extends Fragment {
     private MainActivity activity;
     private final int FINE_PERM = 0, CAMERA_PERM = 1;
 
+
+    private ImageButton dateFilter;
+    private ImageButton userFilter;
+    private Button map_small_filter;
+    private Button map_medium_filter;
+    private Button map_large_filter;
+    private LinearLayout personalSpaceFilters;
+    private boolean dateFilterIsVisible = false;
+    private boolean userFilterIsVisible = false;
+
+    private final String day = "24 hours";
+    private final String week = "Week";
+    private final String month = "Month";
+    private final String privateNote = "Private";
+    private final String publicNote = "Public";
+    private final String privateAndPublic = "All";
 
     public PersonalFragment() {
         // Required empty public constructor
@@ -98,7 +115,57 @@ public class PersonalFragment extends Fragment {
         noteList.setAdapter(noteListAdapter);
         noteList.setOnItemClickListener(new ItemClickedListener());
         Utils.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");
+
+        dateFilter = (ImageButton) view.findViewById(R.id.personalSpace_date_filter);
+        userFilter = (ImageButton) view.findViewById(R.id.personalSpace_premission_filter);
+
+        map_small_filter = (Button) view.findViewById(R.id.personalSpace_small_filter);
+        map_medium_filter = (Button) view.findViewById(R.id.personalSpace_medium_filter);
+        map_large_filter = (Button) view.findViewById(R.id.personalSpace_large_filter);
+
+        personalSpaceFilters = (LinearLayout) view.findViewById(R.id.personalSpace_filter_options);
+
+        dateFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dateFilterIsVisible) {
+                    dateFilterIsVisible = false;
+                    personalSpaceFilters.setVisibility(View.INVISIBLE);
+                } else {
+                    personalSpaceFilters.setVisibility(View.VISIBLE);
+                    dateFilterIsVisible = true;
+                    userFilterIsVisible = false;
+
+                    // set text button in the right filter string
+                    map_small_filter.setText(day);
+                    map_medium_filter.setText(week);
+                    map_large_filter.setText(month);
+                }
+            }
+        });
+
+        userFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (userFilterIsVisible) {
+                    userFilterIsVisible = false;
+                    personalSpaceFilters.setVisibility(View.INVISIBLE);
+                } else {
+                    personalSpaceFilters.setVisibility(View.VISIBLE);
+                    userFilterIsVisible = true;
+                    dateFilterIsVisible = false;
+
+                    // set text button in the right filter string
+                    map_small_filter.setText(privateNote);
+                    map_medium_filter.setText(publicNote);
+                    map_large_filter.setText(privateAndPublic);
+                }
+            }
+        });
+
+        // get all notes according to some default filter ? // TODO: Aran?
         getAllNotes();
+
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
         // The New "Add Button"

@@ -18,31 +18,71 @@
       android:layout_marginBottom="5dp">
 
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.1"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/ps_filters_textview"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="Filters and Shit"
-                android:layout_weight="0.8"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contextClickable="false" >
 
-          <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinner"
-            android:spinnerMode="dropdown" />
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/personalSpace_date_filter"
+                    android:layout_weight="1"
+                    android:src="@drawable/date_icon"
+                    android:scaleType="fitCenter" />
 
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/personalSpace_premission_filter"
+                    android:layout_weight="1"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/permission_icon" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contextClickable="false"
+                android:layout_marginTop="5dp"
+                android:visibility="invisible"
+                android:id="@+id/personalSpace_filter_options" >
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:text="filter 1"
+                    android:id="@+id/personalSpace_small_filter"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:text="filter 2"
+                    android:id="@+id/personalSpace_medium_filter"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:text="filter 3"
+                    android:id="@+id/personalSpace_large_filter"
+                    android:layout_weight="1" />
+            </LinearLayout>
         </LinearLayout>
 
         <ListView
             android:id="@+id/ps_list_listview"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.8" />
+            android:layout_weight="0.8"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
