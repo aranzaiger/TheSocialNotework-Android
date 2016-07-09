@@ -27,6 +27,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -62,9 +63,25 @@ public class PersonalFragment extends Fragment {
   private final int FINE_PERM = 0, CAMERA_PERM = 1;
 
 
-  public PersonalFragment() {
-    // Required empty public constructor
-  }
+    private ImageButton dateFilter;
+    private ImageButton userFilter;
+    private Button map_small_filter;
+    private Button map_medium_filter;
+    private Button map_large_filter;
+    private LinearLayout personalSpaceFilters;
+    private boolean dateFilterIsVisible = false;
+    private boolean userFilterIsVisible = false;
+
+    private final String day = "24 hours";
+    private final String week = "Week";
+    private final String month = "Month";
+    private final String privateNote = "Private";
+    private final String publicNote = "Public";
+    private final String privateAndPublic = "All";
+
+    public PersonalFragment() {
+        // Required empty public constructor
+    }
 
 
   @Override
@@ -93,23 +110,73 @@ public class PersonalFragment extends Fragment {
 //        }
 
 
-      this.noteList = (ListView) view.findViewById(R.id.ps_list_listview);
-    gpsUtils = activity.getGPSUtils();
-    gpsUtils.getLocation();
-    listOfNotes = new ArrayList<>();
-    noteListAdapter = new ListAdapter(getContext(), listOfNotes);
-    noteList.setAdapter(noteListAdapter);
-    noteList.setOnItemClickListener(new ItemClickedListener());
-    Utils.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");
-    getAllNotes();
+        this.noteList = (ListView) view.findViewById(R.id.ps_list_listview);
+        gpsUtils = activity.getGPSUtils();
+        gpsUtils.getLocation();
+        listOfNotes = new ArrayList<>();
+        noteListAdapter = new ListAdapter(getContext(), listOfNotes);
+        noteList.setAdapter(noteListAdapter);
+        noteList.setOnItemClickListener(new ItemClickedListener());
+        Utils.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");
+
+        dateFilter = (ImageButton) view.findViewById(R.id.personalSpace_date_filter);
+        userFilter = (ImageButton) view.findViewById(R.id.personalSpace_premission_filter);
+
+        map_small_filter = (Button) view.findViewById(R.id.personalSpace_small_filter);
+        map_medium_filter = (Button) view.findViewById(R.id.personalSpace_medium_filter);
+        map_large_filter = (Button) view.findViewById(R.id.personalSpace_large_filter);
+
+        personalSpaceFilters = (LinearLayout) view.findViewById(R.id.personalSpace_filter_options);
+
+        dateFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dateFilterIsVisible) {
+                    dateFilterIsVisible = false;
+                    personalSpaceFilters.setVisibility(View.INVISIBLE);
+                } else {
+                    personalSpaceFilters.setVisibility(View.VISIBLE);
+                    dateFilterIsVisible = true;
+                    userFilterIsVisible = false;
+
+                    // set text button in the right filter string
+                    map_small_filter.setText(day);
+                    map_medium_filter.setText(week);
+                    map_large_filter.setText(month);
+                }
+            }
+        });
+
+        userFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (userFilterIsVisible) {
+                    userFilterIsVisible = false;
+                    personalSpaceFilters.setVisibility(View.INVISIBLE);
+                } else {
+                    personalSpaceFilters.setVisibility(View.VISIBLE);
+                    userFilterIsVisible = true;
+                    dateFilterIsVisible = false;
+
+                    // set text button in the right filter string
+                    map_small_filter.setText(privateNote);
+                    map_medium_filter.setText(publicNote);
+                    map_large_filter.setText(privateAndPublic);
+                }
+            }
+        });
+
+        // get all notes according to some default filter ? // TODO: Aran?
+        getAllNotes();
+
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
-    // The New "Add Button"
-    FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-    fab.setOnClickListener(addNewNoteDialog);
+        // The New "Add Button"
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(addNewNoteDialog);
 
-    return view;
-  }
+        return view;
+    }
 
 
   @Override
@@ -130,8 +197,8 @@ public class PersonalFragment extends Fragment {
     VolleyUtilSingleton.getInstance(getActivity()).get(BASE_URL + "/note/all?uid=" + userId, getNotesSuccessListener, Utils.genericErrorListener);
   }
 
-  private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
-    public void onClick(View v) {
+    private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
+        public void onClick(View v) {
 
       //create and configure dialog
       final Dialog dialog = new Dialog(getActivity());
@@ -341,74 +408,73 @@ public class PersonalFragment extends Fragment {
 //                dialog.getWindow().setAttributes(lp);
 
 
-      //get note_view_full layout elements
-      final TextView title = (TextView) noteViewDialog.findViewById(R.id.ndf_title_textview);
-      final TextView body = (TextView) noteViewDialog.findViewById(R.id.ndf_body_textview);
-      final TextView time = (TextView) noteViewDialog.findViewById(R.id.ndf_time_textview);
-      final TextView date = (TextView) noteViewDialog.findViewById(R.id.ndf_date_textview);
-      final TextView location = (TextView) noteViewDialog.findViewById(R.id.ndf_address_textview);
-      final TextView likes = (TextView) noteViewDialog.findViewById(R.id.ndf_likes_textview);
+            //get note_view_full layout elements
+            final TextView title = (TextView) noteViewDialog.findViewById(R.id.ndf_title_textview);
+            final TextView body = (TextView) noteViewDialog.findViewById(R.id.ndf_body_textview);
+            final TextView time = (TextView) noteViewDialog.findViewById(R.id.ndf_time_textview);
+            final TextView date = (TextView) noteViewDialog.findViewById(R.id.ndf_date_textview);
+            final TextView location = (TextView) noteViewDialog.findViewById(R.id.ndf_address_textview);
+            final TextView likes = (TextView) noteViewDialog.findViewById(R.id.ndf_likes_textview);
 //            final TextView tags = (TextView) noteViewDialog.findViewById(R.id.ndf_tags_textview);
-      final TextView permission = (TextView) noteViewDialog.findViewById(R.id.ndf_permission_textview);
-      final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
-      final ImageView avatar = (RoundAvatarImageView) noteViewDialog.findViewById(R.id.note_user_avatar);
+            final TextView permission = (TextView) noteViewDialog.findViewById(R.id.ndf_permission_textview);
+            final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
+            final ImageView avatar = (RoundAvatarImageView) noteViewDialog.findViewById(R.id.note_user_avatar);
 
 
-      title.setText(note.getTitle());
-      body.setText(note.getBody());
-      date.setText(note.getDate());
-      time.setText(note.getTime());
-      location.setText(note.getAddress());
-      if (likes != null) likes.setText("" + note.getLikes());
+            title.setText(note.getTitle());
+            body.setText(note.getBody());
+            date.setText(note.getDate());
+            time.setText(note.getTime());
+            location.setText(note.getAddress());
+            if(likes !=null )likes.setText("" + note.getLikes());
 //            tags.setText("Tags: "+ note.getTags().toString());
-      permission.setText("" + (note.isPublic() ? "Public" : "Private"));
-      Utils.URLtoImageView(avatar, note.getAvatar());
+            permission.setText("" + (note.isPublic() ? "Public" : "Private"));
+            Utils.URLtoImageView(avatar, note.getAvatar());
 
-      deleteBtn.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
-          //Put up the Yes/No message box
-          AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-          builder
-            .setTitle("Delete Note")
-            .setMessage("Are you sure you want to delete the note?")
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                //Yes button clicked, do something
-                Toast.makeText(getActivity(), "Item Deleted!",
-                  Toast.LENGTH_SHORT).show();
-                //TODO send delete
-                JSONObject delNote = new JSONObject();
-                try {
-                  delNote.put("uid", userId);
-                  delNote.put("nid", note.getId());
-                  VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, Utils.deleteNoteSuccessListener, Utils.genericErrorListener);
-                  activity.getUser().setNumber_of_notes(activity.getUser().getNumber_of_notes()-1);
-                  listOfNotes.remove(position);
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    //Put up the Yes/No message box
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder
+                            .setTitle("Delete Note")
+                            .setMessage("Are you sure you want to delete the note?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Yes button clicked, do something
+                                    Toast.makeText(getActivity(), "Item Deleted!",
+                                            Toast.LENGTH_SHORT).show();
+                                    //TODO send delete
+                                    JSONObject delNote = new JSONObject();
+                                    try {
+                                        delNote.put("uid", userId);
+                                        delNote.put("nid", note.getId());
+                                        VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, Utils.deleteNoteSuccessListener, Utils.genericErrorListener);
+                                        listOfNotes.remove(position);
 
-                } catch (JSONException e) {
-                  Toast.makeText(getActivity(), "Something went wrong.\n Failed to delete note...", Toast.LENGTH_LONG).show();
-                  e.printStackTrace();
+                                    } catch (JSONException e) {
+                                        Toast.makeText(getActivity(), "Something went wrong.\n Failed to delete note...", Toast.LENGTH_LONG).show();
+                                        e.printStackTrace();
+                                    }
+                                    noteList.setAdapter(noteListAdapter);
+                                    noteViewDialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Yes button clicked, do something
+                                    Toast.makeText(getActivity(), "Canceled",
+                                            Toast.LENGTH_SHORT).show();
+                                    noteViewDialog.dismiss();
+                                }
+                            })                        //Do nothing on no
+                            .show();
                 }
-                noteList.setAdapter(noteListAdapter);
-                noteViewDialog.dismiss();
-              }
-            })
-            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                //Yes button clicked, do something
-                Toast.makeText(getActivity(), "Canceled",
-                  Toast.LENGTH_SHORT).show();
-                noteViewDialog.dismiss();
-              }
-            })                        //Do nothing on no
-            .show();
+            });
+
         }
-      });
+
 
     }
-
-
-  }
 
 }

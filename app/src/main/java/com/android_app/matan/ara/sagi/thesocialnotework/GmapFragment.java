@@ -21,8 +21,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +67,27 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private MainActivity mainActivity;
     private final int MAX_ZOOM = 16, MIN_ZOOM = 9, DEFAULT_ZOOM = 12;
     private HashMap<Marker, Note> eventMarkerMap;
+    private ImageButton dateFilter;
+    private ImageButton locationFilter;
+    private ImageButton userFilter;
+    private Button map_small_filter;
+    private Button map_medium_filter;
+    private Button map_large_filter;
+    private LinearLayout mapFilters;
+    private boolean dateFilterIsVisible = false;
+    private boolean locationFilterIsVisible = false;
+    private boolean userFilterIsVisible = false;
+
+    private final String day = "24 hours";
+    private final String week = "Week";
+    private final String month = "Month";
+    private final String hundredMeters = "100 meters";
+    private final String kilometer = "1 Km";
+    private final String threeKilometer = "3 Km";
+    private final String mine = "mine";
+    private final String everyoneButMine = "all w/o me";
+    private final String everyone = "everyone's";
+
 
 
     public GmapFragment() {
@@ -89,7 +112,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainActivity = (MainActivity) getActivity();
-
         gpsUtils = mainActivity.getGPSUtils();
 
     }
@@ -98,6 +120,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_personal, container, false);
+
         return inflater.inflate(R.layout.fragment_gmap, container, false);
     }
 
@@ -106,6 +130,76 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment frag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
         frag.getMapAsync(this);
+
+        dateFilter = (ImageButton) view.findViewById(R.id.map_date_filter);
+        locationFilter = (ImageButton) view.findViewById(R.id.map_location_filter);
+        userFilter = (ImageButton) view.findViewById(R.id.map_user_filter);
+
+        map_small_filter = (Button) view.findViewById(R.id.map_small_filter);
+        map_medium_filter = (Button) view.findViewById(R.id.map_medium_filter);
+        map_large_filter = (Button) view.findViewById(R.id.map_large_filter);
+
+        mapFilters = (LinearLayout) view.findViewById(R.id.map_filter_options);
+
+        dateFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dateFilterIsVisible) {
+                    dateFilterIsVisible = false;
+                    mapFilters.setVisibility(View.INVISIBLE);
+                } else {
+                    mapFilters.setVisibility(View.VISIBLE);
+                    dateFilterIsVisible = true;
+                    locationFilterIsVisible = false;
+                    userFilterIsVisible = false;
+
+                    // set text button in the right filter string
+                    map_small_filter.setText(day);
+                    map_medium_filter.setText(week);
+                    map_large_filter.setText(month);
+                }
+            }
+        });
+
+        locationFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (locationFilterIsVisible) {
+                    locationFilterIsVisible = false;
+                    mapFilters.setVisibility(View.INVISIBLE);
+                } else {
+                    mapFilters.setVisibility(View.VISIBLE);
+                    locationFilterIsVisible = true;
+                    dateFilterIsVisible = false;
+                    userFilterIsVisible = false;
+
+                    // set text button in the right filter string
+                    map_small_filter.setText(hundredMeters);
+                    map_medium_filter.setText(kilometer);
+                    map_large_filter.setText(threeKilometer);
+                }
+            }
+        });
+
+        userFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (userFilterIsVisible) {
+                    userFilterIsVisible = false;
+                    mapFilters.setVisibility(View.INVISIBLE);
+                } else {
+                    mapFilters.setVisibility(View.VISIBLE);
+                    userFilterIsVisible = true;
+                    dateFilterIsVisible = false;
+                    locationFilterIsVisible = false;
+
+                    // set text button in the right filter string
+                    map_small_filter.setText(mine);
+                    map_medium_filter.setText(everyoneButMine);
+                    map_large_filter.setText(everyone);
+                }
+            }
+        });
     }
 
 
@@ -161,7 +255,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
 
     }
-
 
     GoogleMap.InfoWindowAdapter infoWindowAdapter = new GoogleMap.InfoWindowAdapter() { // Use default InfoWindow frame
         @Override

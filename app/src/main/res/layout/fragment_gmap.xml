@@ -9,13 +9,79 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/mapFragment"
-        class="com.google.android.gms.maps.SupportMapFragment">
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_marginTop="50dp">
 
     </fragment>
 
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contextClickable="false">
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/map_date_filter"
+                android:layout_weight="1"
+                android:src="@drawable/date_icon"
+                android:scaleType="fitCenter" />
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/map_location_filter"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/location_filter" />
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/map_user_filter"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/users_filter" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contextClickable="false"
+            android:layout_marginTop="5dp"
+            android:visibility="invisible"
+            android:id="@+id/map_filter_options">
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="filter 1"
+                android:id="@+id/map_small_filter"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="filter 2"
+                android:id="@+id/map_medium_filter"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="filter 3"
+                android:id="@+id/map_large_filter"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>
