@@ -142,7 +142,7 @@ public class PersonalFragment extends Fragment {
                 Log.d(TAG, "onClick: dateFilter pressed");
                 if (dateFilterIsVisible) {
                     dateFilterIsVisible = false;
-                    personalSpaceFilters.setVisibility(View.INVISIBLE);
+                    personalSpaceFilters.setVisibility(View.GONE);
                 } else {
                     personalSpaceFilters.setVisibility(View.VISIBLE);
                     dateFilterIsVisible = true;
@@ -163,7 +163,7 @@ public class PersonalFragment extends Fragment {
                 //if pressed same filter twice - close filters.
                 if (userFilterIsVisible) {
                     userFilterIsVisible = false;
-                    personalSpaceFilters.setVisibility(View.INVISIBLE);
+                    personalSpaceFilters.setVisibility(View.GONE);
                 } else {
                     personalSpaceFilters.setVisibility(View.VISIBLE);
                     userFilterIsVisible = true;
@@ -192,20 +192,23 @@ public class PersonalFragment extends Fragment {
     }
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Utils.dismissLoadingDialog();
-        Log.d(TAG, "onAttach");
-    }
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    Utils.dismissLoadingDialog();
+    Log.d(TAG, "onAttach");
+  }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Utils.dismissLoadingDialog();
-    }
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    Utils.dismissLoadingDialog();
+  }
 
-
+  public void getAllNotes() {
+    Log.d(TAG, "url: " + BASE_URL + "/note/all?uid=" + userId);
+    VolleyUtilSingleton.getInstance(getActivity()).get(BASE_URL + "/note/all?uid=" + userId, getNotesSuccessListener, Utils.genericErrorListener);
+  }
 
     private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
         public void onClick(View v) {

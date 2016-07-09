@@ -84,9 +84,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private final String hundredMeters = "100 meters";
     private final String kilometer = "1 Km";
     private final String threeKilometer = "3 Km";
-    private final String mine = "mine";
-    private final String others = "others";
-    private final String all = "all";
+    private final String mine = "Mine";
+    private final String others = "Others";
+    private final String all = "All";
 
 
 
@@ -144,10 +144,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         dateFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.d(TAG, "" + v.getId());
                 if (dateFilterIsVisible) {
                     dateFilterIsVisible = false;
-                    mapFilters.setVisibility(View.INVISIBLE);
+                    mapFilters.setVisibility(View.GONE);
                 } else {
                     mapFilters.setVisibility(View.VISIBLE);
                     dateFilterIsVisible = true;
@@ -167,7 +166,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 if (locationFilterIsVisible) {
                     locationFilterIsVisible = false;
-                    mapFilters.setVisibility(View.INVISIBLE);
+                    mapFilters.setVisibility(View.GONE);
                 } else {
                     mapFilters.setVisibility(View.VISIBLE);
                     locationFilterIsVisible = true;
@@ -187,7 +186,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 if (userFilterIsVisible) {
                     userFilterIsVisible = false;
-                    mapFilters.setVisibility(View.INVISIBLE);
+                    mapFilters.setVisibility(View.GONE);
                 } else {
                     mapFilters.setVisibility(View.VISIBLE);
                     userFilterIsVisible = true;
