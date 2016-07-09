@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,15 +55,17 @@ import java.util.List;
  */
 public class PersonalFragment extends Fragment {
 
-  protected ListView noteList;
-  private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
-  private GPSUtils gpsUtils;
-  private List<Note> listOfNotes;
-  private ListAdapter noteListAdapter;
-  private String userId;
-  private final String TAG = "[TSN/PersonalFragment]";
-  private MainActivity activity;
-  private final int FINE_PERM = 0, CAMERA_PERM = 1;
+    protected ListView noteList;
+    private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
+    private GPSUtils gpsUtils;
+    private List<Note> listOfNotes, presentedNotes;
+    private ListAdapter noteListAdapter;
+    private String userId;
+    private final String TAG = "[TSN/PersonalFragment]";
+    private MainActivity activity;
+    private final int FINE_PERM = 0, CAMERA_PERM = 1;
+    private int userFilterSelection;
+    private Long dateFilterSelection;
 
 
     private ImageButton dateFilter;
@@ -84,36 +89,34 @@ public class PersonalFragment extends Fragment {
     }
 
 
-  @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_personal, container, false);
-    // Inflate the layout for this fragment
-    activity = (MainActivity) getActivity();
-    Bundle bundle = getArguments();
-    this.userId = activity.getUserId();
-    Log.d(TAG, "onCreateView: userID: " + userId);
-
-    ActivityCompat.requestPermissions(activity, new String[]{
-        android.Manifest.permission.ACCESS_FINE_LOCATION,
-        android.Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-      },
-      FINE_PERM
-    );
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_personal, container, false);
+        // Inflate the layout for this fragment
+        activity = (MainActivity) getActivity();
+        Bundle bundle = getArguments();
+        this.userId = activity.getUserId();
+        Log.d(TAG, "onCreateView: userID: " + userId);
+        dateFilterSelection = 2592000000L;
+        userFilterSelection = 3;
 
 
-//        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERM);
-
-//        if (!Utils.arePermissionsGranted()) {
-//            Toast.makeText(getContext(), "Missing some Permissions...\nPlease go to app info and enable them", Toast.LENGTH_LONG).show();
-//        }
+        ActivityCompat.requestPermissions(activity, new String[]{
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.CAMERA,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                },
+                FINE_PERM
+        );
 
 
         this.noteList = (ListView) view.findViewById(R.id.ps_list_listview);
         gpsUtils = activity.getGPSUtils();
         gpsUtils.getLocation();
         listOfNotes = new ArrayList<>();
-        noteListAdapter = new ListAdapter(activity, listOfNotes);
+        presentedNotes = new ArrayList<>();
+
+        noteListAdapter = new ListAdapter(getContext(), presentedNotes);
         noteList.setAdapter(noteListAdapter);
         noteList.setOnItemClickListener(new ItemClickedListener());
         Utils.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");
@@ -123,13 +126,20 @@ public class PersonalFragment extends Fragment {
 
         map_small_filter = (Button) view.findViewById(R.id.personalSpace_small_filter);
         map_medium_filter = (Button) view.findViewById(R.id.personalSpace_medium_filter);
+        Log.d(TAG, "onCreateView: personalSpace_filter_options = "+R.id.personalSpace_filter_options);
+
         map_large_filter = (Button) view.findViewById(R.id.personalSpace_large_filter);
+
+        map_small_filter.setOnClickListener(button1ClickListener);
+        map_medium_filter.setOnClickListener(button2ClickListener);
+        map_large_filter.setOnClickListener(button3ClickListener);
 
         personalSpaceFilters = (LinearLayout) view.findViewById(R.id.personalSpace_filter_options);
 
         dateFilter.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
+                Log.d(TAG, "onClick: dateFilter pressed");
                 if (dateFilterIsVisible) {
                     dateFilterIsVisible = false;
                     personalSpaceFilters.setVisibility(View.GONE);
@@ -149,6 +159,8 @@ public class PersonalFragment extends Fragment {
         userFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: userFilter pressed");
+                //if pressed same filter twice - close filters.
                 if (userFilterIsVisible) {
                     userFilterIsVisible = false;
                     personalSpaceFilters.setVisibility(View.GONE);
@@ -166,7 +178,9 @@ public class PersonalFragment extends Fragment {
         });
 
         // get all notes according to some default filter ? // TODO: Aran?
-        getAllNotes();
+        VolleyUtilSingleton.getInstance(getActivity()).get(BASE_URL + "/note/all?uid=" + userId, getNotesSuccessListener, Utils.genericErrorListener);
+
+//        getAllNotes();
 
 
 //https://thesocialnotework-api.appspot.com/api/note/all?uid=<USER_ID>
@@ -199,105 +213,108 @@ public class PersonalFragment extends Fragment {
     private View.OnClickListener addNewNoteDialog = new View.OnClickListener() {
         public void onClick(View v) {
 
-      //create and configure dialog
-      final Dialog dialog = new Dialog(getActivity());
-      dialog.setContentView(R.layout.note_view_full);
-      dialog.setTitle("New Note");
-      WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-      lp.copyFrom(dialog.getWindow().getAttributes());
-      lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-      lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-      dialog.setCancelable(false);
-      dialog.show();
-      dialog.getWindow().setAttributes(lp);
+            //create and configure dialog
+            final Dialog dialog = new Dialog(getActivity());
+            dialog.setContentView(R.layout.note_view_full);
+            dialog.setTitle("New Note");
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(dialog.getWindow().getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+            dialog.setCancelable(false);
+            dialog.show();
+            dialog.getWindow().setAttributes(lp);
 
 
-      //get note_view_full layout elements
-      final Switch permissionSwitch = (Switch) dialog.findViewById(R.id.nvf_note_permission);
-      final EditText newTitle = (EditText) dialog.findViewById(R.id.nvf_note_title);
-      final EditText newBody = (EditText) dialog.findViewById(R.id.nvf_note_content);
-      Button saveBtn = (Button) dialog.findViewById(R.id.nvf_note_submit_btn);
-      Button cancelBtn = (Button) dialog.findViewById(R.id.nvf_note_cancel_btn);
+            //get note_view_full layout elements
+            final Switch permissionSwitch = (Switch) dialog.findViewById(R.id.nvf_note_permission);
+            final EditText newTitle = (EditText) dialog.findViewById(R.id.nvf_note_title);
+            final EditText newBody = (EditText) dialog.findViewById(R.id.nvf_note_content);
+            Button saveBtn = (Button) dialog.findViewById(R.id.nvf_note_submit_btn);
+            Button cancelBtn = (Button) dialog.findViewById(R.id.nvf_note_cancel_btn);
 
-      cancelBtn.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
-          dialog.dismiss();
-        }
-      });
+            cancelBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
 
-      saveBtn.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
+            saveBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
 
-          //title too short
-          if (newTitle.getText().length() == 0) {
-            Toast toast = Toast.makeText(getActivity(), "Title too short.", Toast.LENGTH_LONG);
-            toast.show();
-            return;
-          }
+                    //title too short
+                    if (newTitle.getText().length() == 0) {
+                        Toast toast = Toast.makeText(getActivity(), "Title too short.", Toast.LENGTH_LONG);
+                        toast.show();
+                        return;
+                    }
 
-          //title too long
-          if (newTitle.getText().length() > 20) {
-            Toast toast = Toast.makeText(getActivity(), "Title too long.\n Use up to 20 notes.", Toast.LENGTH_LONG);
-            toast.show();
-            return;
-          }
-          //volley post
-          final JSONObject noteJson = new JSONObject();
-          try {
+                    //title too long
+                    if (newTitle.getText().length() > 20) {
+                        Toast toast = Toast.makeText(getActivity(), "Title too long.\n Use up to 20 notes.", Toast.LENGTH_LONG);
+                        toast.show();
+                        return;
+                    }
+                    //volley post
+                    final JSONObject noteJson = new JSONObject();
+                    try {
 
-            //TODO need to get owner id from login screen
-            noteJson.put("owner_id", userId);
-            noteJson.put("title", newTitle.getText());
-            noteJson.put("lat", gpsUtils.getLatitude());
-            noteJson.put("lng", gpsUtils.getLongitude());
-            noteJson.put("address", gpsUtils.getAddress());
-            noteJson.put("body", newBody.getText());
-            noteJson.put("is_public", permissionSwitch.isChecked());
+                        //TODO need to get owner id from login screen
+                        noteJson.put("owner_id", userId);
+                        noteJson.put("title", newTitle.getText());
+                        noteJson.put("lat", gpsUtils.getLatitude());
+                        noteJson.put("lng", gpsUtils.getLongitude());
+                        noteJson.put("address", gpsUtils.getAddress());
+                        noteJson.put("body", newBody.getText());
+                        noteJson.put("is_public", permissionSwitch.isChecked());
 //                      noteJson.put("tags",);
-            Log.d(TAG, "Json: " + noteJson.toString());
+                        Log.d(TAG, "Json: " + noteJson.toString());
 
 
-          } catch (Exception e) {
-            Log.d(TAG, "saveBtn: " + e.toString());
-          }
+                    } catch (Exception e) {
+                        Log.d(TAG, "saveBtn: " + e.toString());
+                    }
 
-          //send request and close dialog
-          VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/upsert", noteJson, newNoteSuccessListener, Utils.genericErrorListener);
-          dialog.dismiss();
+                    //send request and close dialog
+                    VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/upsert", noteJson, newNoteSuccessListener, Utils.genericErrorListener);
+                    dialog.dismiss();
+                }
+            });
+
+            //change text of switch according to state.
+            permissionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked)
+                        permissionSwitch.setText(R.string.nvf_public_label);
+                    else
+                        permissionSwitch.setText(R.string.nvf_private_label);
+                }
+            });
+
+
         }
-      });
+    };
 
-      //change text of switch according to state.
-      permissionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-          if (isChecked)
-            permissionSwitch.setText(R.string.nvf_public_label);
-          else
-            permissionSwitch.setText(R.string.nvf_private_label);
+    //response listener for adding new note
+    Response.Listener<JSONObject> newNoteSuccessListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            Log.d(TAG, "newNoteSuccess: response - " + response.toString());
+            try {
+                Date time = new Date();
+                JSONObject noteObject = response.getJSONObject("note");
+                time.setTime(noteObject.getLong("created_at"));
+                addNoteFromJsonObj(noteObject, time);
+                updateShowedNotes();
+
+//                presentedNotes = listOfNotes;
+//                noteList.setAdapter(noteListAdapter);
+            } catch (Exception e) {
+                Log.e(TAG, "newNoteSuccess:" + e.getMessage());
+            }
+
         }
-      });
-
-
-    }
-  };
-
-  //response listener for adding new note
-  Response.Listener<JSONObject> newNoteSuccessListener = new Response.Listener<JSONObject>() {
-    @Override
-    public void onResponse(JSONObject response) {
-      Log.d(TAG, "newNoteSuccess: response - " + response.toString());
-      try {
-        Date time = new Date();
-        JSONObject noteObject = response.getJSONObject("note");
-        time.setTime(noteObject.getLong("created_at"));
-        addNoteFromJsonObj(noteObject, time);
-        noteList.setAdapter(noteListAdapter);
-      } catch (Exception e) {
-        Log.e(TAG, "newNoteSuccess:" + e.getMessage());
-      }
-
-    }
-  };
+    };
 
 
 //  //response Error listener for adding new note
@@ -309,30 +326,32 @@ public class PersonalFragment extends Fragment {
 //  };
 
 
-  //response listener for getting all user notes
-  Response.Listener<JSONObject> getNotesSuccessListener = new Response.Listener<JSONObject>() {
-    @Override
-    public void onResponse(JSONObject response) {
-      Log.d(TAG, "getNotesSuccessListener: " + response.toString());
-      Utils.dismissLoadingDialog();
-      try {
-        //need to get all notes and add to listOfNotes
-        JSONArray noteObjectsArray = response.getJSONArray("notes");
-        activity.getUser().setNumber_of_notes(noteObjectsArray.length());
-        Date time = new Date();
-        for (int i = 0; i < noteObjectsArray.length(); i++) {
-          JSONObject noteObject = noteObjectsArray.getJSONObject(i);
-          time.setTime(noteObject.getLong("created_at"));
+    //response listener for getting all user notes
+    Response.Listener<JSONObject> getNotesSuccessListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            Log.d(TAG, "getNotesSuccessListener: " + response.toString());
+            Utils.dismissLoadingDialog();
+            try {
+                //need to get all notes and add to listOfNotes
+                JSONArray noteObjectsArray = response.getJSONArray("notes");
+                activity.getUser().setNumber_of_notes(noteObjectsArray.length());
+                Date time = new Date();
+                for (int i = 0; i < noteObjectsArray.length(); i++) {
+                    JSONObject noteObject = noteObjectsArray.getJSONObject(i);
+                    time.setTime(noteObject.getLong("created_at"));
 
-          addNoteFromJsonObj(noteObject, time);
+                    addNoteFromJsonObj(noteObject, time);
+                }
+                updateShowedNotes();
+//                presentedNotes = listOfNotes;
+//                noteList.setAdapter(noteListAdapter);
+            } catch (Exception e) {
+                Log.e(TAG, "newNoteSuccess:" + e.getMessage());
+            }
+
         }
-        noteList.setAdapter(noteListAdapter);
-      } catch (Exception e) {
-        Log.e(TAG, "newNoteSuccess:" + e.getMessage());
-      }
-
-    }
-  };
+    };
 
 
 //  //response ErrorListener for getting all user notes
@@ -355,55 +374,55 @@ public class PersonalFragment extends Fragment {
 //  };
 
 
-  private ArrayList<String> jsonArrayToStringArray(JSONArray jArray) {
-    ArrayList<String> stringArray = new ArrayList<String>();
-    for (int i = 0, count = jArray.length(); i < count; i++) {
-      try {
-        JSONObject jsonObject = jArray.getJSONObject(i);
-        stringArray.add(jsonObject.toString());
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+    private ArrayList<String> jsonArrayToStringArray(JSONArray jArray) {
+        ArrayList<String> stringArray = new ArrayList<String>();
+        for (int i = 0, count = jArray.length(); i < count; i++) {
+            try {
+                JSONObject jsonObject = jArray.getJSONObject(i);
+                stringArray.add(jsonObject.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return stringArray;
     }
-    return stringArray;
-  }
 
 
-  private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
-    Note addNote = new Note(
-      noteObject.getString("id"),
-      Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
-      Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
-      noteObject.getJSONObject("location").getString("address"),
-      noteObject.getString("title"),
-      noteObject.getString("body"),
-      time.toString(),
-      noteObject.getBoolean("is_public"),
-      noteObject.getInt("likes"),
-      noteObject.getString("avatar"),
-      noteObject.getString("owner_id"),
-      jsonArrayToStringArray(noteObject.getJSONArray("tags"))
-    );
-    listOfNotes.add(addNote);
+    private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
+        Note addNote = new Note(
+                noteObject.getString("id"),
+                Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
+                Float.parseFloat(noteObject.getJSONObject("location").getString("lng")),
+                noteObject.getJSONObject("location").getString("address"),
+                noteObject.getString("title"),
+                noteObject.getString("body"),
+                time.toString(),
+                noteObject.getBoolean("is_public"),
+                noteObject.getInt("likes"),
+                noteObject.getString("avatar"),
+                noteObject.getString("owner_id"),
+                jsonArrayToStringArray(noteObject.getJSONArray("tags"))
+        );
+        listOfNotes.add(addNote);
 
-  }
+    }
 
-  // click on listView item
-  class ItemClickedListener implements AdapterView.OnItemClickListener {
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-      //create and configure dialog
-      final Note note = listOfNotes.get(position);
-      final Dialog noteViewDialog = new Dialog(getActivity());
-      noteViewDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-      noteViewDialog.setContentView(R.layout.note_display_full);
+    // click on listView item
+    class ItemClickedListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+            //create and configure dialog
+            final Note note = presentedNotes.get(position);
+            final Dialog noteViewDialog = new Dialog(getActivity());
+            noteViewDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            noteViewDialog.setContentView(R.layout.note_display_full);
 //            noteViewDialog.setTitle("You wrote...");
 
-      WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-      lp.copyFrom(noteViewDialog.getWindow().getAttributes());
-      lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-      lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-      noteViewDialog.show();
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(noteViewDialog.getWindow().getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+            noteViewDialog.show();
 //                dialog.getWindow().setAttributes(lp);
 
 
@@ -425,7 +444,7 @@ public class PersonalFragment extends Fragment {
             date.setText(note.getDate());
             time.setText(note.getTime());
             location.setText(note.getAddress());
-            if(likes !=null )likes.setText("" + note.getLikes());
+            if (likes != null) likes.setText("" + note.getLikes());
 //            tags.setText("Tags: "+ note.getTags().toString());
             permission.setText("" + (note.isPublic() ? "Public" : "Private"));
             Utils.URLtoImageView(avatar, note.getAvatar());
@@ -449,13 +468,15 @@ public class PersonalFragment extends Fragment {
                                         delNote.put("uid", userId);
                                         delNote.put("nid", note.getId());
                                         VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, Utils.deleteNoteSuccessListener, Utils.genericErrorListener);
-                                        listOfNotes.remove(position);
+                                        listOfNotes.remove(presentedNotes.get(position));
+                                        presentedNotes.remove(position);
 
                                     } catch (JSONException e) {
                                         Toast.makeText(getActivity(), "Something went wrong.\n Failed to delete note...", Toast.LENGTH_LONG).show();
                                         e.printStackTrace();
                                     }
-                                    noteList.setAdapter(noteListAdapter);
+                                    updateShowedNotes();
+//                                    noteList.setAdapter(noteListAdapter);
                                     noteViewDialog.dismiss();
                                 }
                             })
@@ -472,6 +493,196 @@ public class PersonalFragment extends Fragment {
             });
 
         }
+    }
+
+
+
+    //all buttons listener
+    public View.OnClickListener button1ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+
+            Log.d(TAG, "onClick: start");
+            Log.d(TAG, "onClick: v id: "+ v.getId());
+            Log.d(TAG, "onClick: map_small_filter id: "+ R.id.map_small_filter);
+            Log.d(TAG, "onCreateView: personalSpace_filter_options = "+R.id.personalSpace_filter_options);
+
+            Log.d(TAG, "onClick: are equal? "+ (v.getId() ==R.id.map_small_filter));
+
+                    Log.d(TAG, "onClick: case map_small_filter");
+                    //user filters
+                    if (userFilterIsVisible) {
+                        userFilterSelection = 1;
+                    }
+                    //date filters
+                    else {
+                        dateFilterSelection = 86400000L;
+
+                    }
+                    updateShowedNotes();
+        }
+    };
+    //all buttons listener
+    public View.OnClickListener button2ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+
+            Log.d(TAG, "onClick: start");
+            Log.d(TAG, "onClick: v id: " + v.getId());
+            Log.d(TAG, "onClick: map_small_filter id: " + R.id.map_small_filter);
+            Log.d(TAG, "onCreateView: personalSpace_filter_options = " + R.id.personalSpace_filter_options);
+
+            Log.d(TAG, "onClick: are equal? " + (v.getId() == R.id.map_small_filter));
+
+
+            Log.d(TAG, "onClick: case map_medium_filter");
+            v.setBackgroundColor(Color.BLUE);
+
+            //user filters
+            if (userFilterIsVisible) {
+                userFilterSelection = 2;
+
+            }
+            //date filters
+            else {
+                dateFilterSelection = 604800000L;
+
+            }
+            updateShowedNotes();
+        }
+    };
+    //all buttons listener
+    public View.OnClickListener button3ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+
+            Log.d(TAG, "onClick: start");
+            Log.d(TAG, "onClick: v id: "+ v.getId());
+            Log.d(TAG, "onClick: map_small_filter id: "+ R.id.map_small_filter);
+            Log.d(TAG, "onCreateView: personalSpace_filter_options = "+R.id.personalSpace_filter_options);
+
+            Log.d(TAG, "onClick: are equal? "+ (v.getId() ==R.id.map_small_filter));
+
+            Log.d(TAG, "onClick: case map_large_filter");
+
+            //user filters
+            if (userFilterIsVisible) {
+                userFilterSelection = 3;
+            }
+            //date filters
+            else {
+                dateFilterSelection = 2592000000L;
+
+            }
+            updateShowedNotes();
+
+        }
+    };
+
+//    //all buttons listener
+//    public View.OnClickListener buttonClickListener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(final View v) {
+//
+//            Log.d(TAG, "onClick: start");
+//            Log.d(TAG, "onClick: v id: "+ v.getId());
+//            Log.d(TAG, "onClick: map_small_filter id: "+ R.id.map_small_filter);
+//            Log.d(TAG, "onCreateView: personalSpace_filter_options = "+R.id.personalSpace_filter_options);
+//
+//            Log.d(TAG, "onClick: are equal? "+ (v.getId() ==R.id.map_small_filter));
+//
+//            switch (v.getId()) {
+//                case R.id.map_small_filter:
+//                    Log.d(TAG, "onClick: case map_small_filter");
+//                    //user filters
+//                    if (userFilterIsVisible) {
+//                        userFilterSelection = 1;
+//                    }
+//                    //date filters
+//                    else {
+//                        dateFilterSelection = 86400000L;
+//
+//                    }
+//                    updateShowedNotes();
+//                    break;
+//                case R.id.map_medium_filter:
+//                    Log.d(TAG, "onClick: case map_medium_filter");
+//
+//                    //user filters
+//                    if (userFilterIsVisible) {
+//                        userFilterSelection = 2;
+//
+//                    }
+//                    //date filters
+//                    else {
+//                        dateFilterSelection = 604800000L;
+//
+//                    }
+//                    updateShowedNotes();
+//                    break;
+//                case R.id.map_large_filter:
+//                    Log.d(TAG, "onClick: case map_large_filter");
+//
+//                    //user filters
+//                    if (userFilterIsVisible) {
+//                        userFilterSelection = 3;
+//                    }
+//                    //date filters
+//                    else {
+//                        dateFilterSelection = 2592000000L;
+//
+//                    }
+//                    updateShowedNotes();
+//                    break;
+//                default:
+//                    Log.d(TAG, "onClick: in default");
+//                    break;
+//            }
+//        }
+//    };
+
+
+
+
+    public void updateShowedNotes() {
+        presentedNotes = new ArrayList<>();
+        long timeDifference;
+//        float distance;
+        Log.d(TAG, "updateShowedNotes: start");
+        Log.d(TAG, "updateShowedNotes: userPrefFilter = "+userFilterSelection);
+        Log.d(TAG, "updateShowedNotes: timeDifferencePerf = "+dateFilterSelection);
+        Log.d(TAG, "updateShowedNotes: +++++++++++++++++++++++++++++++++++++++++++++++++");
+
+
+//        Location currLocation = new Location(gpsUtils.getLocation());
+        Date now = new Date();
+
+//        Location targetLocation = new Location("");//provider name is unecessary
+        Date targetDate;
+        for (Note note : listOfNotes){
+            Log.d(TAG, "updateShowedNotes: chekcing note with title: "+ note.title);
+            //get note location and date
+//            targetLocation.setLatitude(note.getLat());//your coords of course
+//            targetLocation.setLongitude(note.getLon());
+            targetDate = new Date(note.getTimestamp());
+
+            //get time and date differences
+            timeDifference = now.getTime() - targetDate.getTime();
+//            distance = currLocation.distanceTo(targetLocation);
+
+            Log.d(TAG, "updateShowedNotes: time difference = "+ timeDifference);
+            //add to currently presented list according to filters.
+            if(timeDifference <= dateFilterSelection
+                && ((!note.isPublic && userFilterSelection==1) || (note.isPublic && userFilterSelection == 2) || (userFilterSelection == 3))){
+                presentedNotes.add(note);
+            }
+
+            Log.d(TAG, "updateShowedNotes: ======================================");
+        }
+        Log.d(TAG, "updateShowedNotes: presentedNotes size = "+ presentedNotes.size());
+
+        noteListAdapter.updateList(presentedNotes);
+        noteList.setAdapter(noteListAdapter);
     }
 
 }
