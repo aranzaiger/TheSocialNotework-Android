@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 //import com.android.volley.toolbox.NetworkImageView;
@@ -62,7 +63,7 @@ public class ListAdapter extends BaseAdapter {
         TextView date = (TextView) v.findViewById(R.id.nvm_date_textview);
         TextView location = (TextView) v.findViewById(R.id.nvm_location_textview);
         TextView likes = (TextView) v.findViewById(R.id.nvm_likes_textview);
-        TextView permission = (TextView) v.findViewById(R.id.nvm_permission_textview);
+        ImageView permission = (ImageView) v.findViewById(R.id.nvm_permission_image_view);
 //        NetworkImageView thumbNail = (NetworkImageView) v.findViewById(R.id.infoImageImageView);
 //        String url = mVideos.get(position).getImgURL();
 //        thumbNail.setImageUrl(url, VolleyUtilSingleTone.getInstance(mContext).getImageLoader());
@@ -73,7 +74,11 @@ public class ListAdapter extends BaseAdapter {
         location.setText(curNote.getAddress());
         if(likes !=null )likes.setText(""+curNote.getLikes());
 //        permission.setText(curNote.isPublic() ? "Public":"Private");
-        permission.setBackground(curNote.isPublic() ?  v.getResources().getDrawable(R.drawable.public_icon):  v.getResources().getDrawable(R.drawable.private_icon));
+        if(((MainActivity)mContext).getUser().getId().equals(curNote.ownerId)){// MY Note
+          permission.setBackground(curNote.isPublic() ?  v.getResources().getDrawable(R.drawable.public_icon):  v.getResources().getDrawable(R.drawable.private_icon));
+        }else{
+          Utils.URLtoImageView(permission, curNote.getAvatar());
+        }
 
         Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
         v.startAnimation(animation);

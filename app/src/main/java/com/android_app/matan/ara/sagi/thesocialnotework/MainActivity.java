@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity
   private GmapFragment gmapFragment;
   private PersonalFragment personalFragment;
   private SettingsFragment settingsFragment;
+  private ExploreFragment exploreFragment;
   private Toolbar toolbar;
   public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
   private ImageView menu_avatar;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     gmapFragment = new GmapFragment();
     personalFragment = new PersonalFragment();
     settingsFragment = new SettingsFragment();
+    exploreFragment = new ExploreFragment();
     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
     StrictMode.setThreadPolicy(policy);
 
@@ -153,6 +155,9 @@ public class MainActivity extends AppCompatActivity
     if (id == R.id.nav_explore) {
       toolbar.setTitle("Explore");
       setSupportActionBar(toolbar);
+      Log.d(TAG, "Before going to Explore");
+      ft.replace(R.id.fragment_container, exploreFragment);
+      ft.commit();
     } else if (id == R.id.nav_map) {
 
       Log.d(TAG, "Before going to map");

@@ -114,7 +114,7 @@ public class PersonalFragment extends Fragment {
         gpsUtils = activity.getGPSUtils();
         gpsUtils.getLocation();
         listOfNotes = new ArrayList<>();
-        noteListAdapter = new ListAdapter(getContext(), listOfNotes);
+        noteListAdapter = new ListAdapter(activity, listOfNotes);
         noteList.setAdapter(noteListAdapter);
         noteList.setOnItemClickListener(new ItemClickedListener());
         Utils.showLoadingDialog(getActivity(), "Fetching..", "getting your notes");

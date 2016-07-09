@@ -4,19 +4,19 @@
     android:layout_height="wrap_content"
     android:padding="5dp">
 
-    <TextView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:id="@+id/nvm_permission_textview"
-        android:background="@drawable/private_icon"
-        android:gravity="center_vertical|center_horizontal" />
+  <ImageView
+    android:layout_width="70dp"
+    android:layout_height="70dp"
+    android:id="@+id/nvm_permission_image_view"
+    android:layout_gravity="left" />
 
-    <LinearLayout
+  <LinearLayout
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.6"
-        android:layout_marginLeft="15dp">
+        android:layout_marginLeft="15dp"
+    android:layout_gravity="center">
 
         <TextView
             android:layout_width="fill_parent"
@@ -70,7 +70,7 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="13dp"
@@ -92,10 +92,11 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="0dp"
+      android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.3">
+        android:layout_weight="0.3"
+      android:gravity="end"
+      android:layout_gravity="right">
 
       <LinearLayout
             android:orientation="horizontal"
