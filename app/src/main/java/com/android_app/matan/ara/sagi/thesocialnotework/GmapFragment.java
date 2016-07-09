@@ -377,6 +377,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                                     }
                                     VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, getNotesSuccessListener, Utils.genericErrorListener);
                                     mainActivity.getUser().getLiked_notes().add(note.getId());
+                                    mainActivity.getUser().updateUser(mainActivity);
                                     likes.setText("Likes: "+(note.getLikes()+1));
                                 }
                             }

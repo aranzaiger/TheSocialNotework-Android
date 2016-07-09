@@ -2,6 +2,7 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -11,6 +12,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -37,11 +39,14 @@ import java.util.HashMap;
 public class Utils {
 
     public static final String TAG = "Utils";
-    public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
+    public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api", UPLOAD_IMAGE_PATH="/file/upload";
     public static ProgressDialog progress;
     private static HashMap<String, Bitmap> bitmapHash = new HashMap<>();
+    public static  final String PHOTOS_DIR_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/TheSocialNotework/";
+
     private static boolean mLocationPermission = false;
     private static boolean mCameraPermission = false;
+    private static SharedPreferences prefs;
 
 
     public static Bitmap getBitmapFromURL(String url) {
@@ -74,6 +79,7 @@ public class Utils {
         public void onErrorResponse(VolleyError error) {
             Log.d(TAG, "genericErrorListener");
             error.printStackTrace();
+            Utils.dismissLoadingDialog();
         }
     };
 
@@ -142,7 +148,8 @@ public class Utils {
   private static class setUserAvatar extends AsyncTask<Void, Void, Bitmap> {
     private ImageView iv;
     private String url;
-    public setUserAvatar(ImageView imageView, String url){
+
+    public setUserAvatar(ImageView imageView, String url) {
       this.iv = imageView;
       this.url = url;
     }
@@ -151,14 +158,13 @@ public class Utils {
     protected Bitmap doInBackground(Void... v) {
 //        Bitmap b;
 
-        return Utils.getBitmapFromURL(url);
+      return Utils.getBitmapFromURL(url);
 
     }
 
     @Override
-    protected void onPostExecute(Bitmap b){
-        iv.setImageBitmap(b);
-        //getRoundedCornerBitmap(b, 20);
+    protected void onPostExecute(Bitmap b) {
+      iv.setImageBitmap(b);
     }
   }
     public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
@@ -203,6 +209,28 @@ public class Utils {
     public static boolean isLocationPermissionGranted(){
         return mLocationPermission;
     }
+
+  public static String getUserFromSharedPrefs(Context contexst){
+    if(prefs == null){
+      prefs = contexst.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
+    }
+    return prefs.getString("UserData", null);
+  };
+
+  public static void updateUserSharedPref(String data) throws Exception {
+    if(prefs == null) throw new Exception("Prefs are not available");
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putString("UserData", data);
+    editor.commit();
+  }
+
+  public static void removeUserDataFromPrefs() throws Exception{
+    if(prefs == null) throw new Exception("Prefs are not available");
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.remove("UserData");
+    editor.commit();
+  }
+
 
 
 

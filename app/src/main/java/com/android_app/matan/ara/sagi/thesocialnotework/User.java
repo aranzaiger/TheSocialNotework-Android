@@ -1,6 +1,15 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Vector;
 
@@ -21,9 +30,13 @@ public class User {
   public static final String TAG = "[TSN/User]", ATTARS_DELIMETER="||" , LIKED_NOTES_DELIMETER="|";
   protected String id, password, email, avatar, username;
   protected Vector<String> liked_notes;
+  protected int number_of_notes;
+  protected User self;
 
   public User(String serializedUserData){
+    self = this;
     liked_notes = new Vector<>();
+    number_of_notes = 0;
     String[] array = serializedUserData.split("\\|\\|");
     for (int i = 0 ; i < array.length ; i ++){
       switch (i){
@@ -50,6 +63,14 @@ public class User {
           break;
       }
     }
+  }
+
+  public int getNumber_of_notes() {
+    return number_of_notes;
+  }
+
+  public void setNumber_of_notes(int number_of_notes) {
+    this.number_of_notes = number_of_notes;
   }
 
   public String getId() {
@@ -119,7 +140,7 @@ public class User {
     for (int i = 0; i < liked_notes.size(); i++) {
       result += liked_notes.get(i);
       if(i != liked_notes.size() - 1){
-        result+=";";
+        result+=User.LIKED_NOTES_DELIMETER;
       }
     }
     return result;
@@ -129,6 +150,46 @@ public class User {
     return "Id: "+id+" UserName: " + username +" Password: " +password +" email: " + email+ " Avatar: " +avatar+" Liked Notes: "+liked_notes.toString();
   }
 
+  public void updateUser(final MainActivity activity){
+    Log.d(TAG, "updateUser: ================================");
+    VolleyUtilSingleton.getInstance(activity).post(Utils.BASE_URL + "/user/upsert", this.toJSON(), new Response.Listener<JSONObject>() {
+      @Override
+      public void onResponse(JSONObject response) {
+        try {
+          if(response.get("status").equals("OK")){
+            Log.d(TAG, "onResponse: In OKOKOKOK");
+            activity.updateNavAvatar();
+            Utils.updateUserSharedPref(self.Serialise());
+            activity.updateNavAvatar();
+          }
+        } catch (JSONException e) {
+          e.printStackTrace();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }, Utils.genericErrorListener);
+  }
+
+  public JSONObject toJSON() {
+    JSONObject json = new JSONObject();
+    JSONArray liked = new JSONArray();
+    for (int i = 0; i < liked_notes.size(); i++) {
+      liked.put(liked_notes.get(i));
+    }
+    try {
+      json.put("id", this.id);
+      json.put("password", this.password);
+      json.put("username", this.username);
+      json.put("email", this.email);
+      json.put("avatar", this.avatar);
+      json.put("liked_notes_id", liked);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return json;
+  }
 
 
 }

@@ -1,16 +1,11 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.graphics.drawable.DrawableWrapper;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import java.util.Random;
 
@@ -18,7 +13,6 @@ public class SplashActivity extends AppCompatActivity {
 
     private ImageView background;
     private int timerDelay = 3500;
-    private final String TAG = "Splash Screen Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +27,8 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             background.setImageDrawable( getResources().getDrawable(rand_splash()));
         }
-        SharedPreferences sharedPref = this.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
-        final String userData = sharedPref.getString("UserData", null);
+
+        final String userData = Utils.getUserFromSharedPrefs(this);
 
         Thread timerThread = new Thread(){
             public void run(){

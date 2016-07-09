@@ -38,11 +38,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mRegisterButton;
     private Button mLoginButton;
     private final String TAG = "[TSN/LoginActivity]";
-    private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private final String LOGIN_PATH = "/login";
     private LoginActivity self; //this
     protected LinearLayout layout;
-    private boolean permissionsReturend = false;
 
 
     @Override
@@ -126,8 +124,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             try {
                 if (!response.isNull("user")) {
                     Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
-                    SharedPreferences sharedPref = self.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
                     String id, password, email, avatar, username, likedNotes = "";
 
                     JSONArray likedNotes_JSON;
@@ -143,8 +139,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             likedNotes += User.LIKED_NOTES_DELIMETER;
                         }
                     }
-                    editor.putString("UserData", id + User.ATTARS_DELIMETER + username + User.ATTARS_DELIMETER + password + User.ATTARS_DELIMETER + email + User.ATTARS_DELIMETER + avatar + User.ATTARS_DELIMETER + likedNotes);
-                    editor.commit();
+                    Utils.updateUserSharedPref(id + User.ATTARS_DELIMETER + username + User.ATTARS_DELIMETER + password + User.ATTARS_DELIMETER + email + User.ATTARS_DELIMETER + avatar + User.ATTARS_DELIMETER + likedNotes);
                     Intent personalSpaceActivity = new Intent(LoginActivity.this, MainActivity.class);
                     Bundle loginUserBundle = new Bundle();
                     loginUserBundle.putString("UserData", id + User.ATTARS_DELIMETER + username + User.ATTARS_DELIMETER + password + User.ATTARS_DELIMETER + email + User.ATTARS_DELIMETER + avatar + User.ATTARS_DELIMETER + likedNotes);

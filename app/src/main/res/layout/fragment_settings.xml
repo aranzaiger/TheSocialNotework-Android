@@ -1,20 +1,138 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.android_app.matan.ara.sagi.thesocialnotework.SettingsFragment">
 
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Change"
-        android:id="@+id/camera_button"
-        android:layout_gravity="center"/>
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:padding="10dp"
+    android:layout_marginTop="15dp">
 
-    <ImageView
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="0.26">
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.65">
+
+        <EditText
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:inputType="textPersonName"
+          android:ems="10"
+          android:id="@+id/txt_username"
+          android:hint="Username" />
+
+        <EditText
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:inputType="textPassword"
+          android:ems="10"
+          android:id="@+id/txt_password"
+          android:hint="Password" />
+
+        <EditText
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:ems="10"
+          android:id="@+id/txt_email"
+          android:hint="Email"
+          android:inputType="none|text" />
+      </LinearLayout>
+
+      <RelativeLayout
+        android:layout_width="90dp"
+        android:layout_height="90dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/settings_userAvater_iamgeView"
+            android:layout_gravity="top|center_horizontal"
+          android:src="@drawable/default_avatar" />
+
+        <ImageButton
+          android:layout_width="45dp"
+          android:layout_height="45dp"
+          android:id="@+id/btn_camera"
+          android:layout_alignParentBottom="true"
+          android:layout_alignParentEnd="true"
+          android:background="@android:color/transparent"
+          android:src="@drawable/ic_menu_camera"
+          android:tint="#7b7b7b" />
+      </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="right"
+      android:layout_weight="0.14"
+      android:weightSum="1">
+
+      <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/settings_userAvater_iamgeView"
-        android:layout_gravity="center_horizontal|bottom" />
-</FrameLayout>
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Nuber Of Notes: "
+        android:id="@+id/textView3"
+        android:textStyle="bold"
+        android:layout_weight="0.25" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="15"
+        android:id="@+id/lbl_num_of_notes"
+        android:layout_weight="0.25" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Notes I Liked:"
+        android:id="@+id/textView4"
+        android:textStyle="bold"
+        android:layout_weight="0.25" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="30"
+        android:id="@+id/lbl_num_of_liked"
+        android:layout_weight="0.25" />
+    </LinearLayout>
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="126dp"
+      android:layout_gravity="right"
+      android:layout_weight="0.07">
+
+      <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Changes"
+        android:id="@+id/btn_save"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="29dp" />
+    </RelativeLayout>
+
+  </LinearLayout>
+
+</RelativeLayout>
