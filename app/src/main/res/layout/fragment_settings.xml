@@ -47,7 +47,7 @@
           android:ems="10"
           android:id="@+id/txt_email"
           android:hint="Email"
-          android:inputType="none|text" />
+          android:inputType="textEmailAddress" />
       </LinearLayout>
 
       <RelativeLayout
