@@ -144,7 +144,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         dateFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.d(TAG, "" + v.getId());
                 if (dateFilterIsVisible) {
                     dateFilterIsVisible = false;
                     mapFilters.setVisibility(View.GONE);

@@ -8,6 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.android.volley.Response;
@@ -36,6 +39,27 @@ public class ExploreFragment extends Fragment {
   private List<Note> notes;
   protected ListView list_notes;
 
+  private ImageButton dateFilter;
+  private ImageButton locationFilter;
+  private ImageButton userFilter;
+  private Button map_small_filter;
+  private Button map_medium_filter;
+  private Button map_large_filter;
+  private LinearLayout exploreFilters;
+  private boolean dateFilterIsVisible = false;
+  private boolean locationFilterIsVisible = false;
+  private boolean userFilterIsVisible = false;
+
+  private final String day = "24 hours";
+  private final String week = "Week";
+  private final String month = "Month";
+  private final String hundredMeters = "100 meters";
+  private final String kilometer = "1 Km";
+  private final String threeKilometer = "3 Km";
+  private final String mine = "Mine";
+  private final String others = "Others";
+  private final String all = "All";
+
   public ExploreFragment() {
     // Required empty public constructor
   }
@@ -54,6 +78,79 @@ public class ExploreFragment extends Fragment {
     list_notes = (ListView)view.findViewById(R.id.list_notes);
     noteListAdapter = new ListAdapter(parent, notes);
 
+
+    dateFilter = (ImageButton) view.findViewById(R.id.explore_date_filter);
+    locationFilter = (ImageButton) view.findViewById(R.id.explore_location_filter);
+    userFilter = (ImageButton) view.findViewById(R.id.explore_user_filter);
+
+    map_small_filter = (Button) view.findViewById(R.id.explore_small_filter);
+    map_medium_filter = (Button) view.findViewById(R.id.explore_medium_filter);
+    map_large_filter = (Button) view.findViewById(R.id.explore_large_filter);
+
+    exploreFilters = (LinearLayout) view.findViewById(R.id.explore_filter_options);
+
+    dateFilter.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+//                Log.d(TAG, "" + v.getId());
+        if (dateFilterIsVisible) {
+          dateFilterIsVisible = false;
+          exploreFilters.setVisibility(View.GONE);
+        } else {
+          exploreFilters.setVisibility(View.VISIBLE);
+          dateFilterIsVisible = true;
+          locationFilterIsVisible = false;
+          userFilterIsVisible = false;
+
+          // set text button in the right filter string
+          map_small_filter.setText(day);
+          map_medium_filter.setText(week);
+          map_large_filter.setText(month);
+        }
+      }
+    });
+
+    locationFilter.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (locationFilterIsVisible) {
+          locationFilterIsVisible = false;
+          exploreFilters.setVisibility(View.GONE);
+        } else {
+          exploreFilters.setVisibility(View.VISIBLE);
+          locationFilterIsVisible = true;
+          dateFilterIsVisible = false;
+          userFilterIsVisible = false;
+
+          // set text button in the right filter string
+          map_small_filter.setText(hundredMeters);
+          map_medium_filter.setText(kilometer);
+          map_large_filter.setText(threeKilometer);
+        }
+      }
+    });
+
+    userFilter.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (userFilterIsVisible) {
+          userFilterIsVisible = false;
+          exploreFilters.setVisibility(View.GONE);
+        } else {
+          exploreFilters.setVisibility(View.VISIBLE);
+          userFilterIsVisible = true;
+          dateFilterIsVisible = false;
+          locationFilterIsVisible = false;
+
+          // set text button in the right filter string
+          map_small_filter.setText(mine);
+          map_medium_filter.setText(others);
+          map_large_filter.setText(all);
+        }
+      }
+    });
+
+    // TODO: choose a default filter for openning explore mode
 
     try {
       getAllNotes();

@@ -8,9 +8,86 @@
 
   <!-- TODO: Update blank fragment layout -->
 
-  <ListView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/list_notes"
-    android:choiceMode="none" />
+  <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp" >
+
+      <LinearLayout
+          android:orientation="horizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:contextClickable="false" >
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/explore_date_filter"
+            android:layout_weight="1"
+            android:src="@drawable/date_icon"
+            android:scaleType="fitCenter" />
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/explore_location_filter"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/location_filter" />
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/explore_user_filter"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/users_filter" />
+      </LinearLayout>
+
+      <LinearLayout
+          android:orientation="horizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:contextClickable="false"
+          android:layout_marginTop="5dp"
+          android:visibility="gone"
+          android:id="@+id/explore_filter_options" >
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:text="filter 1"
+            android:id="@+id/explore_small_filter"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:text="filter 2"
+            android:id="@+id/explore_medium_filter"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:text="filter 3"
+            android:id="@+id/explore_large_filter"
+            android:layout_weight="1" />
+      </LinearLayout>
+
+      <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_notes"
+        android:choiceMode="none" />
+    </LinearLayout>
+  </LinearLayout>
+
 </LinearLayout>

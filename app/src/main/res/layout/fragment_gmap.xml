@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:contextClickable="false"
             android:layout_marginTop="5dp"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:id="@+id/map_filter_options">
 
             <Button
