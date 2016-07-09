@@ -24,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -204,5 +205,12 @@ public class MainActivity extends AppCompatActivity
   }
 
     public String getUserId(){return user.getId();}
+
+  public void updateNavAvatar(){
+    //Change The Avatar
+    Utils.URLtoImageView(menu_avatar, user.getAvatar());
+    Toast.makeText(this, "Profile Updated!", Toast.LENGTH_LONG).show();
+
+  }
 
 }

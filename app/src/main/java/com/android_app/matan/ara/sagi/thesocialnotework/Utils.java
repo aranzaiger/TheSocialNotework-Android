@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -31,9 +32,10 @@ import java.util.HashMap;
 public class Utils {
 
     public static final String TAG = "Utils";
-    public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
+    public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api", UPLOAD_IMAGE_PATH="/file/upload";
     public static ProgressDialog progress;
     private static HashMap<String, Bitmap> bitmapHash = new HashMap<>();
+    public static  final String PHOTOS_DIR_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/TheSocialNotework/";
 
 
 
