@@ -34,7 +34,8 @@
                     android:id="@+id/personalSpace_date_filter"
                     android:layout_weight="1"
                     android:src="@drawable/date_icon"
-                    android:scaleType="fitCenter" />
+                    android:scaleType="fitCenter"
+                    android:focusable="false" />
 
                 <ImageButton
                     android:layout_width="50dp"
@@ -42,7 +43,9 @@
                     android:id="@+id/personalSpace_premission_filter"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/permission_icon" />
+                    android:src="@drawable/permission_icon"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false" />
             </LinearLayout>
 
             <LinearLayout
@@ -51,8 +54,10 @@
                 android:layout_height="wrap_content"
                 android:contextClickable="false"
                 android:layout_marginTop="5dp"
-                android:visibility="invisible"
-                android:id="@+id/personalSpace_filter_options" >
+                android:visibility="gone"
+                android:id="@+id/personalSpace_filter_options"
+                android:clickable="false"
+                android:focusableInTouchMode="false">
 
                 <Button
                     android:layout_width="50dp"

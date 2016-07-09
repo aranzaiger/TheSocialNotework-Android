@@ -132,7 +132,7 @@ public class PersonalFragment extends Fragment {
             public void onClick(View v) {
                 if (dateFilterIsVisible) {
                     dateFilterIsVisible = false;
-                    personalSpaceFilters.setVisibility(View.INVISIBLE);
+                    personalSpaceFilters.setVisibility(View.GONE);
                 } else {
                     personalSpaceFilters.setVisibility(View.VISIBLE);
                     dateFilterIsVisible = true;
@@ -151,7 +151,7 @@ public class PersonalFragment extends Fragment {
             public void onClick(View v) {
                 if (userFilterIsVisible) {
                     userFilterIsVisible = false;
-                    personalSpaceFilters.setVisibility(View.INVISIBLE);
+                    personalSpaceFilters.setVisibility(View.GONE);
                 } else {
                     personalSpaceFilters.setVisibility(View.VISIBLE);
                     userFilterIsVisible = true;

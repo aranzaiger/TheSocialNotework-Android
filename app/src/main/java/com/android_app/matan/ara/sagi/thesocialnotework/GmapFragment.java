@@ -147,7 +147,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 //                Log.d(TAG, "" + v.getId());
                 if (dateFilterIsVisible) {
                     dateFilterIsVisible = false;
-                    mapFilters.setVisibility(View.INVISIBLE);
+                    mapFilters.setVisibility(View.GONE);
                 } else {
                     mapFilters.setVisibility(View.VISIBLE);
                     dateFilterIsVisible = true;
@@ -167,7 +167,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 if (locationFilterIsVisible) {
                     locationFilterIsVisible = false;
-                    mapFilters.setVisibility(View.INVISIBLE);
+                    mapFilters.setVisibility(View.GONE);
                 } else {
                     mapFilters.setVisibility(View.VISIBLE);
                     locationFilterIsVisible = true;
@@ -187,7 +187,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 if (userFilterIsVisible) {
                     userFilterIsVisible = false;
-                    mapFilters.setVisibility(View.INVISIBLE);
+                    mapFilters.setVisibility(View.GONE);
                 } else {
                     mapFilters.setVisibility(View.VISIBLE);
                     userFilterIsVisible = true;
