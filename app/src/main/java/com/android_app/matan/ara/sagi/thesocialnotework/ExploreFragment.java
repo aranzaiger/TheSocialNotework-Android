@@ -66,6 +66,7 @@ public class ExploreFragment extends Fragment {
 
 
   public void getAllNotes() throws JSONException {
+    Utils.showLoadingDialog(parent, "Exploring...", "Finding some new interesting notes just for you");
     Log.d(TAG, "url: " + Utils.BASE_URL + "/note/getPublic");
     String url = Utils.BASE_URL + "/note/getPublic";
     JSONObject payload = new JSONObject();
@@ -89,6 +90,7 @@ public class ExploreFragment extends Fragment {
           notes.add(Utils.getNoteFromJsonObj(noteObject, time));
         }
         list_notes.setAdapter(noteListAdapter);
+        Utils.dismissLoadingDialog();
       } catch (Exception e) {
         Log.e(TAG, "newNoteSuccess:" + e.getMessage());
       }
