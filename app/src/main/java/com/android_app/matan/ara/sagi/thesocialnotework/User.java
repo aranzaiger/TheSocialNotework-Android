@@ -151,11 +151,13 @@ public class User {
   }
 
   public void updateUser(final MainActivity activity){
+    Log.d(TAG, "updateUser: ================================");
     VolleyUtilSingleton.getInstance(activity).post(Utils.BASE_URL + "/user/upsert", this.toJSON(), new Response.Listener<JSONObject>() {
       @Override
       public void onResponse(JSONObject response) {
         try {
-          if(response.get("status") == "OK"){
+          if(response.get("status").equals("OK")){
+            Log.d(TAG, "onResponse: In OKOKOKOK");
             activity.updateNavAvatar();
             SharedPreferences sharedPref = activity.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();

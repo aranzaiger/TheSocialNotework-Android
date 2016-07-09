@@ -4,6 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -37,6 +43,8 @@ public class Utils {
     private static HashMap<String, Bitmap> bitmapHash = new HashMap<>();
     public static  final String PHOTOS_DIR_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/TheSocialNotework/";
 
+    private static boolean mLocationPermission = false;
+    private static boolean mCameraPermission = false;
 
 
     public static Bitmap getBitmapFromURL(String url) {
@@ -69,6 +77,7 @@ public class Utils {
         public void onErrorResponse(VolleyError error) {
             Log.d(TAG, "genericErrorListener");
             error.printStackTrace();
+            Utils.dismissLoadingDialog();
         }
     };
 
@@ -137,7 +146,8 @@ public class Utils {
   private static class setUserAvatar extends AsyncTask<Void, Void, Bitmap> {
     private ImageView iv;
     private String url;
-    public setUserAvatar(ImageView imageView, String url){
+
+    public setUserAvatar(ImageView imageView, String url) {
       this.iv = imageView;
       this.url = url;
     }
@@ -146,16 +156,58 @@ public class Utils {
     protected Bitmap doInBackground(Void... v) {
 //        Bitmap b;
 
-        return Utils.getBitmapFromURL(url);
+      return Utils.getBitmapFromURL(url);
 
     }
 
     @Override
-    protected void onPostExecute(Bitmap b){
+    protected void onPostExecute(Bitmap b) {
       iv.setImageBitmap(b);
     }
-
   }
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
+        Log.d(TAG, "rounded bitmap");
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
+                .getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+        final float roundPx = pixels;
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
+    }
+
+
+
+
+    public static void setLocationPermission(boolean locationPermission) {
+        mLocationPermission = locationPermission;
+    }
+    public static void setCameraPermission(boolean cameraPermission) {
+        mCameraPermission = cameraPermission;
+    }
+    public static boolean arePermissionsGranted() {
+        return (mLocationPermission && mCameraPermission);
+    }
+
+    public static boolean isCameraPermissionGranted(){
+        return mCameraPermission;
+    }
+    public static boolean isLocationPermissionGranted(){
+        return mLocationPermission;
+    }
+
 
 
 }

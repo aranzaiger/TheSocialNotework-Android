@@ -212,7 +212,7 @@ public class Note implements Parcelable {
     }
 
     public String getDate() {
-        Date d = new Date();
+        Date d = new Date(timestamp);
         DateFormat format = new SimpleDateFormat("dd MMM yyy");
         return format.format(d);
     }

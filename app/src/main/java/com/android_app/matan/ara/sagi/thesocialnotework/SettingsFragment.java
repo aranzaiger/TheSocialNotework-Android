@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -41,6 +43,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     private Uri currentImgUri;
     private TextView lbl_num_of_notes, lbl_num_of_liked;
     private User user;
+  private Button btn_save;
 
 
     public SettingsFragment() {
@@ -62,6 +65,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         this.parent = (MainActivity)getActivity();
         Utils.showLoadingDialog(parent, "Just a sec...", "");
         this.user = parent.getUser();
+      Log.d(TAG, "onCreateView: "+user.toString());
         this.cameraBtn = (ImageButton) view.findViewById(R.id.btn_camera);
         this.cameraBtn.setOnClickListener(this);
         this.avatarImage = (ImageView) view.findViewById(R.id.settings_userAvater_iamgeView);
@@ -72,6 +76,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         this.txt_username = (EditText)view.findViewById(R.id.txt_username);
         this.lbl_num_of_notes = (TextView)view.findViewById(R.id.lbl_num_of_notes);
         this.lbl_num_of_liked = (TextView)view.findViewById(R.id.lbl_num_of_liked);
+      this.btn_save = (Button)view.findViewById(R.id.btn_save);
+      this.btn_save.setOnClickListener(this);
 
         this.txt_username.setEnabled(false);
 
@@ -81,8 +87,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         this.txt_password.setText(user.getPassword());
         this.txt_email.setText(user.getEmail());
 
-//        this.lbl_num_of_notes.setText(user.getNumber_of_notes()); //TODO
-//      this.lbl_num_of_notes.setText(user.getLiked_notes().size());
+        this.lbl_num_of_notes.setText(""+user.getNumber_of_notes()); //TODO
+      this.lbl_num_of_notes.setText(""+user.getLiked_notes().size());
 
 
         Utils.dismissLoadingDialog();
@@ -106,8 +112,18 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     switch(view.getId()){
       case R.id.btn_camera:
         //check for permission
-        ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CAMERA}, 1);
-        openCamera(view);
+//        ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CAMERA}, 1);
+        if ((ActivityCompat.checkSelfPermission((MainActivity) getActivity(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+          &&(ActivityCompat.checkSelfPermission((MainActivity) getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+          openCamera(view);
+        }else{
+          Toast.makeText(getActivity(), "No Camera or Storage Permissions granted.\n\"An App is nothing without its permissions\"", Toast.LENGTH_LONG).show();
+
+        }
+
+        break;
+      case R.id.btn_save:
+        user.updateUser(parent);
         break;
     }
   }

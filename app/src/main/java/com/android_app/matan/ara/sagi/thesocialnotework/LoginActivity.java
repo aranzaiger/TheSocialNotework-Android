@@ -3,6 +3,8 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -40,6 +42,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private final String LOGIN_PATH = "/login";
     private LoginActivity self; //this
     protected LinearLayout layout;
+    private boolean permissionsReturend = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         this.mLoginButton = (Button) findViewById(R.id.al_login_button);
         this.mLoginButton.setOnClickListener(this);
         this.mLoginButton.setEnabled(false);
+
+        //check for permission
+//        while(!permissionsReturend);
 
     }
 
@@ -220,5 +227,42 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void afterTextChanged(Editable editable) {
 
     }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode,
+//                                           String permissions[], int[] grantResults) {
+//        permissionsReturend = true;
+//        Log.d(TAG, "onRequestPermissionsResult: in func");
+//        switch (requestCode) {
+//            case FINE_PERM: {
+//                // If request is cancelled, the result arrays are empty.
+//                if (grantResults.length > 0
+//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    Log.d(TAG, "onRequestPermissionsResult: got permission for location");
+//                    Utils.setLocationPermission(true);
+//                    ActivityCompat.requestPermissions(LoginActivity.this, new String[]{android.Manifest.permission.CAMERA}, CAMERA_PERM);
+//                } else {
+//                    Log.d(TAG, "onRequestPermissionsResult:DIDNT  get permission for location");
+//
+//                    Toast.makeText(LoginActivity.this,"No Location Permissions granted.\n\"An App is nothing without its permissions\"",Toast.LENGTH_LONG);
+////                    System.exit(0);
+//                }
+//                return;
+//            }
+//            case CAMERA_PERM: {
+//                if (grantResults.length > 0
+//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    Log.d(TAG, "onRequestPermissionsResult: got permission for camera");
+//                    Utils.setCameraPermission(true);
+//
+//
+//                } else {
+//                    Log.d(TAG, "onRequestPermissionsResult: DIDNT get permission for camera");
+//                    Toast.makeText(LoginActivity.this,"No Camera Permissions granted.\n\"An App is nothing without its permissions\"",Toast.LENGTH_LONG);
+//                }
+//                return;
+//            }
+//        }
+//    }
+
 }
 
