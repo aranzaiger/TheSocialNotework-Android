@@ -172,10 +172,11 @@ public class MainActivity extends AppCompatActivity
       ft.commit();
     } else if (id == R.id.nav_logout) {
 
-      SharedPreferences sharedPref = this.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
-      SharedPreferences.Editor editor = sharedPref.edit();
-      editor.remove("UserData");
-      editor.commit();
+      try {
+        Utils.removeUserDataFromPrefs();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       Intent loginActivity = new Intent(MainActivity.this, LoginActivity.class);
       startActivity(loginActivity);
       finish();

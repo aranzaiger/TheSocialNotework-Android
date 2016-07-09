@@ -83,9 +83,10 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         //Populate The data
         Utils.URLtoImageView(avatarImage, user.getAvatar());
-        this.txt_username.setText(user.getUsername());
-        this.txt_password.setText(user.getPassword());
-        this.txt_email.setText(user.getEmail());
+        this.txt_username.setText(""+user.getUsername());
+        this.txt_password.setText(""+user.getPassword());
+        Log.d(TAG, "onCreateView: The FUCKING EMAIL IS --------------->>>" + user.getEmail());
+        this.txt_email.setText(""+user.getEmail());
 
         this.lbl_num_of_notes.setText(""+user.getNumber_of_notes()); //TODO
       this.lbl_num_of_liked.setText(""+user.getLiked_notes().size());

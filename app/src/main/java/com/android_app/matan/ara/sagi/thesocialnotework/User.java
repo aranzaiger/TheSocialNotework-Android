@@ -140,7 +140,7 @@ public class User {
     for (int i = 0; i < liked_notes.size(); i++) {
       result += liked_notes.get(i);
       if(i != liked_notes.size() - 1){
-        result+=";";
+        result+=User.LIKED_NOTES_DELIMETER;
       }
     }
     return result;
@@ -159,12 +159,12 @@ public class User {
           if(response.get("status").equals("OK")){
             Log.d(TAG, "onResponse: In OKOKOKOK");
             activity.updateNavAvatar();
-            SharedPreferences sharedPref = activity.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("UserData", self.Serialise());
+            Utils.updateUserSharedPref(self.Serialise());
             activity.updateNavAvatar();
           }
         } catch (JSONException e) {
+          e.printStackTrace();
+        } catch (Exception e) {
           e.printStackTrace();
         }
       }

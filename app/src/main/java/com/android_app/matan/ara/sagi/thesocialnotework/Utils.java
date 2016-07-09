@@ -2,6 +2,7 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -45,6 +46,7 @@ public class Utils {
 
     private static boolean mLocationPermission = false;
     private static boolean mCameraPermission = false;
+    private static SharedPreferences prefs;
 
 
     public static Bitmap getBitmapFromURL(String url) {
@@ -207,6 +209,28 @@ public class Utils {
     public static boolean isLocationPermissionGranted(){
         return mLocationPermission;
     }
+
+  public static String getUserFromSharedPrefs(Context contexst){
+    if(prefs == null){
+      prefs = contexst.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
+    }
+    return prefs.getString("UserData", null);
+  };
+
+  public static void updateUserSharedPref(String data) throws Exception {
+    if(prefs == null) throw new Exception("Prefs are not available");
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putString("UserData", data);
+    editor.commit();
+  }
+
+  public static void removeUserDataFromPrefs() throws Exception{
+    if(prefs == null) throw new Exception("Prefs are not available");
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.remove("UserData");
+    editor.commit();
+  }
+
 
 
 
