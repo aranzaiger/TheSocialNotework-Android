@@ -161,7 +161,8 @@ public class MainActivity extends AppCompatActivity
       ft.replace(R.id.fragment_container, gmapFragment);
       ft.commit();
     } else if (id == R.id.nav_personal) {
-
+      toolbar.setTitle("Personal Notes");
+      setSupportActionBar(toolbar);
       Log.d(TAG, "Before going to personal");
       ft.replace(R.id.fragment_container, personalFragment);
       ft.commit();
