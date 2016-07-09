@@ -63,7 +63,7 @@ public class ListAdapter extends BaseAdapter {
         TextView date = (TextView) v.findViewById(R.id.nvm_date_textview);
         TextView location = (TextView) v.findViewById(R.id.nvm_location_textview);
         TextView likes = (TextView) v.findViewById(R.id.nvm_likes_textview);
-        ImageView permission = (ImageView) v.findViewById(R.id.nvm_permission_image_view);
+        ImageView permission = (RoundAvatarImageView) v.findViewById(R.id.nvm_permission_image_view);
 //        NetworkImageView thumbNail = (NetworkImageView) v.findViewById(R.id.infoImageImageView);
 //        String url = mVideos.get(position).getImgURL();
 //        thumbNail.setImageUrl(url, VolleyUtilSingleTone.getInstance(mContext).getImageLoader());
