@@ -65,14 +65,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         this.parent = (MainActivity)getActivity();
         Utils.showLoadingDialog(parent, "Just a sec...", "");
         this.user = parent.getUser();
-      Log.d(TAG, "onCreateView: "+user.toString());
         this.cameraBtn = (ImageButton) view.findViewById(R.id.btn_camera);
         this.cameraBtn.setOnClickListener(this);
         this.avatarImage = (ImageView) view.findViewById(R.id.settings_userAvater_iamgeView);
         this.txt_email = (EditText)view.findViewById(R.id.txt_email);
-        this.txt_email.addTextChangedListener(this);
         this.txt_password = (EditText)view.findViewById(R.id.txt_password);
-      this.txt_password.addTextChangedListener(this);
         this.txt_username = (EditText)view.findViewById(R.id.txt_username);
         this.lbl_num_of_notes = (TextView)view.findViewById(R.id.lbl_num_of_notes);
         this.lbl_num_of_liked = (TextView)view.findViewById(R.id.lbl_num_of_liked);
@@ -85,12 +82,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         Utils.URLtoImageView(avatarImage, user.getAvatar());
         this.txt_username.setText(""+user.getUsername());
         this.txt_password.setText(""+user.getPassword());
-        Log.d(TAG, "onCreateView: The FUCKING EMAIL IS --------------->>>" + user.getEmail());
-        this.txt_email.setText(""+user.getEmail());
+        this.txt_email.setText(""+parent.getUser().getEmail());
 
         this.lbl_num_of_notes.setText(""+user.getNumber_of_notes()); //TODO
       this.lbl_num_of_liked.setText(""+user.getLiked_notes().size());
 
+      this.txt_password.addTextChangedListener(this);
+      this.txt_email.addTextChangedListener(this);
 
         Utils.dismissLoadingDialog();
         return view;

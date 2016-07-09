@@ -63,6 +63,7 @@ public class User {
           break;
       }
     }
+    Log.d(TAG, "User: Constructor Created:\n"+this.toString());
   }
 
   public int getNumber_of_notes() {
@@ -90,7 +91,7 @@ public class User {
   }
 
   public String getEmail() {
-    return email;
+    return this.email;
   }
 
   public void setEmail(String email) {
@@ -109,16 +110,9 @@ public class User {
     return username;
   }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
 
   public Vector<String> getLiked_notes() {
     return liked_notes;
-  }
-
-  public void setLiked_notes(Vector<String> liked_notes) {
-    this.liked_notes = liked_notes;
   }
 
   private void createArrayNotes(String s) {
@@ -128,7 +122,6 @@ public class User {
       Log.d(TAG, "createArrayNotes: Note ID " + i + ": " + noteIds[i]);
       liked_notes.add(noteIds[i]);
     }
-    Log.d(TAG, "createArrayNotes: =================: == Done With Note IDS");
   }
 
   public String Serialise(){
@@ -151,13 +144,11 @@ public class User {
   }
 
   public void updateUser(final MainActivity activity){
-    Log.d(TAG, "updateUser: ================================");
     VolleyUtilSingleton.getInstance(activity).post(Utils.BASE_URL + "/user/upsert", this.toJSON(), new Response.Listener<JSONObject>() {
       @Override
       public void onResponse(JSONObject response) {
         try {
           if(response.get("status").equals("OK")){
-            Log.d(TAG, "onResponse: In OKOKOKOK");
             activity.updateNavAvatar();
             Utils.updateUserSharedPref(self.Serialise());
             activity.updateNavAvatar();
