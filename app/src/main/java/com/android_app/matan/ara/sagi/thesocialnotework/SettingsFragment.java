@@ -88,7 +88,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         this.txt_email.setText(user.getEmail());
 
         this.lbl_num_of_notes.setText(""+user.getNumber_of_notes()); //TODO
-      this.lbl_num_of_notes.setText(""+user.getLiked_notes().size());
+      this.lbl_num_of_liked.setText(""+user.getLiked_notes().size());
 
 
         Utils.dismissLoadingDialog();
