@@ -85,8 +85,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private final String kilometer = "1 Km";
     private final String threeKilometer = "3 Km";
     private final String mine = "mine";
-    private final String everyoneButMine = "all w/o me";
-    private final String everyone = "everyone's";
+    private final String others = "others";
+    private final String all = "all";
 
 
 
@@ -144,6 +144,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         dateFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Log.d(TAG, "" + v.getId());
                 if (dateFilterIsVisible) {
                     dateFilterIsVisible = false;
                     mapFilters.setVisibility(View.INVISIBLE);
@@ -195,8 +196,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
                     // set text button in the right filter string
                     map_small_filter.setText(mine);
-                    map_medium_filter.setText(everyoneButMine);
-                    map_large_filter.setText(everyone);
+                    map_medium_filter.setText(others);
+                    map_large_filter.setText(all);
                 }
             }
         });
