@@ -114,8 +114,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
       case R.id.btn_camera:
         //check for permission
 //        ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CAMERA}, 1);
-        if ((ActivityCompat.checkSelfPermission((MainActivity) getActivity(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-          &&(ActivityCompat.checkSelfPermission((MainActivity) getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+        if ((ActivityCompat.checkSelfPermission(parent, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+          &&(ActivityCompat.checkSelfPermission(parent, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
           openCamera(view);
         }else{
           Toast.makeText(getActivity(), "No Camera or Storage Permissions granted.\n\"An App is nothing without its permissions\"", Toast.LENGTH_LONG).show();
