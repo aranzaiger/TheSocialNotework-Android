@@ -136,8 +136,14 @@ public class MainActivity extends AppCompatActivity
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
 
+    Log.d(TAG, "onOptionsItemSelected: id -> "+id);
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
+      FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+      toolbar.setTitle("Settings");
+      setSupportActionBar(toolbar);
+      ft.replace(R.id.fragment_container, settingsFragment);
+      ft.commit();
       return true;
     }
 
@@ -148,7 +154,6 @@ public class MainActivity extends AppCompatActivity
   @Override
   public boolean onNavigationItemSelected(MenuItem item) {
     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-    Bundle b = new Bundle();
 
     int id = item.getItemId();
 
