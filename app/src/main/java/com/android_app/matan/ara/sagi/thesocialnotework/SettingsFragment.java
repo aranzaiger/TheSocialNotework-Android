@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 
 public class SettingsFragment extends Fragment implements View.OnClickListener, TextWatcher {
     private static final String TAG = "[TSN/Settings]";
@@ -170,11 +171,48 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     private void saveImage() {
         Utils.showLoadingDialog(parent, "Saving Image...", "This Can Take a while");
-        File myFile = new File(currentImgUri.getPath());
+
+      Bitmap b= BitmapFactory.decodeFile(currentImgUri.getPath()); // Original Image
+      Bitmap out;
+      if (b.getWidth() >= b.getHeight()){
+
+        out = Bitmap.createBitmap(
+          b,
+          b.getWidth()/2 - b.getHeight()/2,
+          0,
+          b.getHeight(),
+          b.getHeight()
+        );
+
+      }else{
+        out = Bitmap.createBitmap(
+          b,
+          0,
+          b.getHeight()/2 - b.getWidth()/2,
+          b.getWidth(),
+          b.getWidth()
+        );
+      }
+//      Bitmap out = Bitmap.createBitmap(b, 0,0,320, 320);
+      out = Bitmap.createScaledBitmap(out, 320, 320, false);
+
+      File file = new File(currentImgUri.getPath());
+      FileOutputStream fOut;
+      try {
+        fOut = new FileOutputStream(file);
+        out.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+        fOut.flush();
+        fOut.close();
+        b.recycle();
+        out.recycle();
+      } catch (Exception e) {}
+
+
+
 
         JSONObject payload = new JSONObject();
         try {
-            payload.put("image", ImageToBase64(myFile.getAbsolutePath()));
+            payload.put("image", ImageToBase64(file.getAbsolutePath()));
         } catch (JSONException e) {
             e.printStackTrace();
             Utils.dismissLoadingDialog();
