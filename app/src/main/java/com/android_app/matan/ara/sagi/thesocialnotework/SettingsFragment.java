@@ -193,7 +193,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
           b.getWidth()
         );
       }
-//      Bitmap out = Bitmap.createBitmap(b, 0,0,320, 320);
       out = Bitmap.createScaledBitmap(out, 320, 320, false);
 
       File file = new File(currentImgUri.getPath());
