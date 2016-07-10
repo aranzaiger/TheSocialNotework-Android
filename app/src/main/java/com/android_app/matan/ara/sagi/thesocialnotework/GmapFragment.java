@@ -70,7 +70,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private GPSUtils gpsUtils;
     private MainActivity mainActivity;
-    private final int MAX_ZOOM = 16, MIN_ZOOM = 9, DEFAULT_ZOOM = 12;
+    private final int MAX_ZOOM = 16, MIN_ZOOM = 8, DEFAULT_ZOOM = 12;
     private HashMap<Marker, Note> eventMarkerMap;
     private ImageButton dateFilter;
     private ImageButton locationFilter;
@@ -258,6 +258,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        updateLocationCircle();
         mMap.setMyLocationEnabled(true);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, DEFAULT_ZOOM));
 
@@ -563,6 +564,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                 map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
                 map_large_filter.setBackgroundColor(Utils.filterColor);
             }
+            updateLocationCircle();
         } else {
             locationFilter.setBackgroundResource(android.R.drawable.btn_default);
         }
@@ -596,6 +598,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         }
         Log.d(TAG, "updateShowedNotes: ======= markers presented: "+ presentedNotes.size()+"=============");
         mMap.clear();
+        updateLocationCircle();
         new getMarkersFromNotes(mMap, eventMarkerMap).execute(presentedNotes);
 
     }
