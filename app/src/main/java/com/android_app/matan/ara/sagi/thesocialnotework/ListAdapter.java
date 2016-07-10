@@ -58,22 +58,24 @@ public class ListAdapter extends BaseAdapter {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             v = inflater.inflate(R.layout.note_view_mini , parent , false);
         }
+
+        //get all layout views
         TextView title = (TextView) v.findViewById(R.id.nvm_title_textview);
         TextView time = (TextView) v.findViewById(R.id.nvm_time_textview);
         TextView date = (TextView) v.findViewById(R.id.nvm_date_textview);
         TextView location = (TextView) v.findViewById(R.id.nvm_location_textview);
         TextView likes = (TextView) v.findViewById(R.id.nvm_likes_textview);
         ImageView permission = (RoundAvatarImageView) v.findViewById(R.id.nvm_permission_image_view);
-//        NetworkImageView thumbNail = (NetworkImageView) v.findViewById(R.id.infoImageImageView);
-//        String url = mVideos.get(position).getImgURL();
-//        thumbNail.setImageUrl(url, VolleyUtilSingleTone.getInstance(mContext).getImageLoader());
+
+        //set data from note
         Note curNote = mNotes.get(position);
         title.setText(curNote.getTitle());
         time.setText(curNote.getTime());
         date.setText(curNote.getDate());
         location.setText(curNote.getAddress());
         if(likes !=null )likes.setText(""+curNote.getLikes());
-//        permission.setText(curNote.isPublic() ? "Public":"Private");
+
+        //add permission icon only if user is owner
         if(((MainActivity)mContext).getUser().getId().equals(curNote.ownerId)){// MY Note
           permission.setBackground(curNote.isPublic() ?  v.getResources().getDrawable(R.drawable.public_icon):  v.getResources().getDrawable(R.drawable.private_icon));
         }else{

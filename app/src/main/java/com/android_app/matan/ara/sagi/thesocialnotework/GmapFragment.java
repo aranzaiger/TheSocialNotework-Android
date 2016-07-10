@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-//import android.app.Fragment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -49,8 +48,6 @@ import java.util.List;
 
 
 public class GmapFragment extends Fragment implements OnMapReadyCallback {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String TAG = "[TSN / GmapFragment]";
@@ -62,13 +59,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private ImageButton dateFilter;
     private ImageButton locationFilter;
     private ImageButton userFilter;
-    private Button map_small_filter;
-    private Button map_medium_filter;
-    private Button map_large_filter;
+    private Button map_small_filter, map_medium_filter, map_large_filter;
     private LinearLayout mapFilters, mainMapFilters;
-    private boolean dateFilterIsVisible = false;
-    private boolean locationFilterIsVisible = false;
-    private boolean userFilterIsVisible = false;
+    private boolean dateFilterIsVisible = false, locationFilterIsVisible = false, userFilterIsVisible = false;
     private int userFilterSelection;
     private Long dateFilterSelection;
     private float locationFilterSelection;
@@ -108,18 +101,19 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_personal, container, false);
-
         return inflater.inflate(R.layout.fragment_gmap, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //initiate map
         SupportMapFragment frag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
         frag.getMapAsync(this);
-        listOfNotes = new ArrayList<>();
 
+        //initialize arrays and get all layout views
+        listOfNotes = new ArrayList<>();
         dateFilter = (ImageButton) view.findViewById(R.id.map_date_filter);
         locationFilter = (ImageButton) view.findViewById(R.id.map_location_filter);
         userFilter = (ImageButton) view.findViewById(R.id.map_user_filter);
@@ -128,6 +122,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         map_medium_filter = (Button) view.findViewById(R.id.map_medium_filter);
         map_large_filter = (Button) view.findViewById(R.id.map_large_filter);
 
+
+        //set onClickListeners for all filter buttons
         map_small_filter.setOnClickListener(button1ClickListener);
         map_medium_filter.setOnClickListener(button2ClickListener);
         map_large_filter.setOnClickListener(button3ClickListener);
@@ -135,9 +131,11 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         mapFilters = (LinearLayout) view.findViewById(R.id.map_filter_options);
         mainMapFilters = (LinearLayout) view.findViewById(R.id.map_filters_layout);
 
+        //set listener for date filter button
         dateFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //check if already pressed
                 if (dateFilterIsVisible) {
                     dateFilterIsVisible = false;
                     mapFilters.setVisibility(View.GONE);
@@ -156,9 +154,11 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        //set listener for location filter button
         locationFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //check if already pressed
                 if (locationFilterIsVisible) {
                     locationFilterIsVisible = false;
                     mapFilters.setVisibility(View.GONE);
@@ -177,9 +177,11 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        //set listener for user filter button
         userFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //check if already pressed
                 if (userFilterIsVisible) {
                     userFilterIsVisible = false;
                     mapFilters.setVisibility(View.GONE);
@@ -215,6 +217,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+
+        //limit map zoom in\out options
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
@@ -227,21 +231,26 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
             }
         });
+
+        //add listener for clicking marker details on map
         mMap.setInfoWindowAdapter(infoWindowAdapter);
 
 
-        LatLng userLocation = new LatLng(gpsUtils.getLatitude(), gpsUtils.getLongitude());
-//        mMap.addMarker(new MarkerOptions().position(userLocation).title("I Am Here!"));
+        //check if permission to location is enabled - and show user location on map
         if (ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        updateLocationCircle();
         mMap.setMyLocationEnabled(true);
+        updateLocationCircle();
+
+        //set camera to user location
+        LatLng userLocation = new LatLng(gpsUtils.getLatitude(), gpsUtils.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, DEFAULT_ZOOM));
 
         //get my notes
         VolleyUtilSingleton.getInstance(getActivity()).get(Utils.BASE_URL + "/note/all?uid=" + mainActivity.getUserId(), getNotesSuccessListener, Utils.genericErrorListener);
 
+        //put user id in Json with any wanted filters
         JSONObject jsonObj = new JSONObject();
         try {
             jsonObj.put("id", mainActivity.getUserId());
@@ -254,6 +263,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+    /**
+     * This function draws a circle around the user location according to the distance filter
+     */
     private void updateLocationCircle() {
         if(onMapCircle!=null){
             onMapCircle.remove();
@@ -264,6 +276,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                 .fillColor(Utils.circleColor));
     }
 
+    /**
+     * This adapter is used for opening a dialog for user note when pressed associated marker
+     */
     GoogleMap.InfoWindowAdapter infoWindowAdapter = new GoogleMap.InfoWindowAdapter() { // Use default InfoWindow frame
         @Override
         public View getInfoWindow(Marker args) {
@@ -299,16 +314,16 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     final ImageView permissionImg = (ImageView) noteViewDialog.findViewById(R.id.permission_image);
                     final ImageButton deleteBtn = (ImageButton) noteViewDialog.findViewById(R.id.ndf_delete_imagebutton);
 
-
+                    //set all date to dialog fields
                     title.setText(note.getTitle());
                     body.setText(note.getBody());
                     time.setText(note.getTime());
                     date.setText(note.getDate());
-
                     location.setText("" + note.getAddress());
                     likes.setText("" + note.getLikes());
-//                    tags.setText("Tags: " + note.getTags().toString());
                     Utils.URLtoImageView(avatar, note.getAvatar());
+
+                    //set delete\like icon according to user and note relation
                     if (isOwner) {
                         permission.setText("" + (note.isPublic() ? "Public" : "Private"));
                     } else {
@@ -322,6 +337,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         }
                     }
 
+                    //if user is owner of note - set delete function
                     if (isOwner) {
                         deleteBtn.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
@@ -341,6 +357,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                                                 try {
                                                     delNote.put("uid", mainActivity.getUserId());
                                                     delNote.put("nid", note.getId());
+
+                                                    //update server
                                                     VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/delete", delNote, Utils.deleteNoteSuccessListener, Utils.genericErrorListener);
 //                                                listOfNotes.remove(position);
                                                     marker.remove();
@@ -365,7 +383,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                             }
                         });
 
-
+                        //if user is NOT owner of note - set like function
                     } else {
                         //like Btn
                         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -380,6 +398,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+                                    //update server and local data
                                     VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, Utils.genericSuccessListener, Utils.genericErrorListener);
                                     mainActivity.getUser().getLiked_notes().add(note.getId());
                                     mainActivity.getUser().updateUser(mainActivity);
@@ -400,7 +419,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     };
 
 
-    //response listener for getting all user notes
+    /**
+     * response listener for getting all user notes
+     */
     Response.Listener<JSONObject> getNotesSuccessListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
@@ -426,6 +447,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         }
     };
 
+    /**
+     * async class in charge of getting image from server, and adding a note to the map when ready
+     */
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerNoteStruct, Void> {
         GoogleMap mMap;
         HashMap<Marker, Note> eventMarkerMap;
@@ -446,9 +470,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         @Override
         protected Void doInBackground(List<Note>... listOfNotes) {
             Log.d(TAG, "in async BG");
-
             BitmapDescriptor b;
 
+            //create new marker for each note
             for (Note n : listOfNotes[0]) {
                 b = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(Utils.getBitmapFromURL(n.getAvatar()), 80, 80, false));
                 MarkerOptions mo = new MarkerOptions()
@@ -457,6 +481,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         .snippet(n.getBody())
                         .icon(b);
 
+                //update UI
                 publishProgress(new MarkerNoteStruct(n, mo));
 
             }
@@ -467,7 +492,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-    //set main filter colors
+    /**
+     * set all filter buttons colors
+     */
     private void setButtonsColor() {
 
         Log.d(TAG, "setButtonsColor: start");
@@ -537,24 +564,30 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         mainMapFilters.setPadding(0, 8, 0, 0);
     }
 
+    /**
+     * update the list of currently presented notes according to filters
+     */
     public void updateShowedNotes() {
         List<Note> presentedNotes = new ArrayList<>();
         long timeDifference;
         float distance;
+
         //get current date and location
         Location currLocation = new Location(gpsUtils.getLocation());
         Date now = new Date();
         Location targetLocation = new Location("");//provider name is unecessary
         Date targetDate;
 
+        //for each note - check if passes filter limitations
         for (Note note : listOfNotes) {
-//            get note location and date
-            targetLocation.setLatitude(note.getLat());//your coords of course
+            //get note location and date
+            targetLocation.setLatitude(note.getLat());
             targetLocation.setLongitude(note.getLon());
             targetDate = new Date(note.getTimestamp());
             //get time and date differences
             timeDifference = now.getTime() - targetDate.getTime();
             distance = currLocation.distanceTo(targetLocation);
+
             //add to currently presented list according to filters.
             if (timeDifference <= dateFilterSelection
                     && distance <= locationFilterSelection
@@ -563,14 +596,16 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             }
 
         }
-        Log.d(TAG, "updateShowedNotes: ======= markers presented: "+ presentedNotes.size()+"=============");
+        //clear map and re-add relevant notes
         mMap.clear();
         updateLocationCircle();
         new getMarkersFromNotes(mMap, eventMarkerMap).execute(presentedNotes);
 
     }
 
-    //all buttons listener
+    /**
+     * first filter click listener
+     */
     public View.OnClickListener button1ClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
@@ -595,7 +630,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         }
     };
 
-    //all buttons listener
+    /**
+     * second filter click listener
+     */
     public View.OnClickListener button2ClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
@@ -619,7 +656,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         }
     };
 
-    //all buttons listener
+    /**
+     * first filter click listener
+     */
     public View.OnClickListener button3ClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {

@@ -41,14 +41,10 @@ public class ExploreFragment extends Fragment {
   private ListAdapter noteListAdapter;
   private List<Note> notes;
   protected ListView list_notes;
-  private ImageButton dateFilter;
-  private ImageButton locationFilter;
-  private Button map_small_filter;
-  private Button map_medium_filter;
-  private Button map_large_filter;
+  private ImageButton dateFilter, locationFilter;
+  private Button map_small_filter, map_medium_filter, map_large_filter;
   private LinearLayout exploreFilters;
-  private boolean dateFilterIsVisible = false;
-  private boolean locationFilterIsVisible = false;
+  private boolean dateFilterIsVisible = false, locationFilterIsVisible = false;
   private Long dateFilterSelection;
   private float locationFilterSelection;
   private GPSUtils gpsUtils;
@@ -74,7 +70,7 @@ public class ExploreFragment extends Fragment {
 
 
     notes = new ArrayList<>();
-    //Get Views
+    //Get all Views from layout
     list_notes = (ListView) view.findViewById(R.id.list_notes);
     noteListAdapter = new ListAdapter(parent, notes);
     list_notes.setOnItemClickListener(new ItemClickedListener());
@@ -88,19 +84,22 @@ public class ExploreFragment extends Fragment {
     map_small_filter.setOnClickListener(button1ClickListener);
     map_medium_filter.setOnClickListener(button2ClickListener);
     map_large_filter.setOnClickListener(button3ClickListener);
-
     exploreFilters = (LinearLayout) view.findViewById(R.id.explore_filter_options);
 
+
+      //set listener for date filter button
     dateFilter.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        if (dateFilterIsVisible) {
+          //check if already pressed
+          if (dateFilterIsVisible) {
           dateFilterIsVisible = false;
           exploreFilters.setVisibility(View.GONE);
         } else {
           exploreFilters.setVisibility(View.VISIBLE);
           dateFilterIsVisible = true;
           locationFilterIsVisible = false;
+
           // set text button in the right filter string
           map_small_filter.setText(R.string.day);
           map_medium_filter.setText(R.string.week);
@@ -110,9 +109,12 @@ public class ExploreFragment extends Fragment {
       }
     });
 
-    locationFilter.setOnClickListener(new View.OnClickListener() {
+      //set listener for location filter button
+      locationFilter.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+
+          //check if already pressed
         if (locationFilterIsVisible) {
           locationFilterIsVisible = false;
           exploreFilters.setVisibility(View.GONE);
@@ -128,6 +130,7 @@ public class ExploreFragment extends Fragment {
         setButtonsColor();
       }
     });
+
     try {
       getAllNotes();
     } catch (JSONException e) {
