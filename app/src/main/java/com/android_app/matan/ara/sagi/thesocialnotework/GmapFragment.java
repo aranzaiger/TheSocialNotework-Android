@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -167,7 +170,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     // set text button in the right filter string
                     map_small_filter.setText(day);
                     map_medium_filter.setText(week);
-                    map_medium_filter.setText(week);
                     map_large_filter.setText(month);
                 }
                 setButtonsColor();
@@ -290,10 +292,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     noteViewDialog.setContentView(R.layout.note_display_full);
 
                     boolean isOwner = note.getOwnerId().equals(mainActivity.getUserId());
-//                    if (isOwner)
-//                        noteViewDialog.setTitle("You wrote...");
-//                    else
-//                        noteViewDialog.setTitle("Someone wrote...");
                     noteViewDialog.show();
 
 
@@ -325,9 +323,14 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     } else {
                         permissionImg.setVisibility(View.INVISIBLE);
                         permission.setText("");
-                        deleteBtn.setBackgroundResource(R.drawable.like_icon);
+                        deleteBtn.setBackgroundResource(R.drawable.unlike_icon);
+                        int filterColor;
+                        if (mainActivity.getUser().getLiked_notes().contains(note.getId())) {
+                            deleteBtn.setBackgroundResource(R.drawable.like_icon);
+                        } else {
+                            deleteBtn.setBackgroundResource(R.drawable.unlike_icon);
+                        }
                     }
-
 
                     if (isOwner) {
                         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -377,9 +380,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         //like Btn
                         deleteBtn.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-                                //add like only if user is didnt like already
+                                //add like only if user didnt like already
                                 if (!mainActivity.getUser().getLiked_notes().contains(note.getId())) {
-
                                     JSONObject jsonObj = new JSONObject();
                                     try {
                                         jsonObj.put("uid", mainActivity.getUserId());
@@ -388,10 +390,12 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, getNotesSuccessListener, Utils.genericErrorListener);
+                                    VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, likeNotesSuccessListener, Utils.genericErrorListener);
                                     mainActivity.getUser().getLiked_notes().add(note.getId());
                                     mainActivity.getUser().updateUser(mainActivity);
-                                    likes.setText("Likes: " + (note.getLikes() + 1));
+                                    note.setLikes(note.getLikes()+1);
+                                    likes.setText("" + note.getLikes());
+                                    deleteBtn.setBackgroundResource(R.drawable.like_icon);
                                 }
                             }
                         });
@@ -431,6 +435,15 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
     };
+
+    //response listener for getting all user notes
+    Response.Listener<JSONObject> likeNotesSuccessListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            Log.d(TAG, "likeNotesSuccessListener: " + response.toString());
+        }
+    };
+
 
 
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerNoteStruct, Void> {
