@@ -302,7 +302,7 @@ public class PersonalFragment extends Fragment {
                 Date time = new Date();
                 JSONObject noteObject = response.getJSONObject("note");
                 time.setTime(noteObject.getLong("created_at"));
-                addNoteFromJsonObj(noteObject, time);
+                addNoteFromJsonObj(noteObject, time,0);
                 updateShowedNotes();
 
 //                presentedNotes = listOfNotes;
@@ -339,7 +339,7 @@ public class PersonalFragment extends Fragment {
                     JSONObject noteObject = noteObjectsArray.getJSONObject(i);
                     time.setTime(noteObject.getLong("created_at"));
 
-                    addNoteFromJsonObj(noteObject, time);
+                    addNoteFromJsonObj(noteObject, time,-1);
                 }
                 updateShowedNotes();
 //                presentedNotes = listOfNotes;
@@ -365,7 +365,7 @@ public class PersonalFragment extends Fragment {
     }
 
 
-    private void addNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
+    private void addNoteFromJsonObj(JSONObject noteObject, Date time, int position) throws JSONException {
         Note addNote = new Note(
                 noteObject.getString("id"),
                 Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
@@ -380,7 +380,12 @@ public class PersonalFragment extends Fragment {
                 noteObject.getString("owner_id"),
                 jsonArrayToStringArray(noteObject.getJSONArray("tags"))
         );
-        listOfNotes.add(addNote);
+        Log.d(TAG, "addNoteFromJsonObj: "+ addNote.getDate() + " " + addNote.getTime());
+        if (position != 0)
+            listOfNotes.add(addNote);
+        else
+            listOfNotes.add(position,addNote);
+
 
     }
 
