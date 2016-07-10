@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -37,6 +38,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -81,6 +84,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private Long dateFilterSelection;
     private float locationFilterSelection;
     List<Note> listOfNotes;
+    private Circle onMapCircle;
 
     private final String day = "24 hours";
     private final String week = "Week";
@@ -236,9 +240,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-                if (cameraPosition.zoom > MAX_ZOOM) {
-                    getMap().animateCamera(CameraUpdateFactory.zoomTo(MAX_ZOOM));
-                }
+//                if (cameraPosition.zoom > MAX_ZOOM) {
+//                    getMap().animateCamera(CameraUpdateFactory.zoomTo(MAX_ZOOM));
+//                }
                 if (cameraPosition.zoom < MIN_ZOOM) {
                     getMap().animateCamera(CameraUpdateFactory.zoomTo(MIN_ZOOM));
                 }
@@ -253,6 +257,16 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
+        updateLocationCircle();
+        //add circle around user locaiton
+//        onMapCircle = mMap.addCircle(new CircleOptions()
+//                .center(new LatLng(gpsUtils.getLatitude(), gpsUtils.getLongitude()))
+//                .radius(locationFilterSelection)
+//                .fillColor(Utils.circleColor));
+
+
+
         mMap.setMyLocationEnabled(true);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, DEFAULT_ZOOM));
 
@@ -269,6 +283,16 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/getPublic", jsonObj, getNotesSuccessListener, Utils.genericErrorListener);
 
 
+    }
+
+    private void updateLocationCircle() {
+        if(onMapCircle!=null){
+            onMapCircle.remove();
+        }
+        onMapCircle = mMap.addCircle(new CircleOptions()
+                .center(new LatLng(gpsUtils.getLatitude(), gpsUtils.getLongitude()))
+                .radius(locationFilterSelection)
+                .fillColor(Utils.circleColor));
     }
 
     GoogleMap.InfoWindowAdapter infoWindowAdapter = new GoogleMap.InfoWindowAdapter() { // Use default InfoWindow frame
@@ -537,6 +561,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                 map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
                 map_large_filter.setBackgroundColor(Utils.filterColor);
             }
+            updateLocationCircle();
         } else {
             locationFilter.setBackgroundResource(android.R.drawable.btn_default);
         }
@@ -570,6 +595,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         }
         Log.d(TAG, "updateShowedNotes: ======= markers presented: "+ presentedNotes.size()+"=============");
         mMap.clear();
+        updateLocationCircle();
         new getMarkersFromNotes(mMap, eventMarkerMap).execute(presentedNotes);
 
     }
