@@ -338,7 +338,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         permissionImg.setVisibility(View.INVISIBLE);
                         permission.setText("");
                         deleteBtn.setBackgroundResource(R.drawable.unlike_icon);
-                        int filterColor;
                         if (mainActivity.getUser().getLiked_notes().contains(note.getId())) {
                             deleteBtn.setBackgroundResource(R.drawable.like_icon);
                         } else {
@@ -404,7 +403,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, likeNotesSuccessListener, Utils.genericErrorListener);
+                                    VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, Utils.genericSuccessListener, Utils.genericErrorListener);
                                     mainActivity.getUser().getLiked_notes().add(note.getId());
                                     mainActivity.getUser().updateUser(mainActivity);
                                     note.setLikes(note.getLikes()+1);
@@ -449,16 +448,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
     };
-
-    //response listener for getting all user notes
-    Response.Listener<JSONObject> likeNotesSuccessListener = new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
-            Log.d(TAG, "likeNotesSuccessListener: " + response.toString());
-        }
-    };
-
-
 
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerNoteStruct, Void> {
         GoogleMap mMap;
