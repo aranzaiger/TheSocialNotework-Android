@@ -250,9 +250,8 @@ public class MainActivity extends AppCompatActivity
 
   public void updateNavAvatar() {
     //Change The Avatar
-    Log.d(TAG, "updateNavAvatar: PINPINPINPIN");
     Utils.URLtoImageView(menu_avatar, user.getAvatar());
-    Toast.makeText(this, "Profile Updated!", Toast.LENGTH_LONG).show();
+    Toast.makeText(this, "Success "+("\ud83d\ude01")+" !", Toast.LENGTH_LONG).show();
 
   }
 }
