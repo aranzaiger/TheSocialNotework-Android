@@ -85,9 +85,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private final String day = "24 hours";
     private final String week = "Week";
     private final String month = "Month";
-    private final String hundredMeters = "100 meters";
-    private final String kilometer = "1 Km";
-    private final String tenKilometers = "10 Km";
+    private final String hundredMeters = "1 Km";
+    private final String kilometer = "10 Km";
+    private final String tenKilometers = "100 Km";
     private final String mine = "Mine";
     private final String others = "Others";
     private final String all = "All";
@@ -167,9 +167,10 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     // set text button in the right filter string
                     map_small_filter.setText(day);
                     map_medium_filter.setText(week);
+                    map_medium_filter.setText(week);
                     map_large_filter.setText(month);
                 }
-                updateShowedNotes();
+                setButtonsColor();
             }
         });
 
@@ -190,7 +191,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     map_medium_filter.setText(kilometer);
                     map_large_filter.setText(tenKilometers);
                 }
-                updateShowedNotes();
+                setButtonsColor();
             }
         });
 
@@ -211,7 +212,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     map_medium_filter.setText(others);
                     map_large_filter.setText(all);
                 }
-                updateShowedNotes();
+                setButtonsColor();
             }
         });
     }
@@ -568,10 +569,8 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
         }
         Log.d(TAG, "updateShowedNotes: ======= markers presented: "+ presentedNotes.size()+"=============");
-//        noteListAdapter.updateList(presentedNotes);
-//        noteList.setAdapter(noteListAdapter);
         mMap.clear();
-        new getMarkersFromNotes(mMap, eventMarkerMap).execute(listOfNotes);
+        new getMarkersFromNotes(mMap, eventMarkerMap).execute(presentedNotes);
 
     }
 
@@ -616,7 +615,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
             //date filters
             else {
-                dateFilterSelection = Utils.MONTH_MILI;
+                dateFilterSelection = Utils.WEEK_MILI;
             }
             //change colors of buttons and update visible notes
             setButtonsColor();
