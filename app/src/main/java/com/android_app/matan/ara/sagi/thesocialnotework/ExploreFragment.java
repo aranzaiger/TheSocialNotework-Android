@@ -92,7 +92,6 @@ public class ExploreFragment extends Fragment {
     dateFilter.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-//                Log.d(TAG, "" + v.getId());
         if (dateFilterIsVisible) {
           dateFilterIsVisible = false;
           exploreFilters.setVisibility(View.GONE);

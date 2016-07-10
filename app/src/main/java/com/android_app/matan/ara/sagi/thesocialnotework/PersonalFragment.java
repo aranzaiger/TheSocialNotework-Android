@@ -498,8 +498,6 @@ public class PersonalFragment extends Fragment {
             });
 
         }
-
-
     }
 
 
