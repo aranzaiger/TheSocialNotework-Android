@@ -48,7 +48,8 @@ public class Utils {
     private static boolean mLocationPermission = false;
     private static boolean mCameraPermission = false;
     private static SharedPreferences prefs;
-    public static int filterColor = Color.parseColor("#33adff");
+    public static int filterColor = Color.parseColor("#33adff"), circleColor =0x6666a3ff;
+
     public static final long DAY_MILI = 86400000L,WEEK_MILI = 604800000L,MONTH_MILI = 2592000000L;
     public static final float DISTANCE_SMALL = 1000,DISTANCE_MEDIUM = 10000,DISTANCE_LONG = 100000;
 

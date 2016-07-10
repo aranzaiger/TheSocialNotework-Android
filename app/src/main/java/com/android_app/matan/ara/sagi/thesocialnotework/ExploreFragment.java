@@ -4,6 +4,7 @@ package com.android_app.matan.ara.sagi.thesocialnotework;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -57,14 +58,17 @@ public class ExploreFragment extends Fragment {
     private LinearLayout exploreFilters;
     private boolean dateFilterIsVisible = false;
     private boolean locationFilterIsVisible = false;
+    private Long dateFilterSelection;
+    private float locationFilterSelection;
+    private GPSUtils gpsUtils;
 //    private boolean userFilterIsVisible = false;
 
     private final String day = "24 hours";
     private final String week = "Week";
     private final String month = "Month";
-    private final String hundredMeters = "100 meters";
-    private final String kilometer = "1 Km";
-    private final String threeKilometer = "3 Km";
+    private final String hundredMeters = "1 K";
+    private final String kilometer = "10 Km";
+    private final String threeKilometer = "100 Km";
 //    private final String mine = "Mine";
 //    private final String others = "Others";
 //    private final String all = "All";
@@ -81,12 +85,16 @@ public class ExploreFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
 
         parent = (MainActivity) getActivity();
+        gpsUtils = parent.getGPSUtils();
         user = parent.getUser();
         notes = new ArrayList<>();
         //Get Views
         list_notes = (ListView) view.findViewById(R.id.list_notes);
         noteListAdapter = new ListAdapter(parent, notes);
         list_notes.setOnItemClickListener(new ItemClickedListener());
+        dateFilterSelection = Utils.MONTH_MILI;
+        locationFilterSelection = Utils.DISTANCE_LONG;
+
 
 
         dateFilter = (ImageButton) view.findViewById(R.id.explore_date_filter);
@@ -95,6 +103,10 @@ public class ExploreFragment extends Fragment {
         map_small_filter = (Button) view.findViewById(R.id.explore_small_filter);
         map_medium_filter = (Button) view.findViewById(R.id.explore_medium_filter);
         map_large_filter = (Button) view.findViewById(R.id.explore_large_filter);
+
+        map_small_filter.setOnClickListener(button1ClickListener);
+        map_medium_filter.setOnClickListener(button2ClickListener);
+        map_large_filter.setOnClickListener(button3ClickListener);
 
         exploreFilters = (LinearLayout) view.findViewById(R.id.explore_filter_options);
 
@@ -115,6 +127,7 @@ public class ExploreFragment extends Fragment {
                     map_medium_filter.setText(week);
                     map_large_filter.setText(month);
                 }
+                setButtonsColor();
             }
         });
 
@@ -135,28 +148,10 @@ public class ExploreFragment extends Fragment {
                     map_medium_filter.setText(kilometer);
                     map_large_filter.setText(threeKilometer);
                 }
+                setButtonsColor();
             }
         });
 
-//        userFilter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (userFilterIsVisible) {
-//                    userFilterIsVisible = false;
-//                    exploreFilters.setVisibility(View.GONE);
-//                } else {
-//                    exploreFilters.setVisibility(View.VISIBLE);
-//                    userFilterIsVisible = true;
-//                    dateFilterIsVisible = false;
-//                    locationFilterIsVisible = false;
-//
-//                    // set text button in the right filter string
-//                    map_small_filter.setText(mine);
-//                    map_medium_filter.setText(others);
-//                    map_large_filter.setText(all);
-//                }
-//            }
-//        });
 
         // TODO: choose a default filter for openning explore mode
 
@@ -193,7 +188,8 @@ public class ExploreFragment extends Fragment {
                     time.setTime(noteObject.getLong("created_at"));
                     notes.add(Utils.getNoteFromJsonObj(noteObject, time));
                 }
-                list_notes.setAdapter(noteListAdapter);
+//                list_notes.setAdapter(noteListAdapter);
+                updateShowedNotes();
                 Utils.dismissLoadingDialog();
             } catch (Exception e) {
                 Log.e(TAG, "newNoteSuccess:" + e.getMessage());
@@ -293,6 +289,144 @@ public class ExploreFragment extends Fragment {
                 }
             });
         }
+    }
+
+    //all buttons listener
+    public View.OnClickListener button1ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+
+            //location filter
+            if (locationFilterIsVisible) {
+                locationFilterSelection = Utils.DISTANCE_SMALL;
+            }
+
+            //date filters
+            else {
+                dateFilterSelection = Utils.DAY_MILI;
+
+            }
+            //change colors of buttons and update visible notes
+            setButtonsColor();
+            updateShowedNotes();
+        }
+    };
+
+    //all buttons listener
+    public View.OnClickListener button2ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+
+            //location filter
+            if (locationFilterIsVisible) {
+                locationFilterSelection = Utils.DISTANCE_MEDIUM;
+            }
+
+            //date filters
+            else {
+                dateFilterSelection = Utils.WEEK_MILI;
+            }
+            //change colors of buttons and update visible notes
+            setButtonsColor();
+            updateShowedNotes();
+        }
+    };
+
+    //all buttons listener
+    public View.OnClickListener button3ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+
+            //location filter
+            if (locationFilterIsVisible) {
+                locationFilterSelection = Utils.DISTANCE_LONG;
+            }
+
+            //date filters
+            else {
+                dateFilterSelection = Utils.MONTH_MILI;
+            }
+            //change colors of buttons and update visible notes
+            setButtonsColor();
+            updateShowedNotes();
+        }
+    };
+
+
+    //set main filter colors
+    private void setButtonsColor() {
+
+        Log.d(TAG, "setButtonsColor: start");
+        //set date filter colors
+        if (dateFilterIsVisible) {
+            dateFilter.setBackgroundColor(Utils.filterColor);
+            if (dateFilterSelection == Utils.DAY_MILI) {
+                map_small_filter.setBackgroundColor(Utils.filterColor);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else if (dateFilterSelection == Utils.WEEK_MILI) {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundColor(Utils.filterColor);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundColor(Utils.filterColor);
+            }
+        } else {
+            dateFilter.setBackgroundResource(android.R.drawable.btn_default);
+        }
+
+        //set distance filter colors
+        if (locationFilterIsVisible) {
+            locationFilter.setBackgroundColor(Utils.filterColor);
+            if (locationFilterSelection == Utils.DISTANCE_SMALL) {
+                map_small_filter.setBackgroundColor(Utils.filterColor);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else if (locationFilterSelection == Utils.DISTANCE_MEDIUM) {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundColor(Utils.filterColor);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundColor(Utils.filterColor);
+            }
+        } else {
+            locationFilter.setBackgroundResource(android.R.drawable.btn_default);
+        }
+    }
+
+    public void updateShowedNotes() {
+        List<Note> presentedNotes = new ArrayList<>();
+        long timeDifference;
+        float distance;
+        //get current date and location
+        Location currLocation = new Location(gpsUtils.getLocation());
+        Date now = new Date();
+        Location targetLocation = new Location("");//provider name is unecessary
+        Date targetDate;
+
+        for (Note note : notes) {
+//            get note location and date
+            targetLocation.setLatitude(note.getLat());//your coords of course
+            targetLocation.setLongitude(note.getLon());
+            targetDate = new Date(note.getTimestamp());
+            //get time and date differences
+            timeDifference = now.getTime() - targetDate.getTime();
+            distance = currLocation.distanceTo(targetLocation);
+            //add to currently presented list according to filters.
+            if (timeDifference <= dateFilterSelection
+                    && distance <= locationFilterSelection){
+                presentedNotes.add(note);
+            }
+
+        }
+
+
+        noteListAdapter.updateList(presentedNotes);
+        list_notes.setAdapter(noteListAdapter);
     }
 
 
