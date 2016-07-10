@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -47,6 +48,9 @@ public class Utils {
     private static boolean mLocationPermission = false;
     private static boolean mCameraPermission = false;
     private static SharedPreferences prefs;
+    public static int filterColor = Color.parseColor("#33adff");
+    public static final long DAY_MILI = 86400000L,WEEK_MILI = 604800000L,MONTH_MILI = 2592000000L;
+
 
 
     public static Bitmap getBitmapFromURL(String url) {
