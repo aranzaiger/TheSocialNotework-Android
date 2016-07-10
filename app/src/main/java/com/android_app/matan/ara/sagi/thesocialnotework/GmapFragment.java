@@ -77,21 +77,27 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private boolean dateFilterIsVisible = false;
     private boolean locationFilterIsVisible = false;
     private boolean userFilterIsVisible = false;
+    private int userFilterSelection;
+    private Long dateFilterSelection;
+    private float locationFilterSelection;
+    List<Note> listOfNotes;
 
     private final String day = "24 hours";
     private final String week = "Week";
     private final String month = "Month";
     private final String hundredMeters = "100 meters";
     private final String kilometer = "1 Km";
-    private final String threeKilometer = "3 Km";
+    private final String tenKilometers = "10 Km";
     private final String mine = "Mine";
     private final String others = "Others";
     private final String all = "All";
 
 
-
     public GmapFragment() {
         eventMarkerMap = new HashMap<Marker, Note>();
+        dateFilterSelection = Utils.MONTH_MILI;
+        userFilterSelection = 3;
+        locationFilterSelection = Utils.DISTANCE_LONG;
     }
 
 
@@ -130,6 +136,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment frag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
         frag.getMapAsync(this);
+        listOfNotes = new ArrayList<>();
 
         dateFilter = (ImageButton) view.findViewById(R.id.map_date_filter);
         locationFilter = (ImageButton) view.findViewById(R.id.map_location_filter);
@@ -138,6 +145,10 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         map_small_filter = (Button) view.findViewById(R.id.map_small_filter);
         map_medium_filter = (Button) view.findViewById(R.id.map_medium_filter);
         map_large_filter = (Button) view.findViewById(R.id.map_large_filter);
+
+        map_small_filter.setOnClickListener(button1ClickListener);
+        map_medium_filter.setOnClickListener(button2ClickListener);
+        map_large_filter.setOnClickListener(button3ClickListener);
 
         mapFilters = (LinearLayout) view.findViewById(R.id.map_filter_options);
 
@@ -158,6 +169,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     map_medium_filter.setText(week);
                     map_large_filter.setText(month);
                 }
+                updateShowedNotes();
             }
         });
 
@@ -176,8 +188,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     // set text button in the right filter string
                     map_small_filter.setText(hundredMeters);
                     map_medium_filter.setText(kilometer);
-                    map_large_filter.setText(threeKilometer);
+                    map_large_filter.setText(tenKilometers);
                 }
+                updateShowedNotes();
             }
         });
 
@@ -198,6 +211,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     map_medium_filter.setText(others);
                     map_large_filter.setText(all);
                 }
+                updateShowedNotes();
             }
         });
     }
@@ -314,8 +328,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     }
 
 
-                    if (isOwner)
-                    {
+                    if (isOwner) {
                         deleteBtn.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
                                 //Put up the Yes/No message box
@@ -359,8 +372,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         });
 
 
-                    }
-                    else{
+                    } else {
                         //like Btn
                         deleteBtn.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
@@ -378,7 +390,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                                     VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, getNotesSuccessListener, Utils.genericErrorListener);
                                     mainActivity.getUser().getLiked_notes().add(note.getId());
                                     mainActivity.getUser().updateUser(mainActivity);
-                                    likes.setText("Likes: "+(note.getLikes()+1));
+                                    likes.setText("Likes: " + (note.getLikes() + 1));
                                 }
                             }
                         });
@@ -398,7 +410,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         @Override
         public void onResponse(JSONObject response) {
             Log.d(TAG, "getNotesSuccessListener: " + response.toString());
-            List<Note> listOfNotes = new ArrayList<>();
+//            listOfNotes = new ArrayList<>();
 
             try {
                 //need to get all notes and add to listOfNotes
@@ -409,14 +421,15 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     time.setTime(noteObject.getLong("created_at"));
                     listOfNotes.add(Utils.getNoteFromJsonObj(noteObject, time));
                 }
-                new getMarkersFromNotes(mMap, eventMarkerMap).execute(listOfNotes);
+                updateShowedNotes();
+//                new getMarkersFromNotes(mMap, eventMarkerMap).execute(listOfNotes);
+
             } catch (Exception e) {
                 Log.e(TAG, "newNoteSuccess:" + e.getMessage());
                 e.printStackTrace();
             }
         }
     };
-
 
 
     private class getMarkersFromNotes extends AsyncTask<List<Note>, MarkerNoteStruct, Void> {
@@ -432,7 +445,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         @Override
         protected void onProgressUpdate(MarkerNoteStruct... mo) {
 
-            eventMarkerMap.put(mMap.addMarker(mo[0].getMarker()),mo[0].getNote());
+            eventMarkerMap.put(mMap.addMarker(mo[0].getMarker()), mo[0].getNote());
 
         }
 
@@ -450,7 +463,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                         .snippet(n.getBody())
                         .icon(b);
 
-                publishProgress(new MarkerNoteStruct(n,mo));
+                publishProgress(new MarkerNoteStruct(n, mo));
 
             }
             return null;
@@ -460,19 +473,181 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-//    public Marker placeMarker(Note eventInfo) {
-//
-//        Marker m  = getMap().addMarker(new MarkerOptions()
-//
-//                .position(eventInfo.getLatLong())
-//
-//                .title(eventInfo.getName()));
-//
-//
-//
-//        return m;
-//
-//    }
+    //set main filter colors
+    private void setButtonsColor() {
+
+        Log.d(TAG, "setButtonsColor: start");
+        //set date filter colors
+        if (dateFilterIsVisible) {
+            Log.d(TAG, "setButtonsColor: dateselection :" + dateFilterSelection);
+            dateFilter.setBackgroundColor(Utils.filterColor);
+            if (dateFilterSelection == Utils.DAY_MILI) {
+                map_small_filter.setBackgroundColor(Utils.filterColor);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else if (dateFilterSelection == Utils.WEEK_MILI) {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundColor(Utils.filterColor);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundColor(Utils.filterColor);
+            }
+        } else {
+            dateFilter.setBackgroundResource(android.R.drawable.btn_default);
+        }
+
+        //set date filter colors
+        if (userFilterIsVisible) {
+            Log.d(TAG, "setButtonsColor: userFilter: " + userFilterSelection);
+            userFilter.setBackgroundColor(Utils.filterColor);
+            if (userFilterSelection == 1) {
+                map_small_filter.setBackgroundColor(Utils.filterColor);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else if (userFilterSelection == 2) {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundColor(Utils.filterColor);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundColor(Utils.filterColor);
+            }
+        } else {
+            userFilter.setBackgroundResource(android.R.drawable.btn_default);
+        }
+
+        //set distance filter colors
+        if (locationFilterIsVisible) {
+            Log.d(TAG, "setButtonsColor: userFilter: " + userFilterSelection);
+            locationFilter.setBackgroundColor(Utils.filterColor);
+            if (locationFilterSelection == Utils.DISTANCE_SMALL) {
+                map_small_filter.setBackgroundColor(Utils.filterColor);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else if (locationFilterSelection == Utils.DISTANCE_MEDIUM) {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundColor(Utils.filterColor);
+                map_large_filter.setBackgroundResource(android.R.drawable.btn_default);
+            } else {
+                map_small_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_medium_filter.setBackgroundResource(android.R.drawable.btn_default);
+                map_large_filter.setBackgroundColor(Utils.filterColor);
+            }
+        } else {
+            locationFilter.setBackgroundResource(android.R.drawable.btn_default);
+        }
+    }
+
+    public void updateShowedNotes() {
+        List<Note> presentedNotes = new ArrayList<>();
+        long timeDifference;
+        float distance;
+        //get current date and location
+        Location currLocation = new Location(gpsUtils.getLocation());
+        Date now = new Date();
+        Location targetLocation = new Location("");//provider name is unecessary
+        Date targetDate;
+
+        for (Note note : listOfNotes) {
+//            get note location and date
+            targetLocation.setLatitude(note.getLat());//your coords of course
+            targetLocation.setLongitude(note.getLon());
+            targetDate = new Date(note.getTimestamp());
+            //get time and date differences
+            timeDifference = now.getTime() - targetDate.getTime();
+            distance = currLocation.distanceTo(targetLocation);
+            //add to currently presented list according to filters.
+            if (timeDifference <= dateFilterSelection
+                    && distance <= locationFilterSelection
+                    && ((note.getOwnerId().equals(mainActivity.getUserId()) && userFilterSelection == 1) || (!note.getOwnerId().equals(mainActivity.getUserId()) && userFilterSelection == 2) || (userFilterSelection == 3))) {
+                presentedNotes.add(note);
+            }
+
+        }
+        Log.d(TAG, "updateShowedNotes: ======= markers presented: "+ presentedNotes.size()+"=============");
+//        noteListAdapter.updateList(presentedNotes);
+//        noteList.setAdapter(noteListAdapter);
+        mMap.clear();
+        new getMarkersFromNotes(mMap, eventMarkerMap).execute(listOfNotes);
+
+    }
+
+    //all buttons listener
+    public View.OnClickListener button1ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+            //user filters
+            if (userFilterIsVisible) {
+                userFilterSelection = 1;
+            }
+
+            //location filter
+            else if (locationFilterIsVisible) {
+                locationFilterSelection = Utils.DISTANCE_SMALL;
+            }
+
+            //date filters
+            else {
+                dateFilterSelection = Utils.DAY_MILI;
+
+            }
+            //change colors of buttons and update visible notes
+            setButtonsColor();
+            updateShowedNotes();
+        }
+    };
+
+    //all buttons listener
+    public View.OnClickListener button2ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+            //user filters
+            if (userFilterIsVisible) {
+                userFilterSelection = 2;
+            }
+
+            //location filter
+            else if (locationFilterIsVisible) {
+                locationFilterSelection = Utils.DISTANCE_MEDIUM;
+            }
+
+            //date filters
+            else {
+                dateFilterSelection = Utils.MONTH_MILI;
+            }
+            //change colors of buttons and update visible notes
+            setButtonsColor();
+            updateShowedNotes();
+        }
+    };
+
+    //all buttons listener
+    public View.OnClickListener button3ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+            //user filters
+            if (userFilterIsVisible) {
+                userFilterSelection = 3;
+            }
+
+            //location filter
+            else if (locationFilterIsVisible) {
+                locationFilterSelection = Utils.DISTANCE_LONG;
+            }
+
+            //date filters
+            else {
+                dateFilterSelection = Utils.MONTH_MILI;
+
+            }
+            //change colors of buttons and update visible notes
+            setButtonsColor();
+            updateShowedNotes();
+        }
+    };
 
 
 }
