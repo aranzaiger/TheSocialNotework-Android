@@ -50,14 +50,14 @@ public class ExploreFragment extends Fragment {
 
     private ImageButton dateFilter;
     private ImageButton locationFilter;
-    private ImageButton userFilter;
+//    private ImageButton userFilter;
     private Button map_small_filter;
     private Button map_medium_filter;
     private Button map_large_filter;
     private LinearLayout exploreFilters;
     private boolean dateFilterIsVisible = false;
     private boolean locationFilterIsVisible = false;
-    private boolean userFilterIsVisible = false;
+//    private boolean userFilterIsVisible = false;
 
     private final String day = "24 hours";
     private final String week = "Week";
@@ -65,9 +65,9 @@ public class ExploreFragment extends Fragment {
     private final String hundredMeters = "100 meters";
     private final String kilometer = "1 Km";
     private final String threeKilometer = "3 Km";
-    private final String mine = "Mine";
-    private final String others = "Others";
-    private final String all = "All";
+//    private final String mine = "Mine";
+//    private final String others = "Others";
+//    private final String all = "All";
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -91,7 +91,6 @@ public class ExploreFragment extends Fragment {
 
         dateFilter = (ImageButton) view.findViewById(R.id.explore_date_filter);
         locationFilter = (ImageButton) view.findViewById(R.id.explore_location_filter);
-        userFilter = (ImageButton) view.findViewById(R.id.explore_user_filter);
 
         map_small_filter = (Button) view.findViewById(R.id.explore_small_filter);
         map_medium_filter = (Button) view.findViewById(R.id.explore_medium_filter);
@@ -109,7 +108,7 @@ public class ExploreFragment extends Fragment {
                     exploreFilters.setVisibility(View.VISIBLE);
                     dateFilterIsVisible = true;
                     locationFilterIsVisible = false;
-                    userFilterIsVisible = false;
+//                    userFilterIsVisible = false;
 
                     // set text button in the right filter string
                     map_small_filter.setText(day);
@@ -129,7 +128,7 @@ public class ExploreFragment extends Fragment {
                     exploreFilters.setVisibility(View.VISIBLE);
                     locationFilterIsVisible = true;
                     dateFilterIsVisible = false;
-                    userFilterIsVisible = false;
+//                    userFilterIsVisible = false;
 
                     // set text button in the right filter string
                     map_small_filter.setText(hundredMeters);
@@ -139,25 +138,25 @@ public class ExploreFragment extends Fragment {
             }
         });
 
-        userFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (userFilterIsVisible) {
-                    userFilterIsVisible = false;
-                    exploreFilters.setVisibility(View.GONE);
-                } else {
-                    exploreFilters.setVisibility(View.VISIBLE);
-                    userFilterIsVisible = true;
-                    dateFilterIsVisible = false;
-                    locationFilterIsVisible = false;
-
-                    // set text button in the right filter string
-                    map_small_filter.setText(mine);
-                    map_medium_filter.setText(others);
-                    map_large_filter.setText(all);
-                }
-            }
-        });
+//        userFilter.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (userFilterIsVisible) {
+//                    userFilterIsVisible = false;
+//                    exploreFilters.setVisibility(View.GONE);
+//                } else {
+//                    exploreFilters.setVisibility(View.VISIBLE);
+//                    userFilterIsVisible = true;
+//                    dateFilterIsVisible = false;
+//                    locationFilterIsVisible = false;
+//
+//                    // set text button in the right filter string
+//                    map_small_filter.setText(mine);
+//                    map_medium_filter.setText(others);
+//                    map_large_filter.setText(all);
+//                }
+//            }
+//        });
 
         // TODO: choose a default filter for openning explore mode
 
