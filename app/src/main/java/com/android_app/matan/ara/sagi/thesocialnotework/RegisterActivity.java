@@ -10,12 +10,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-
 import org.json.JSONObject;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,13 +24,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private Button registerButton;
     private Button testBtn;
     private RegisterActivity self;
-
     protected RelativeLayout layout;
-    private final String TAG = "Register Activity";
-
+    private final String TAG = "[TSN/RegisterActivity]";
     private final String BASE_URL = "http://thesocialnotework-api.appspot.com/api";
     private final String REG_PATH = "/register";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +52,30 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         this.registerButton.setOnClickListener(this);
     }
 
-    private boolean isUsernameValid(String username) { // username validation
+    /**
+     * username validation
+     * @param username
+     * @return
+     */
+    private boolean isUsernameValid(String username) {
         return !TextUtils.isEmpty(username) && username.length() > 0;
     }
 
-    private boolean isPasswordValid(String password) { // password validation
+    /**
+     * password validation
+     * @param password
+     * @return
+     */
+    private boolean isPasswordValid(String password) {
         return !TextUtils.isEmpty(password) && password.length() > 3;
     }
 
-    private boolean isEmailValid(String email) { // email validation
+    /**
+     * email validation
+     * @param email
+     * @return
+     */
+    private boolean isEmailValid(String email) {
         if (TextUtils.isEmpty(email))
             return false;
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
@@ -75,11 +84,21 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         return matcher.matches();
     }
 
-    private boolean isParamsValid(String username, String password, String email) { // private method that validates all params
+    /**
+     * private method that validates all params
+     * @param username
+     * @param password
+     * @param email
+     * @return
+     */
+    private boolean isParamsValid(String username, String password, String email) {
         return (isUsernameValid(username) && isPasswordValid(password) && isEmailValid(email));
     }
 
-    private void attemptRegister() { // attempt registering
+    /**
+     * attempt registering
+     */
+    private void attemptRegister() {
         Utils.showLoadingDialog(this, "Registering", "Please Wait...");
         if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString(), mEmailView.getText().toString())) { // params are valid
             String username = mUsernameView.getText().toString();
@@ -101,9 +120,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    /**
+     * listener to success response on register from server
+     */
     Response.Listener<JSONObject> onRegisterSuccess = new Response.Listener<JSONObject>() {
+        /**
+         * on response register from server
+         * @param response
+         */
         @Override
-        public void onResponse(JSONObject response) { // listener to success response on register from server
+        public void onResponse(JSONObject response) {
             Utils.dismissLoadingDialog();
             try {
                 if (response.getString("message").equals("created")) { // user created
@@ -120,16 +146,25 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     };
 
+
     Response.ErrorListener onRegisterError = new Response.ErrorListener() {
+        /**
+         * listener to error response on register from server
+         * @param error
+         */
         @Override
-        public void onErrorResponse(VolleyError error) { // listener to error response on register from server
+        public void onErrorResponse(VolleyError error) {
             Utils.dismissLoadingDialog();
             Toast.makeText(self, "Username is already taken. maybe: " + mUsernameView.getText().toString() + "_666 ? :)", Toast.LENGTH_LONG).show();
         }
     };
 
+    /**
+     * onclick methods to redirect to register and to login
+     * @param view
+     */
     @Override
-    public void onClick(View view) { // onclick methods to redirect to register and to login
+    public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ra_register_button:
                 attemptRegister();
@@ -140,7 +175,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void returnToLogin() { // redirect to login
+    /**
+     * redirect to login
+     */
+    private void returnToLogin() {
         Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(i);
         finish();

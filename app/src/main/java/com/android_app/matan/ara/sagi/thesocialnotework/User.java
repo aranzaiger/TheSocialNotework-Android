@@ -66,6 +66,8 @@ public class User {
     Log.d(TAG, "User: Constructor Created:\n"+this.toString());
   }
 
+  // Getters & Setters //
+
   public int getNumber_of_notes() {
     return number_of_notes;
   }
@@ -111,6 +113,10 @@ public class User {
   }
 
 
+  /**
+   * get liked notes
+   * @return
+     */
   public Vector<String> getLiked_notes() {
     return liked_notes;
   }
@@ -124,10 +130,18 @@ public class User {
     }
   }
 
+  /**
+   * convert the user object to string in order to save to the shared prefs
+   * @return
+     */
   public String Serialise(){
     return id + ATTARS_DELIMETER + username + ATTARS_DELIMETER + password + ATTARS_DELIMETER + email + ATTARS_DELIMETER +avatar + ATTARS_DELIMETER + serialiseNoteList();
   }
 
+  /**
+   * convert the user note list to string in order to save to the shared prefs
+   * @return
+     */
   private String serialiseNoteList() {
     String result = "";
     for (int i = 0; i < liked_notes.size(); i++) {
@@ -143,6 +157,10 @@ public class User {
     return "Id: "+id+" UserName: " + username +" Password: " +password +" email: " + email+ " Avatar: " +avatar+" Liked Notes: "+liked_notes.toString();
   }
 
+  /**
+   * update user
+   * @param activity
+     */
   public void updateUser(final MainActivity activity){
     VolleyUtilSingleton.getInstance(activity).post(Utils.BASE_URL + "/user/upsert", this.toJSON(), new Response.Listener<JSONObject>() {
       @Override
