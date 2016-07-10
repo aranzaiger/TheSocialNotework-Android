@@ -19,8 +19,6 @@ import android.widget.ImageView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,23 +38,28 @@ import java.util.HashMap;
 public class Utils {
 
     public static final String TAG = "Utils";
-    public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api", UPLOAD_IMAGE_PATH="/file/upload";
+    public static final String BASE_URL = "http://thesocialnotework-api.appspot.com/api", UPLOAD_IMAGE_PATH = "/file/upload";
     public static ProgressDialog progress;
     private static HashMap<String, Bitmap> bitmapHash = new HashMap<>();
-    public static  final String PHOTOS_DIR_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/TheSocialNotework/";
+    public static final String PHOTOS_DIR_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/TheSocialNotework/";
 
     private static boolean mLocationPermission = false;
     private static boolean mCameraPermission = false;
     private static SharedPreferences prefs;
-    public static int filterColor = Color.parseColor("#33adff"), circleColor =0x6666a3ff;
+    public static int filterColor = Color.parseColor("#33adff"), circleColor = 0x6666a3ff;
 
-    public static final long DAY_MILI = 86400000L,WEEK_MILI = 604800000L,MONTH_MILI = 2592000000L;
-    public static final float DISTANCE_SMALL = 1000,DISTANCE_MEDIUM = 10000,DISTANCE_LONG = 100000;
+    public static final long DAY_MILI = 86400000L, WEEK_MILI = 604800000L, MONTH_MILI = 2592000000L;
+    public static final float DISTANCE_SMALL = 1000, DISTANCE_MEDIUM = 10000, DISTANCE_LONG = 100000;
 
 
-
+    /**
+     * gets the bitmap from the url
+     *
+     * @param url
+     * @return
+     */
     public static Bitmap getBitmapFromURL(String url) {
-        if (Utils.bitmapHash.containsKey(url)){
+        if (Utils.bitmapHash.containsKey(url)) {
             Log.d(TAG, "getBitmapFromURL: Found is hash");
             return bitmapHash.get(url);
         } else {
@@ -78,8 +81,9 @@ public class Utils {
 
     }
 
-
-    //    //Generic response ErrorListener
+    /**
+     * Generic response ErrorListener
+     */
     public static Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
@@ -88,7 +92,9 @@ public class Utils {
             Utils.dismissLoadingDialog();
         }
     };
-
+    /**
+     * Generic response deleteNoteSuccessListener
+     */
     public static Response.Listener<JSONObject> deleteNoteSuccessListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
@@ -96,7 +102,9 @@ public class Utils {
         }
     };
 
-    //response listener for getting all user notes
+    /**
+     * response listener for getting all user notes
+     */
     public static Response.Listener<JSONObject> genericSuccessListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
@@ -104,6 +112,13 @@ public class Utils {
         }
     };
 
+    /**
+     * Show loading dialog
+     *
+     * @param context
+     * @param title
+     * @param msg
+     */
     public static void showLoadingDialog(Context context, String title, String msg) {
         progress = new ProgressDialog(context);
         progress.setTitle(title);
@@ -112,17 +127,23 @@ public class Utils {
         progress.show();
     }
 
+    /**
+     * Stop loading dialog
+     */
     public static void dismissLoadingDialog() {
-
         if (progress != null && progress.isShowing()) {
             progress.dismiss();
         }
     }
 
-
+    /**
+     * get all the notes from the object
+     * @param noteObject
+     * @param time
+     * @return
+     * @throws JSONException
+     */
     public static Note getNoteFromJsonObj(JSONObject noteObject, Date time) throws JSONException {
-//            List<Note> listOfNotes = new ArrayList<>();
-
         Note note = new Note(
                 noteObject.getString("id"),
                 Float.parseFloat(noteObject.getJSONObject("location").getString("lat")),
@@ -138,10 +159,13 @@ public class Utils {
                 jsonArrayToStringArray(noteObject.getJSONArray("tags"))
         );
         return note;
-//        listOfNotes.add(addNote);
-
     }
 
+    /**
+     * convert json array to string array
+     * @param jArray
+     * @return
+     */
     public static ArrayList<String> jsonArrayToStringArray(JSONArray jArray) {
         ArrayList<String> stringArray = new ArrayList<String>();
         for (int i = 0, count = jArray.length(); i < count; i++) {
@@ -155,36 +179,48 @@ public class Utils {
         return stringArray;
     }
 
-  public static void URLtoImageView(ImageView iv, String url){
-    if(bitmapHash.containsKey(url)){
-      iv.setImageBitmap(bitmapHash.get(url));
-    }else{
-      new setUserAvatar(iv, url).execute();
-    }
-  }
-
-  private static class setUserAvatar extends AsyncTask<Void, Void, Bitmap> {
-    private ImageView iv;
-    private String url;
-
-    public setUserAvatar(ImageView imageView, String url) {
-      this.iv = imageView;
-      this.url = url;
+    /**
+     * convert url to image view
+     * @param iv
+     * @param url
+     */
+    public static void URLtoImageView(ImageView iv, String url) {
+        if (bitmapHash.containsKey(url)) {
+            iv.setImageBitmap(bitmapHash.get(url));
+        } else {
+            new setUserAvatar(iv, url).execute();
+        }
     }
 
-    @Override
-    protected Bitmap doInBackground(Void... v) {
-//        Bitmap b;
+    /**
+     * sets the user avatar
+     */
+    private static class setUserAvatar extends AsyncTask<Void, Void, Bitmap> {
+        private ImageView iv;
+        private String url;
 
-      return Utils.getBitmapFromURL(url);
+        public setUserAvatar(ImageView imageView, String url) {
+            this.iv = imageView;
+            this.url = url;
+        }
 
+        @Override
+        protected Bitmap doInBackground(Void... v) {
+            return Utils.getBitmapFromURL(url);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap b) {
+            iv.setImageBitmap(b);
+        }
     }
 
-    @Override
-    protected void onPostExecute(Bitmap b) {
-      iv.setImageBitmap(b);
-    }
-  }
+    /**
+     * gets a rounded bitmap
+     * @param bitmap
+     * @param pixels
+     * @return
+     */
     public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
         Log.d(TAG, "rounded bitmap");
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
@@ -208,44 +244,78 @@ public class Utils {
         return output;
     }
 
-
-
-
+    /**
+     * set location permission
+     * @param locationPermission
+     */
     public static void setLocationPermission(boolean locationPermission) {
         mLocationPermission = locationPermission;
     }
+
+    /**
+     * set camera permission
+     * @param cameraPermission
+     */
     public static void setCameraPermission(boolean cameraPermission) {
         mCameraPermission = cameraPermission;
     }
+
+    /**
+     * check for permissions
+     * @return
+     */
     public static boolean arePermissionsGranted() {
         return (mLocationPermission && mCameraPermission);
     }
 
-    public static boolean isCameraPermissionGranted(){
+    /**
+     * checks for camera permission
+     * @return
+     */
+    public static boolean isCameraPermissionGranted() {
         return mCameraPermission;
     }
-    public static boolean isLocationPermissionGranted(){
+
+    /**
+     * checks for location permission
+     * @return
+     */
+    public static boolean isLocationPermissionGranted() {
         return mLocationPermission;
     }
 
-  public static String getUserFromSharedPrefs(Context contexst){
-    if(prefs == null){
-      prefs = contexst.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
+    /**
+     * get user from shared prefs
+     * @param contexst
+     * @return
+     */
+    public static String getUserFromSharedPrefs(Context contexst) {
+        if (prefs == null) {
+            prefs = contexst.getSharedPreferences(MainActivity.LOCAL_DATA_TSN, Context.MODE_PRIVATE);
+        }
+        return prefs.getString("UserData", null);
+    };
+
+    /**
+     * update user shared pref
+     * @param data
+     * @throws Exception
+     */
+    public static void updateUserSharedPref(String data) throws Exception {
+        if (prefs == null) throw new Exception("Prefs are not available");
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("UserData", data);
+        editor.commit();
     }
-    return prefs.getString("UserData", null);
-  };
 
-  public static void updateUserSharedPref(String data) throws Exception {
-    if(prefs == null) throw new Exception("Prefs are not available");
-    SharedPreferences.Editor editor = prefs.edit();
-    editor.putString("UserData", data);
-    editor.commit();
-  }
-
-  public static void removeUserDataFromPrefs() throws Exception{
-    if(prefs == null) throw new Exception("Prefs are not available");
-    SharedPreferences.Editor editor = prefs.edit();
-    editor.remove("UserData");
-    editor.commit();
-  }
+    /**
+     * remove user data
+     * @throws Exception
+     */
+    public static void removeUserDataFromPrefs() throws Exception {
+        if (prefs == null) throw new Exception("Prefs are not available");
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove("UserData");
+        editor.commit();
+    }
 }

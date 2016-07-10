@@ -6,14 +6,18 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-
 import java.util.Random;
+
 
 public class SplashActivity extends AppCompatActivity {
 
     private ImageView background;
     private int timerDelay = 3500;
 
+    /**
+     * called when this class is created
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +25,9 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
         background = (ImageView) findViewById(R.id.background);
-        final int sdk = android.os.Build.VERSION.SDK_INT;
+
+        final int sdk = android.os.Build.VERSION.SDK_INT; // holds the sdk
+        // Configuring the method to use considering the sdk
         if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
             background.setImageDrawable( getResources().getDrawable(rand_splash()) );
         } else {
@@ -30,6 +36,7 @@ public class SplashActivity extends AppCompatActivity {
 
         final String userData = Utils.getUserFromSharedPrefs(this);
 
+        // Timer for the splash image until it will disappear
         Thread timerThread = new Thread(){
             public void run(){
                 try{
@@ -53,6 +60,9 @@ public class SplashActivity extends AppCompatActivity {
         timerThread.start();
     }
 
+    /**
+     * on pause function
+     */
     @Override
     protected void onPause() {
         // TODO Auto-generated method stub
@@ -60,6 +70,10 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * randomize splash screen
+     * @return
+     */
     protected int rand_splash() {
         int min = 2, max = 4;
         // Usually this can be a field rather than a method variable
@@ -69,10 +83,6 @@ public class SplashActivity extends AppCompatActivity {
         // so add 1 to make it inclusive
         int randomNum = rand.nextInt((max - min) + 1) + min;
         switch (randomNum){
-//            case 0:
-//                return R.drawable.splash_0;
-//            case 1:
-//                return R.drawable.splash_1;
             case 2:
                 return R.drawable.splash_2;
             case 3:

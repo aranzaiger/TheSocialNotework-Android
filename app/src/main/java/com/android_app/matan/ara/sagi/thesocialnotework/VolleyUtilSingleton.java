@@ -25,6 +25,10 @@ public class VolleyUtilSingleton {
     private final String TAG = "VolleyUtilSingleton";
 
 
+    /**
+     * volley singleton
+     * @param context
+     */
     private VolleyUtilSingleton(Context context) {
         mCtx = context;
         mRequestQueue = getRequestQueue();
@@ -32,6 +36,11 @@ public class VolleyUtilSingleton {
         mImageLoader = new ImageLoader(this.mRequestQueue,new LruBitmapCache());
     }
 
+    /**
+     * new singleton
+     * @param context
+     * @return
+     */
     public static synchronized VolleyUtilSingleton getInstance(Context context) {
         if (mInstance == null) {
             mInstance = new VolleyUtilSingleton(context);
@@ -56,6 +65,11 @@ public class VolleyUtilSingleton {
         return mImageLoader;
     }
 
+    /**
+     * create new user on http request
+     * @param url
+     * @param body
+     */
     public void newUser(String url, JSONObject body) {
         JsonObjectRequest request =
                 new JsonObjectRequest(
@@ -86,6 +100,13 @@ public class VolleyUtilSingleton {
         addToRequestQueue(request);
     }
 
+    /**
+     * http post request
+     * @param url
+     * @param body
+     * @param successFunction
+     * @param errorFunction
+     */
     public void post(String url, JSONObject body, Response.Listener<JSONObject> successFunction, Response.ErrorListener errorFunction) {
         JsonObjectRequest request =
                 new JsonObjectRequest(
@@ -98,6 +119,12 @@ public class VolleyUtilSingleton {
         addToRequestQueue(request);
     }
 
+    /**
+     * http get request
+     * @param url
+     * @param successFunction
+     * @param errorFunction
+     */
     public void get(String url, Response.Listener<JSONObject> successFunction, Response.ErrorListener errorFunction) {
         JsonObjectRequest request =
                 new JsonObjectRequest(

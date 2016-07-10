@@ -52,19 +52,32 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     }
 
 
+    /**
+     * a function that called when this class created
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
+    /**
+     * a function that called when view is created
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        this.parent = (MainActivity) getActivity();
-        Utils.showLoadingDialog(parent, "Just a sec...", "");
-        this.user = parent.getUser();
+        this.parent = (MainActivity) getActivity(); // holds the activity
+        Utils.showLoadingDialog(parent, "Just a sec...", ""); // loading dialog
+        this.user = parent.getUser(); // holds the user
+
         this.cameraBtn = (ImageButton) view.findViewById(R.id.btn_camera);
         this.cameraBtn.setOnClickListener(this);
         this.avatarImage = (ImageView) view.findViewById(R.id.settings_userAvater_iamgeView);
@@ -105,21 +118,21 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         super.onDetach();
     }
 
-
+    /**
+     * a function that called on click
+     *
+     * @param view
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_camera:
-                //check for permission
-//        ActivityCompat.requestPermissions(parent, new String[]{Manifest.permission.CAMERA}, 1);
                 if ((ActivityCompat.checkSelfPermission(parent, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
                         && (ActivityCompat.checkSelfPermission(parent, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                     openCamera(view);
                 } else {
                     Toast.makeText(getActivity(), "No Camera or Storage Permissions granted.\n\"An App is nothing without its permissions\"", Toast.LENGTH_LONG).show();
-
                 }
-
                 break;
             case R.id.btn_save:
                 if (txt_password.getText().length() > 3 && txt_email.getText().length() > 0)
@@ -147,15 +160,25 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         startActivityForResult(intent, 1);
     }
 
+    /**
+     * Creates a folder to hold the photos
+     */
     protected void createDir() {
         File f = new File(Utils.PHOTOS_DIR_PATH);
         f.mkdirs();
     }
 
+    /**
+     * upon receiving response from the camera
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param intent
+     */
     @Override
-    public void onActivityResult(int requestCode, int resaultCode, Intent intent) {
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, requestCode, intent);
-        if (resaultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             if (currentImgUri != null) {
                 saveImage();
                 Log.d(TAG, "onActivityResult: Image Capured!! - Now Upload That Shit!!");
@@ -169,47 +192,51 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
+    /**
+     * Saves the image
+     */
     private void saveImage() {
-        Utils.showLoadingDialog(parent, "Saving Image...", "This Can Take a while");
+        Utils.showLoadingDialog(parent, "Saving Image...", "This Can Take a while"); // Loader
+        Bitmap b = BitmapFactory.decodeFile(currentImgUri.getPath()); // Original Image
+        Bitmap out;
 
-      Bitmap b= BitmapFactory.decodeFile(currentImgUri.getPath()); // Original Image
-      Bitmap out;
-      if (b.getWidth() >= b.getHeight()){
+        // Crop image
+        if (b.getWidth() >= b.getHeight()) {
 
-        out = Bitmap.createBitmap(
-          b,
-          b.getWidth()/2 - b.getHeight()/2,
-          0,
-          b.getHeight(),
-          b.getHeight()
-        );
+            out = Bitmap.createBitmap(
+                    b,
+                    b.getWidth() / 2 - b.getHeight() / 2,
+                    0,
+                    b.getHeight(),
+                    b.getHeight()
+            );
+        } else {
+            out = Bitmap.createBitmap(
+                    b,
+                    0,
+                    b.getHeight() / 2 - b.getWidth() / 2,
+                    b.getWidth(),
+                    b.getWidth()
+            );
+        }
+        // Resizing image
+        out = Bitmap.createScaledBitmap(out, 320, 320, false);
 
-      }else{
-        out = Bitmap.createBitmap(
-          b,
-          0,
-          b.getHeight()/2 - b.getWidth()/2,
-          b.getWidth(),
-          b.getWidth()
-        );
-      }
-      out = Bitmap.createScaledBitmap(out, 320, 320, false);
+        File file = new File(currentImgUri.getPath());
+        FileOutputStream fOut;
 
-      File file = new File(currentImgUri.getPath());
-      FileOutputStream fOut;
-      try {
-        fOut = new FileOutputStream(file);
-        out.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-        fOut.flush();
-        fOut.close();
-        b.recycle();
-        out.recycle();
-      } catch (Exception e) {}
-
-
-
+        try {
+            fOut = new FileOutputStream(file);
+            out.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+            b.recycle();
+            out.recycle();
+        } catch (Exception e) {}
 
         JSONObject payload = new JSONObject();
+
+        // Upload image
         try {
             payload.put("image", ImageToBase64(file.getAbsolutePath()));
         } catch (JSONException e) {
@@ -234,6 +261,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         }, Utils.genericErrorListener);
     }
 
+    /**
+     * Converts the file to base 64 bit
+     * @param filePath
+     * @return
+     */
     private String ImageToBase64(String filePath) {
         Bitmap bm = BitmapFactory.decodeFile(filePath);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
