@@ -147,7 +147,11 @@ public class Utils {
     }
 
   public static void URLtoImageView(ImageView iv, String url){
-    new setUserAvatar(iv, url).execute();
+    if(bitmapHash.containsKey(url)){
+      iv.setImageBitmap(bitmapHash.get(url));
+    }else{
+      new setUserAvatar(iv, url).execute();
+    }
   }
 
   private static class setUserAvatar extends AsyncTask<Void, Void, Bitmap> {
