@@ -18,7 +18,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="15dp">
+        android:id="@+id/map_filters_layout">
 
         <LinearLayout
             android:orientation="horizontal"

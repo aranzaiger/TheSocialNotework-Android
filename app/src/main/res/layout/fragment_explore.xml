@@ -4,7 +4,7 @@
   android:layout_height="match_parent"
   tools:context="com.android_app.matan.ara.sagi.thesocialnotework.ExploreFragment"
   android:orientation="vertical"
-  android:paddingTop="15dp">
+    android:paddingTop="3dp">
 
   <!-- TODO: Update blank fragment layout -->
 
@@ -16,8 +16,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="15dp" >
+        android:layout_height="wrap_content">
 
       <LinearLayout
           android:orientation="horizontal"

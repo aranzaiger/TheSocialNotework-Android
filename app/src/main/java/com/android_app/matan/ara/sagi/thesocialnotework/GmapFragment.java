@@ -65,7 +65,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private Button map_small_filter;
     private Button map_medium_filter;
     private Button map_large_filter;
-    private LinearLayout mapFilters;
+    private LinearLayout mapFilters, mainMapFilters;
     private boolean dateFilterIsVisible = false;
     private boolean locationFilterIsVisible = false;
     private boolean userFilterIsVisible = false;
@@ -133,6 +133,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         map_large_filter.setOnClickListener(button3ClickListener);
 
         mapFilters = (LinearLayout) view.findViewById(R.id.map_filter_options);
+        mainMapFilters = (LinearLayout) view.findViewById(R.id.map_filters_layout);
 
         dateFilter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -533,6 +534,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
         } else {
             locationFilter.setBackgroundResource(android.R.drawable.btn_default);
         }
+        mainMapFilters.setPadding(0, 8, 0, 0);
     }
 
     public void updateShowedNotes() {
