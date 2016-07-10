@@ -57,7 +57,7 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private GPSUtils gpsUtils;
     private MainActivity mainActivity;
-    private final int MAX_ZOOM = 16, MIN_ZOOM = 8, DEFAULT_ZOOM = 12;
+    private final int MAX_ZOOM = 16, MIN_ZOOM = 8, DEFAULT_ZOOM = 8;
     private HashMap<Marker, Note> eventMarkerMap;
     private ImageButton dateFilter;
     private ImageButton locationFilter;
