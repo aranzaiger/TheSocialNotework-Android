@@ -96,6 +96,14 @@ public class Utils {
         }
     };
 
+    //response listener for getting all user notes
+    public static Response.Listener<JSONObject> genericSuccessListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            Log.d(TAG, "likeNotesSuccessListener: " + response.toString());
+        }
+    };
+
     public static void showLoadingDialog(Context context, String title, String msg) {
         progress = new ProgressDialog(context);
         progress.setTitle(title);
@@ -240,8 +248,4 @@ public class Utils {
     editor.remove("UserData");
     editor.commit();
   }
-
-
-
-
 }
