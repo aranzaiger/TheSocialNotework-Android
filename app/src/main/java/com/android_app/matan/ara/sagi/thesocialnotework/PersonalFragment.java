@@ -220,8 +220,8 @@ public class PersonalFragment extends Fragment {
 
             //create and configure dialog
             final Dialog dialog = new Dialog(getActivity());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.note_view_full);
-            dialog.setTitle("New Note");
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(dialog.getWindow().getAttributes());
             lp.width = WindowManager.LayoutParams.MATCH_PARENT;
