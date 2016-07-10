@@ -220,8 +220,8 @@ public class PersonalFragment extends Fragment {
 
             //create and configure dialog
             final Dialog dialog = new Dialog(getActivity());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.note_view_full);
-            dialog.setTitle("New Note");
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(dialog.getWindow().getAttributes());
             lp.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -505,15 +505,6 @@ public class PersonalFragment extends Fragment {
     public View.OnClickListener button1ClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
-
-//            Log.d(TAG, "onClick: start");
-//            Log.d(TAG, "onClick: v id: " + v.getId());
-//            Log.d(TAG, "onClick: map_small_filter id: " + R.id.map_small_filter);
-//            Log.d(TAG, "onCreateView: personalSpace_filter_options = " + R.id.personalSpace_filter_options);
-//
-//            Log.d(TAG, "onClick: are equal? " + (v.getId() == R.id.map_small_filter));
-//
-//            Log.d(TAG, "onClick: case map_small_filter");
             //user filters
             if (userFilterIsVisible) {
                 userFilterSelection = 1;
@@ -531,29 +522,15 @@ public class PersonalFragment extends Fragment {
     public View.OnClickListener button2ClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
-
-//            Log.d(TAG, "onClick: start");
-//            Log.d(TAG, "onClick: v id: " + v.getId());
-//            Log.d(TAG, "onClick: map_small_filter id: " + R.id.map_small_filter);
-//            Log.d(TAG, "onCreateView: personalSpace_filter_options = " + R.id.personalSpace_filter_options);
-//
-//            Log.d(TAG, "onClick: are equal? " + (v.getId() == R.id.map_small_filter));
-//
-//
-//            Log.d(TAG, "onClick: case map_medium_filter");
-
             //user filters
             if (userFilterIsVisible) {
                 userFilterSelection = 2;
-
             }
             //date filters
             else {
                 dateFilterSelection = Utils.WEEK_MILI;
-
             }
             setButtonsColor();
-
             updateShowedNotes();
 
         }
@@ -562,15 +539,6 @@ public class PersonalFragment extends Fragment {
     public View.OnClickListener button3ClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
-
-//            Log.d(TAG, "onClick: start");
-//            Log.d(TAG, "onClick: v id: " + v.getId());
-//            Log.d(TAG, "onClick: map_small_filter id: " + R.id.map_small_filter);
-//            Log.d(TAG, "onCreateView: personalSpace_filter_options = " + R.id.personalSpace_filter_options);
-//
-//            Log.d(TAG, "onClick: are equal? " + (v.getId() == R.id.map_small_filter));
-//
-//            Log.d(TAG, "onClick: case map_large_filter");
 
             //user filters
             if (userFilterIsVisible) {
@@ -588,111 +556,34 @@ public class PersonalFragment extends Fragment {
         }
     };
 
-//    //all buttons listener
-//    public View.OnClickListener buttonClickListener = new View.OnClickListener() {
-//        @Override
-//        public void onClick(final View v) {
-//
-//            Log.d(TAG, "onClick: start");
-//            Log.d(TAG, "onClick: v id: "+ v.getId());
-//            Log.d(TAG, "onClick: map_small_filter id: "+ R.id.map_small_filter);
-//            Log.d(TAG, "onCreateView: personalSpace_filter_options = "+R.id.personalSpace_filter_options);
-//
-//            Log.d(TAG, "onClick: are equal? "+ (v.getId() ==R.id.map_small_filter));
-//
-//            switch (v.getId()) {
-//                case R.id.map_small_filter:
-//                    Log.d(TAG, "onClick: case map_small_filter");
-//                    //user filters
-//                    if (userFilterIsVisible) {
-//                        userFilterSelection = 1;
-//                    }
-//                    //date filters
-//                    else {
-//                        dateFilterSelection = 86400000L;
-//
-//                    }
-//                    updateShowedNotes();
-//                    break;
-//                case R.id.map_medium_filter:
-//                    Log.d(TAG, "onClick: case map_medium_filter");
-//
-//                    //user filters
-//                    if (userFilterIsVisible) {
-//                        userFilterSelection = 2;
-//
-//                    }
-//                    //date filters
-//                    else {
-//                        dateFilterSelection = 604800000L;
-//
-//                    }
-//                    updateShowedNotes();
-//                    break;
-//                case R.id.map_large_filter:
-//                    Log.d(TAG, "onClick: case map_large_filter");
-//
-//                    //user filters
-//                    if (userFilterIsVisible) {
-//                        userFilterSelection = 3;
-//                    }
-//                    //date filters
-//                    else {
-//                        dateFilterSelection = 2592000000L;
-//
-//                    }
-//                    updateShowedNotes();
-//                    break;
-//                default:
-//                    Log.d(TAG, "onClick: in default");
-//                    break;
-//            }
-//        }
-//    };
-
 
     public void updateShowedNotes() {
         presentedNotes = new ArrayList<>();
         long timeDifference;
-//        float distance;
-//        Log.d(TAG, "updateShowedNotes: start");
-//        Log.d(TAG, "updateShowedNotes: userPrefFilter = " + userFilterSelection);
-//        Log.d(TAG, "updateShowedNotes: timeDifferencePerf = " + dateFilterSelection);
-//        Log.d(TAG, "updateShowedNotes: +++++++++++++++++++++++++++++++++++++++++++++++++");
-
-
 //        Location currLocation = new Location(gpsUtils.getLocation());
         Date now = new Date();
-
 //        Location targetLocation = new Location("");//provider name is unecessary
         Date targetDate;
         for (Note note : listOfNotes) {
-//            Log.d(TAG, "updateShowedNotes: checkcing note with title: " + note.title);
             //get note location and date
 //            targetLocation.setLatitude(note.getLat());//your coords of course
 //            targetLocation.setLongitude(note.getLon());
             targetDate = new Date(note.getTimestamp());
-
             //get time and date differences
             timeDifference = now.getTime() - targetDate.getTime();
 //            distance = currLocation.distanceTo(targetLocation);
-
-//            Log.d(TAG, "updateShowedNotes: time difference = " + timeDifference);
             //add to currently presented list according to filters.
             if (timeDifference <= dateFilterSelection
                     && ((!note.isPublic && userFilterSelection == 1) || (note.isPublic && userFilterSelection == 2) || (userFilterSelection == 3))) {
                 presentedNotes.add(note);
             }
 
-//            Log.d(TAG, "updateShowedNotes: ======================================");
         }
-//        Log.d(TAG, "updateShowedNotes: presentedNotes size = " + presentedNotes.size());
-
         noteListAdapter.updateList(presentedNotes);
         noteList.setAdapter(noteListAdapter);
     }
 
-    //set main filter colors
+    //set secondery filter colors filter colors
     private void setButtonsColor() {
 
         Log.d(TAG, "setButtonsColor: start");

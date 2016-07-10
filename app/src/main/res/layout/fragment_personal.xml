@@ -29,7 +29,7 @@
                 android:contextClickable="false" >
 
                 <ImageButton
-                    android:layout_width="50dp"
+                    android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:id="@+id/personalSpace_date_filter"
                     android:layout_weight="1"
@@ -38,7 +38,7 @@
                     android:focusable="false" />
 
                 <ImageButton
-                    android:layout_width="50dp"
+                    android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:id="@+id/personalSpace_premission_filter"
                     android:layout_weight="1"
@@ -60,21 +60,21 @@
                 android:focusableInTouchMode="false">
 
                 <Button
-                    android:layout_width="50dp"
+                    android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:text="filter 1"
                     android:id="@+id/personalSpace_small_filter"
                     android:layout_weight="1" />
 
                 <Button
-                    android:layout_width="50dp"
+                    android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:text="filter 2"
                     android:id="@+id/personalSpace_medium_filter"
                     android:layout_weight="1" />
 
                 <Button
-                    android:layout_width="50dp"
+                    android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:text="filter 3"
                     android:id="@+id/personalSpace_large_filter"
