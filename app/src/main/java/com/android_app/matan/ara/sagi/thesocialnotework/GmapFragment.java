@@ -4,15 +4,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 //import android.app.Fragment;
@@ -23,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -34,7 +27,6 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -50,15 +42,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
 
 
 public class GmapFragment extends Fragment implements OnMapReadyCallback {
@@ -87,17 +74,6 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
     private float locationFilterSelection;
     List<Note> listOfNotes;
     private Circle onMapCircle;
-
-    private final String day = "24 hours";
-    private final String week = "Week";
-    private final String month = "Month";
-    private final String hundredMeters = "1 Km";
-    private final String kilometer = "10 Km";
-    private final String tenKilometers = "100 Km";
-    private final String mine = "Mine";
-    private final String others = "Others";
-    private final String all = "All";
-
 
     public GmapFragment() {
         eventMarkerMap = new HashMap<Marker, Note>();
@@ -171,9 +147,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     userFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(day);
-                    map_medium_filter.setText(week);
-                    map_large_filter.setText(month);
+                    map_small_filter.setText(R.string.day);
+                    map_medium_filter.setText(R.string.week);
+                    map_large_filter.setText(R.string.month);
                 }
                 setButtonsColor();
             }
@@ -192,9 +168,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     userFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(hundredMeters);
-                    map_medium_filter.setText(kilometer);
-                    map_large_filter.setText(tenKilometers);
+                    map_small_filter.setText(R.string.shortDistance);
+                    map_medium_filter.setText(R.string.mediumDistance);
+                    map_large_filter.setText(R.string.longDistance);
                 }
                 setButtonsColor();
             }
@@ -213,9 +189,9 @@ public class GmapFragment extends Fragment implements OnMapReadyCallback {
                     locationFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(mine);
-                    map_medium_filter.setText(others);
-                    map_large_filter.setText(all);
+                    map_small_filter.setText(R.string.mine);
+                    map_medium_filter.setText(R.string.others);
+                    map_large_filter.setText(R.string.all);
                 }
                 setButtonsColor();
             }

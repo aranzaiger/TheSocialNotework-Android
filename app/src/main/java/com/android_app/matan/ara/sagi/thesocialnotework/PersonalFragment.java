@@ -77,20 +77,13 @@ public class PersonalFragment extends Fragment {
     private boolean dateFilterIsVisible = false;
     private boolean userFilterIsVisible = false;
 
-    private final String day = "24 hours";
-    private final String week = "Week";
-    private final String month = "Month";
-    private final String privateNote = "Private";
-    private final String publicNote = "Public";
-    private final String privateAndPublic = "All";
-
     public PersonalFragment() {
         // Required empty public constructor
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_personal, container, false);
         // Inflate the layout for this fragment
         activity = (MainActivity) getActivity();
@@ -150,9 +143,9 @@ public class PersonalFragment extends Fragment {
                     userFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(day);
-                    map_medium_filter.setText(week);
-                    map_large_filter.setText(month);
+                    map_small_filter.setText(R.string.day);
+                    map_medium_filter.setText(R.string.week);
+                    map_large_filter.setText(R.string.month);
                 }
                 setButtonsColor();
 
@@ -173,9 +166,9 @@ public class PersonalFragment extends Fragment {
                     dateFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(privateNote);
-                    map_medium_filter.setText(publicNote);
-                    map_large_filter.setText(privateAndPublic);
+                    map_small_filter.setText(R.string.privateNote);
+                    map_medium_filter.setText(R.string.publicNote);
+                    map_large_filter.setText(R.string.privateAndPublic);
                 }
                 setButtonsColor();
 
@@ -358,27 +351,6 @@ public class PersonalFragment extends Fragment {
         }
     };
 
-
-//  //response ErrorListener for getting all user notes
-//  Response.ErrorListener getNotesErrorListener = new Response.ErrorListener() {
-//    @Override
-//    public void onErrorResponse(VolleyError error) {
-//      Log.d(TAG, "getNotesErrorListener: " + error.getMessage());
-//      MainActivity.dismissLoadingDialog();
-//    }
-//  };
-
-//  //Generic response ErrorListener
-//  Response.ErrorListener genericErrorListener = new Response.ErrorListener() {
-//    @Override
-//    public void onErrorResponse(VolleyError error) {
-//      Log.d(TAG, "genericErrorListener");
-//      MainActivity.dismissLoadingDialog();
-//      error.printStackTrace();
-//    }
-//  };
-
-
     private ArrayList<String> jsonArrayToStringArray(JSONArray jArray) {
         ArrayList<String> stringArray = new ArrayList<String>();
         for (int i = 0, count = jArray.length(); i < count; i++) {
@@ -511,7 +483,7 @@ public class PersonalFragment extends Fragment {
             }
             //date filters
             else {
-                dateFilterSelection = Utils.WEEK_MILI;
+                dateFilterSelection = Utils.DAY_MILI;
 
             }
             setButtonsColor();

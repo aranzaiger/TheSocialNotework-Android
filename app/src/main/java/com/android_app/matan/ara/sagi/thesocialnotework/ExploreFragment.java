@@ -1,12 +1,9 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 
@@ -30,11 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 
 /**
@@ -62,17 +55,6 @@ public class ExploreFragment extends Fragment {
     private Long dateFilterSelection;
     private float locationFilterSelection;
     private GPSUtils gpsUtils;
-//    private boolean userFilterIsVisible = false;
-
-    private final String day = "24 hours";
-    private final String week = "Week";
-    private final String month = "Month";
-    private final String hundredMeters = "1 K";
-    private final String kilometer = "10 Km";
-    private final String threeKilometer = "100 Km";
-//    private final String mine = "Mine";
-//    private final String others = "Others";
-//    private final String all = "All";
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -129,9 +111,9 @@ public class ExploreFragment extends Fragment {
 //                    userFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(day);
-                    map_medium_filter.setText(week);
-                    map_large_filter.setText(month);
+                    map_small_filter.setText(R.string.day);
+                    map_medium_filter.setText(R.string.week);
+                    map_large_filter.setText(R.string.month);
                 }
                 setButtonsColor();
             }
@@ -150,9 +132,9 @@ public class ExploreFragment extends Fragment {
 //                    userFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(hundredMeters);
-                    map_medium_filter.setText(kilometer);
-                    map_large_filter.setText(threeKilometer);
+                    map_small_filter.setText(R.string.shortDistance);
+                    map_medium_filter.setText(R.string.mediumDistance);
+                    map_large_filter.setText(R.string.longDistance);
                 }
                 setButtonsColor();
             }
