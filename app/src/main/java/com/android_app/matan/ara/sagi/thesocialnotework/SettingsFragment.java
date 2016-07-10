@@ -122,7 +122,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         break;
       case R.id.btn_save:
-        user.updateUser(parent);
+        if(txt_password.getText().length() > 3 && txt_email.getText().length() > 0) user.updateUser(parent);
+        else Toast.makeText(parent, "Password should be more than 4 chars long, valid email", Toast.LENGTH_LONG).show();
         break;
     }
   }
