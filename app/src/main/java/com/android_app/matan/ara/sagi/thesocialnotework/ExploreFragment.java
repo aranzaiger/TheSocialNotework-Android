@@ -1,12 +1,9 @@
 package com.android_app.matan.ara.sagi.thesocialnotework;
 
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 
@@ -30,11 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 
 /**
@@ -43,6 +36,7 @@ import java.util.ListIterator;
 public class ExploreFragment extends Fragment {
 
     private static final String TAG = "[TSN/Explore]";
+//    protected final User user = ((MainActivity) getActivity()).getUser();
     protected User user;
     protected MainActivity parent;
     private ListAdapter noteListAdapter;
@@ -61,22 +55,18 @@ public class ExploreFragment extends Fragment {
     private Long dateFilterSelection;
     private float locationFilterSelection;
     private GPSUtils gpsUtils;
-//    private boolean userFilterIsVisible = false;
-
-    private final String day = "24 hours";
-    private final String week = "Week";
-    private final String month = "Month";
-    private final String hundredMeters = "1 K";
-    private final String kilometer = "10 Km";
-    private final String threeKilometer = "100 Km";
-//    private final String mine = "Mine";
-//    private final String others = "Others";
-//    private final String all = "All";
 
     public ExploreFragment() {
         // Required empty public constructor
     }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        parent = (MainActivity) getActivity();
+        gpsUtils = parent.getGPSUtils();
+        user = parent.getUser();
 
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,9 +74,7 @@ public class ExploreFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
 
-        parent = (MainActivity) getActivity();
-        gpsUtils = parent.getGPSUtils();
-        user = parent.getUser();
+
         notes = new ArrayList<>();
         //Get Views
         list_notes = (ListView) view.findViewById(R.id.list_notes);
@@ -123,9 +111,9 @@ public class ExploreFragment extends Fragment {
 //                    userFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(day);
-                    map_medium_filter.setText(week);
-                    map_large_filter.setText(month);
+                    map_small_filter.setText(R.string.day);
+                    map_medium_filter.setText(R.string.week);
+                    map_large_filter.setText(R.string.month);
                 }
                 setButtonsColor();
             }
@@ -144,9 +132,9 @@ public class ExploreFragment extends Fragment {
 //                    userFilterIsVisible = false;
 
                     // set text button in the right filter string
-                    map_small_filter.setText(hundredMeters);
-                    map_medium_filter.setText(kilometer);
-                    map_large_filter.setText(threeKilometer);
+                    map_small_filter.setText(R.string.shortDistance);
+                    map_medium_filter.setText(R.string.mediumDistance);
+                    map_large_filter.setText(R.string.longDistance);
                 }
                 setButtonsColor();
             }
@@ -205,6 +193,7 @@ public class ExploreFragment extends Fragment {
         public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
             //create and configure dialog
             final Note note = notes.get(position);
+            final MainActivity localParent = (MainActivity)getActivity();
             final Dialog noteViewDialog = new Dialog(getActivity());
             noteViewDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             noteViewDialog.setContentView(R.layout.note_display_full);
@@ -235,57 +224,42 @@ public class ExploreFragment extends Fragment {
             date.setText(note.getDate());
             time.setText(note.getTime());
             location.setText(note.getAddress());
-            if (likes != null) likes.setText("" + note.getLikes());
-            likeBtn.setBackgroundResource(R.drawable.like_icon);
-//            tags.setText("Tags: "+ note.getTags().toString());
-//      permission.setText("" + (note.isPublic() ? "Public" : "Private"));
+
+            if (likes != null) {
+                likeBtn.setBackgroundResource(R.drawable.like_icon);
+                if (localParent.getUser().getLiked_notes().contains(note.getId())) {
+                    likeBtn.setBackgroundResource(R.drawable.like_icon);
+                } else {
+                    likeBtn.setBackgroundResource(R.drawable.unlike_icon);
+                }
+            }
+            likes.setText("" + note.getLikes());
+
             permission.setVisibility(View.GONE);
             Utils.URLtoImageView(avatar, note.getAvatar());
             permission_image.setVisibility(View.GONE);
 
             likeBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-//          //Put up the Yes/No message box
-//          AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//          builder
-//                  .setTitle("Delete Note")
-//                  .setMessage("Are you sure you want to delete the note?")
-//                  .setIcon(android.R.drawable.ic_dialog_alert)
-//                  .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                      //Yes button clicked, do something
-//                      Toast.makeText(getActivity(), "Item Deleted!",
-//                              Toast.LENGTH_SHORT).show();
-//                      //TODO send delete
-//                      JSONObject delNote = new JSONObject();
-//                      try {
-//                        delNote.put("uid", userId);
-//                        delNote.put("nid", note.getId());
-//                        VolleyUtilSingleton.getInstance(getActivity()).post(BASE_URL + "/note/delete", delNote, Utils.deleteNoteSuccessListener, Utils.genericErrorListener);
-//                        listOfNotes.remove(presentedNotes.get(position));
-//                        presentedNotes.remove(position);
-//
-//                      } catch (JSONException e) {
-//                        Toast.makeText(getActivity(), "Something went wrong.\n Failed to delete note...", Toast.LENGTH_LONG).show();
-//                        e.printStackTrace();
-//                      }
-//                      updateShowedNotes();
-////                                    noteList.setAdapter(noteListAdapter);
-//                      noteViewDialog.dismiss();
-//                    }
-//                  })
-//                  .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                      //Yes button clicked, do something
-//                      Toast.makeText(getActivity(), "Canceled",
-//                              Toast.LENGTH_SHORT).show();
-//                      noteViewDialog.dismiss();
-//                    }
-//                  })                        //Do nothing on no
-//                  .show();
-//        }
-//      });
+                    //add like only if user didnt like already
+                    if (!user.getLiked_notes().contains(note.getId())) {
+                        JSONObject jsonObj = new JSONObject();
+                        try {
+                            jsonObj.put("uid", localParent.getUserId());
+                            jsonObj.put("nid", note.getId());
 
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        VolleyUtilSingleton.getInstance(getActivity()).post(Utils.BASE_URL + "/note/like", jsonObj, Utils.genericSuccessListener, Utils.genericErrorListener);
+                        user.getLiked_notes().add(note.getId());
+                        user.updateUser(localParent);
+                        note.setLikes(note.getLikes()+1);
+                        likes.setText("" + note.getLikes());
+                        noteListAdapter.updateList(notes);
+                        list_notes.setAdapter(noteListAdapter);
+                        likeBtn.setBackgroundResource(R.drawable.like_icon);
+                    }
                 }
             });
         }

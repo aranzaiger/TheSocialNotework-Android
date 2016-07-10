@@ -31,7 +31,6 @@ import java.util.Vector;
  */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
-
     // UI references.
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -66,15 +65,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void removeFocuse() {
-        // Remove Auto Focus from the Text Fields
+    private void removeFocuse() { // Remove Auto Focus from the Text Fields
         mUsernameView.clearFocus();
         mPasswordView.clearFocus();
         layout.setFocusable(true);
         layout.setFocusableInTouchMode(true);
-
     }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -82,10 +78,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * errors are presented and no actual login attempt is made.
      */
 
-    private boolean isParamsValid(String username, String password) {
-        Log.d(TAG, "user: " + username);
-        Log.d(TAG, "pwd: " + password);
-
+    private boolean isParamsValid(String username, String password) { // validate form
         if (TextUtils.isEmpty(username) || !isUsernameValid(username) || TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             return false;
         } else {
@@ -93,7 +86,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void attemptLogin() {
+    private void attemptLogin() { // attempt login
         Utils.showLoadingDialog(this, "Connecting", "Authenticating data");
         mPasswordView.setError(null);
         if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString())) {
@@ -101,7 +94,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             String username = mUsernameView.getText().toString();
             String password = mPasswordView.getText().toString();
 
-            boolean cancel = false;
             // http request register
             JSONObject tempJson = new JSONObject();
             try {
@@ -112,18 +104,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
             VolleyUtilSingleton.getInstance(LoginActivity.this).post(Utils.BASE_URL + LOGIN_PATH, tempJson, onLoginSuccess, onLoginError);
         } else {
-            Utils.dismissLoadingDialog();
-            Log.d(TAG, "Invalid params - make sure username exist & password is 4 characters or more");
+            Utils.dismissLoadingDialog(); // invalid params
         }
 
     }
 
     Response.Listener<JSONObject> onLoginSuccess = new Response.Listener<JSONObject>() {
         @Override
-        public void onResponse(JSONObject response) {
+        public void onResponse(JSONObject response) { // listener to success login response from server
             try {
-                if (!response.isNull("user")) {
-                    Log.e(TAG, "onLoginSuccess => user exist"); // TODO: REMOVE console
+                if (!response.isNull("user")) { // response user from server success
                     String id, password, email, avatar, username, likedNotes = "";
 
                     JSONArray likedNotes_JSON;
@@ -146,7 +136,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     personalSpaceActivity.putExtras(loginUserBundle);
                     Utils.dismissLoadingDialog();
                     startActivity(personalSpaceActivity);
-                } else {
+                } else { // invalid params
                     Utils.dismissLoadingDialog();
                     Toast.makeText(self, "Username or Password are incorrect", Toast.LENGTH_LONG).show();
                     self.mUsernameView.getText().clear();
@@ -164,38 +154,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     Response.ErrorListener onLoginError = new Response.ErrorListener() {
         @Override
-        public void onErrorResponse(VolleyError error) {
+        public void onErrorResponse(VolleyError error) { // listener to error login response from server
             Utils.dismissLoadingDialog();
             Toast.makeText(self, "Username Or Password Incorrect", Toast.LENGTH_LONG).show();
-            //Clean texts
+            // Clean texts
             self.mUsernameView.getText().clear();
             self.mPasswordView.getText().clear();
             self.removeFocuse();
-            Log.d(TAG, "onErrorResponse: setting text to ''");
-            Log.d(TAG, "onLoginError: msg: " + error.getMessage());
         }
     };
 
 
     private boolean isUsernameValid(String username) {
         return username.length() > 0;
-    }
+    } // validate username
 
     private boolean isPasswordValid(String password) {
         return password.length() > 3;
-    }
+    } // validate password
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.al_login_button:
-                //Do Login
-                Log.d(TAG, "Login.......");
+                // Do Login
                 attemptLogin();
                 break;
             case R.id.al_register_button:
-                //Do Register
-                Log.d(TAG, "going to Register...page");
+                // Do Register
                 Intent registerActivity = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(registerActivity);
                 break;
@@ -222,42 +208,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void afterTextChanged(Editable editable) {
 
     }
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode,
-//                                           String permissions[], int[] grantResults) {
-//        permissionsReturend = true;
-//        Log.d(TAG, "onRequestPermissionsResult: in func");
-//        switch (requestCode) {
-//            case FINE_PERM: {
-//                // If request is cancelled, the result arrays are empty.
-//                if (grantResults.length > 0
-//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    Log.d(TAG, "onRequestPermissionsResult: got permission for location");
-//                    Utils.setLocationPermission(true);
-//                    ActivityCompat.requestPermissions(LoginActivity.this, new String[]{android.Manifest.permission.CAMERA}, CAMERA_PERM);
-//                } else {
-//                    Log.d(TAG, "onRequestPermissionsResult:DIDNT  get permission for location");
-//
-//                    Toast.makeText(LoginActivity.this,"No Location Permissions granted.\n\"An App is nothing without its permissions\"",Toast.LENGTH_LONG);
-////                    System.exit(0);
-//                }
-//                return;
-//            }
-//            case CAMERA_PERM: {
-//                if (grantResults.length > 0
-//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    Log.d(TAG, "onRequestPermissionsResult: got permission for camera");
-//                    Utils.setCameraPermission(true);
-//
-//
-//                } else {
-//                    Log.d(TAG, "onRequestPermissionsResult: DIDNT get permission for camera");
-//                    Toast.makeText(LoginActivity.this,"No Camera Permissions granted.\n\"An App is nothing without its permissions\"",Toast.LENGTH_LONG);
-//                }
-//                return;
-//            }
-//        }
-//    }
-
 }
 

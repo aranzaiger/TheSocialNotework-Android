@@ -141,8 +141,9 @@
               android:layout_width="20dp"
               android:layout_height="20dp"
               android:id="@+id/imageView9"
-              android:src="@drawable/like_icon"
-              android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/like_icon_black"
+            android:backgroundTintMode="multiply" />
 
           <TextView
                 android:id="@+id/ndf_likes_textview"

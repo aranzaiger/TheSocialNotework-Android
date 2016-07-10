@@ -40,9 +40,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        this.mUsernameView = (EditText) findViewById(R.id.ra_username);
-        this.mPasswordView = (EditText) findViewById(R.id.ra_password);
-        this.mEmailView = (EditText) findViewById(R.id.ra_email);
+        this.mUsernameView = (EditText) findViewById(R.id.ra_username); // holds the username
+        this.mPasswordView = (EditText) findViewById(R.id.ra_password); // holds the password
+        this.mEmailView = (EditText) findViewById(R.id.ra_email); // holds the email
 
         this.self = this;
         this.layout = (RelativeLayout) findViewById(R.id.ra_layout);
@@ -50,23 +50,23 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         // Remove Auto Focus from the Text Fields
         this.layout.setFocusable(true);
         this.layout.setFocusableInTouchMode(true);
+
         // Buttons And Listeners
         this.testBtn = (Button) findViewById(R.id.btn_cancel);
         this.testBtn.setOnClickListener(this);
         this.registerButton = (Button) findViewById(R.id.ra_register_button);
         this.registerButton.setOnClickListener(this);
-
     }
 
-    private boolean isUsernameValid(String username) {
+    private boolean isUsernameValid(String username) { // username validation
         return !TextUtils.isEmpty(username) && username.length() > 0;
     }
 
-    private boolean isPasswordValid(String password) {
+    private boolean isPasswordValid(String password) { // password validation
         return !TextUtils.isEmpty(password) && password.length() > 3;
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isEmailValid(String email) { // email validation
         if (TextUtils.isEmpty(email))
             return false;
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
@@ -75,52 +75,45 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         return matcher.matches();
     }
 
-    private boolean isParamsValid(String username, String password, String email) {
+    private boolean isParamsValid(String username, String password, String email) { // private method that validates all params
         return (isUsernameValid(username) && isPasswordValid(password) && isEmailValid(email));
     }
 
-    private void attemptRegister() {
+    private void attemptRegister() { // attempt registering
         Utils.showLoadingDialog(this, "Registering", "Please Wait...");
-        Log.d(TAG, "in attemptRegister: Registering..");
-        if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString(), mEmailView.getText().toString())) {
-            Log.d(TAG, "params are valid");
+        if (isParamsValid(mUsernameView.getText().toString(), mPasswordView.getText().toString(), mEmailView.getText().toString())) { // params are valid
             String username = mUsernameView.getText().toString();
             String password = mPasswordView.getText().toString();
             String email = mEmailView.getText().toString();
             // http request register
             JSONObject tempJson = new JSONObject();
-            try {
+            try { // creating a user json to send the server
                 tempJson.put("username", username);
                 tempJson.put("password", password);
                 tempJson.put("email", email);
             } catch (Exception e) {
                 Log.d(TAG, e.toString());
             }
-            Log.d(TAG, "JSON: " + tempJson.toString());
-            VolleyUtilSingleton.getInstance(RegisterActivity.this).post(BASE_URL + REG_PATH, tempJson, onRegisterSuccess, onRegisterError);
-        } else {
+            VolleyUtilSingleton.getInstance(RegisterActivity.this).post(BASE_URL + REG_PATH, tempJson, onRegisterSuccess, onRegisterError); // register request to server
+        } else { // invalid params
             Utils.dismissLoadingDialog();
-            Log.d(TAG, "Invalid params - make sure username exist, password is 4 characters or more & email is valid");
             Toast.makeText(this, "Make Sure tou have entered a valid email. password at least 4 chars", Toast.LENGTH_LONG).show();
         }
     }
 
     Response.Listener<JSONObject> onRegisterSuccess = new Response.Listener<JSONObject>() {
         @Override
-        public void onResponse(JSONObject response) {
-            Log.d(TAG, "response: " + response.toString());
+        public void onResponse(JSONObject response) { // listener to success response on register from server
             Utils.dismissLoadingDialog();
             try {
-                if (response.getString("message").equals("created")) {
-                    Log.d(TAG, "onRegisterSuccess => user created"); // TODO: REMOVE console
+                if (response.getString("message").equals("created")) { // user created
                     Intent loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
                     Toast.makeText(self, "You are now a social notework member - You May Login...", Toast.LENGTH_LONG).show();
                     startActivity(loginActivity);
                 } else {
                     Toast.makeText(self, "Username is already taken. maybe: " + mUsernameView.getText().toString() + "_666 ? :)", Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "Cannot create user, " + response.getString("message"));
                 }
-            } catch (Exception e) {
+            } catch (Exception e) { // error on register user request
                 Log.e(TAG, "onRegisterSuccess:" + e.getMessage());
 
             }
@@ -129,15 +122,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     Response.ErrorListener onRegisterError = new Response.ErrorListener() {
         @Override
-        public void onErrorResponse(VolleyError error) {
+        public void onErrorResponse(VolleyError error) { // listener to error response on register from server
             Utils.dismissLoadingDialog();
             Toast.makeText(self, "Username is already taken. maybe: " + mUsernameView.getText().toString() + "_666 ? :)", Toast.LENGTH_LONG).show();
-            Log.d(TAG, "onRegisterError: msg: " + error.getMessage());
         }
     };
 
     @Override
-    public void onClick(View view) {
+    public void onClick(View view) { // onclick methods to redirect to register and to login
         switch (view.getId()) {
             case R.id.ra_register_button:
                 attemptRegister();
@@ -148,7 +140,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void returnToLogin() {
+    private void returnToLogin() { // redirect to login
         Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(i);
         finish();
