@@ -505,15 +505,6 @@ public class PersonalFragment extends Fragment {
     public View.OnClickListener button1ClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
-
-//            Log.d(TAG, "onClick: start");
-//            Log.d(TAG, "onClick: v id: " + v.getId());
-//            Log.d(TAG, "onClick: map_small_filter id: " + R.id.map_small_filter);
-//            Log.d(TAG, "onCreateView: personalSpace_filter_options = " + R.id.personalSpace_filter_options);
-//
-//            Log.d(TAG, "onClick: are equal? " + (v.getId() == R.id.map_small_filter));
-//
-//            Log.d(TAG, "onClick: case map_small_filter");
             //user filters
             if (userFilterIsVisible) {
                 userFilterSelection = 1;
@@ -549,15 +540,6 @@ public class PersonalFragment extends Fragment {
         @Override
         public void onClick(final View v) {
 
-//            Log.d(TAG, "onClick: start");
-//            Log.d(TAG, "onClick: v id: " + v.getId());
-//            Log.d(TAG, "onClick: map_small_filter id: " + R.id.map_small_filter);
-//            Log.d(TAG, "onCreateView: personalSpace_filter_options = " + R.id.personalSpace_filter_options);
-//
-//            Log.d(TAG, "onClick: are equal? " + (v.getId() == R.id.map_small_filter));
-//
-//            Log.d(TAG, "onClick: case map_large_filter");
-
             //user filters
             if (userFilterIsVisible) {
                 userFilterSelection = 3;
@@ -573,68 +555,6 @@ public class PersonalFragment extends Fragment {
 
         }
     };
-
-//    //all buttons listener
-//    public View.OnClickListener buttonClickListener = new View.OnClickListener() {
-//        @Override
-//        public void onClick(final View v) {
-//
-//            Log.d(TAG, "onClick: start");
-//            Log.d(TAG, "onClick: v id: "+ v.getId());
-//            Log.d(TAG, "onClick: map_small_filter id: "+ R.id.map_small_filter);
-//            Log.d(TAG, "onCreateView: personalSpace_filter_options = "+R.id.personalSpace_filter_options);
-//
-//            Log.d(TAG, "onClick: are equal? "+ (v.getId() ==R.id.map_small_filter));
-//
-//            switch (v.getId()) {
-//                case R.id.map_small_filter:
-//                    Log.d(TAG, "onClick: case map_small_filter");
-//                    //user filters
-//                    if (userFilterIsVisible) {
-//                        userFilterSelection = 1;
-//                    }
-//                    //date filters
-//                    else {
-//                        dateFilterSelection = 86400000L;
-//
-//                    }
-//                    updateShowedNotes();
-//                    break;
-//                case R.id.map_medium_filter:
-//                    Log.d(TAG, "onClick: case map_medium_filter");
-//
-//                    //user filters
-//                    if (userFilterIsVisible) {
-//                        userFilterSelection = 2;
-//
-//                    }
-//                    //date filters
-//                    else {
-//                        dateFilterSelection = 604800000L;
-//
-//                    }
-//                    updateShowedNotes();
-//                    break;
-//                case R.id.map_large_filter:
-//                    Log.d(TAG, "onClick: case map_large_filter");
-//
-//                    //user filters
-//                    if (userFilterIsVisible) {
-//                        userFilterSelection = 3;
-//                    }
-//                    //date filters
-//                    else {
-//                        dateFilterSelection = 2592000000L;
-//
-//                    }
-//                    updateShowedNotes();
-//                    break;
-//                default:
-//                    Log.d(TAG, "onClick: in default");
-//                    break;
-//            }
-//        }
-//    };
 
 
     public void updateShowedNotes() {
@@ -663,7 +583,7 @@ public class PersonalFragment extends Fragment {
         noteList.setAdapter(noteListAdapter);
     }
 
-    //set main filter colors
+    //set secondery filter colors filter colors
     private void setButtonsColor() {
 
         Log.d(TAG, "setButtonsColor: start");
